@@ -646,7 +646,213 @@ date: 2026-06-24
 
 ---
 
-## 13. 部署方案 (不变)
+## 13. 部署方案 (v0.4 加 §13.4 硬件适配)
+
+### 13.1 方案 A: Vercel (退路)
+- 优点: 零配置, 边缘网络
+- 缺点: 国内慢, SQLite 需切 Postgres
+
+### 13.2 方案 B: 自托管 VPS (黑推荐 ⭐)
+- 架构: Nginx + PM2 + SQLite + 定期 cron 备份
+- 优点: 国内快, 数据私有
+- 缺点: 自己维护 (黑写 `deploy.sh`)
+
+### 13.3 百度 Worker 部署 (独立)
+- Cloudflare Worker (免费额度足够)
+- 或 VPS 上 Node.js 反代
+
+> 📌 **老板决策点 Q4**: 部署平台?
+
+### 13.4 硬件适配 🆕 v0.4 (基于老板 4c16g 当前 → 2c4g 未来生产)
+
+**核心思路**: 用 `DEPLOY_MODE` 环境变量三档自适应, **不写两套代码**。
+
+#### 13.4.1 三档定义
+
+| DEPLOY_MODE | 适用主机 | PM2 模式 | Node heap | sharp 并发 | swap | Next.js | CDN |
+|---|---|---|---|---|---|---|---|
+| `dev` | 4c16g (开发/测试) | fork (1 实例) | 4 GB | 不限 | 0 | 标准 | 否 |
+| `prod-16g` | 4c16g (生产 - 富配) | cluster max=2 | 2 GB | 4 | 0 | **standalone** | 可选 |
+| `prod-4g` | 2c4g (生产 - 紧凑) | **fork (1 实例)** | **1.5 GB** | **1** | **2 GB 必备** | **standalone** | **强烈建议** |
+
+#### 13.4.2 配置矩阵 (具体参数)
+
+```bash
+# .env (3 套, 各主机用对应一套)
+# ──────── dev (4c16g 本地) ────────
+DEPLOY_MODE=dev
+NODE_OPTIONS=--max-old-space-size=4096
+SHARP_CONCURRENCY=4
+DATABASE_URL=file:./prisma/dev.db
+
+# ──────── prod-16g (4c16g 生产) ────────
+DEPLOY_MODE=prod-16g
+NODE_OPTIONS=--max-old-space-size=2048
+SHARP_CONCURRENCY=4
+DATABASE_URL=file:/opt/obsidian-journal/prisma/prod.db
+PM2_INSTANCES=2
+
+# ──────── prod-4g (2c4g 生产 - 降配) ────────
+DEPLOY_MODE=prod-4g
+NODE_OPTIONS=--max-old-space-size=1536
+SHARP_CONCURRENCY=1
+DATABASE_URL=file:/opt/obsidian-journal/prisma/prod.db
+PM2_INSTANCES=1
+SWAP_SIZE_MB=2048
+CDN_ENABLED=true
+```
+
+#### 13.4.3 关键约束 (2c4g 必须遵守)
+
+**A. sharp 并发 = 1** (峰值内存控制):
+```ts
+// lib/media/upload.ts
+import sharp from 'sharp';
+
+const MAX_CONCURRENT = parseInt(process.env.SHARP_CONCURRENCY || '4');
+let activeCount = 0;
+const queue: Array<() => void> = [];
+
+async function acquireSharp(): Promise<void> {
+  if (activeCount < MAX_CONCURRENT) {
+    activeCount++;
+    return;
+  }
+  await new Promise<void>((resolve) => queue.push(() => { activeCount++; resolve(); }));
+}
+
+function releaseSharp(): void {
+  activeCount--;
+  const next = queue.shift();
+  if (next) next();
+}
+
+export async function processImage(buffer: Buffer) {
+  await acquireSharp();
+  try {
+    return await sharp(buffer).resize(1280).webp().toBuffer();
+  } finally {
+    releaseSharp();
+  }
+}
+```
+
+**B. SQLite WAL + 调优** (Prisma 启动时执行):
+```ts
+// lib/db.ts (启动 hook)
+import { PrismaClient } from '@prisma/client';
+
+export const prisma = new PrismaClient({
+  log: process.env.DEPLOY_MODE === 'dev' ? ['query', 'warn', 'error'] : ['error'],
+});
+
+export async function tuneSqlite() {
+  if (process.env.DATABASE_URL?.startsWith('file:')) {
+    await prisma.$executeRawUnsafe(`PRAGMA journal_mode = WAL`);
+    await prisma.$executeRawUnsafe(`PRAGMA busy_timeout = 5000`);
+    await prisma.$executeRawUnsafe(`PRAGMA synchronous = NORMAL`);
+    await prisma.$executeRawUnsafe(`PRAGMA mmap_size = 268435456`); // 256MB
+    await prisma.$executeRawUnsafe(`PRAGMA cache_size = -64000`);    // 64MB cache
+  }
+}
+```
+
+**C. Next.js standalone** (生产必备):
+```js
+// next.config.mjs
+export default {
+  output: 'standalone',  // 🆕 v0.4 生产必备
+  // ...
+};
+```
+
+构建产物 `/.next/standalone/` 仅 ~30MB (vs 标准 ~150MB), 含所有依赖, 部署只需拷这个目录 + `public/` + `.next/static/`。
+
+**D. swap 配置 (2c4g 必备)**:
+```bash
+# /swap/swapfile.conf (systemd-swap 或手动)
+sudo fallocate -l 2G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+```
+
+**E. sharp 跨平台编译**:
+```bash
+# 在 4c16g 开发机 (amd64) 编译, 然后 scp 到 2c4g 生产机
+# 若生产机架构相同, 直接 npm ci --omit=dev 跳过编译
+# 若不同 (如生产是 arm64), 在生产机单独 npm rebuild sharp
+
+# deploy.sh 片段:
+if [ "$(uname -m)" != "amd64" ]; then
+  echo "⚠️ 非 amd64 架构, 需要 npm rebuild sharp"
+  npm rebuild sharp
+fi
+```
+
+#### 13.4.4 部署拓扑 (按主机标注)
+
+```
+   ┌──────────────────┐
+   │   Cloudflare CDN │ ← 静态资源 /images/*.webp /_next/static/*
+   │  (可选, 强烈建)  │
+   └────────┬─────────┘
+            │ 缓存命中走 CDN, miss 回落源站
+            ▼
+   ┌──────────────────┐
+   │   Nginx (:443)   │
+   │   + Let's Encrypt│
+   └────────┬─────────┘
+            │
+   ┌────────┴─────────────────────────────┐
+   │ Next.js (PM2 fork, 1 实例)            │
+   │ Node heap 1.5G (2c4g) / 2G (4c16g)   │
+   │ sharp concurrency 1 (2c4g) / 4 (16g)  │
+   │ swap 2GB (2c4g) / 0 (16g)             │
+   └────────┬─────────────────────────────┘
+            │
+            ▼
+   ┌──────────────────┐
+   │ SQLite (WAL)     │
+   │ content/ media/  │
+   └──────────────────┘
+
+   百度 Worker (独立, Cloudflare):
+   ┌──────────────────┐
+   │ pan-proxy.xxx    │
+   │ (独立仓, 不占主) │
+   └──────────────────┘
+```
+
+#### 13.4.5 资源预估 (2c4g 跑稳的边界)
+
+| 资源 | 2c4g 上限 | 预估实际峰值 | 余量 |
+|---|---|---|---|
+| **Node heap** | 1.5 GB | ~1.0 GB (sharp 串行, RSC 流式) | 33% |
+| **sharp 处理** | 共享 heap | ~300 MB / 张 | 串行安全 |
+| **SQLite** | 文件 | ~50 MB + WAL 50 MB | 充足 |
+| **系统 + 缓存** | ~1.5 GB | ~800 MB | 充足 |
+| **swap** | 2 GB | 偶发 | 防 OOM |
+
+**预计**: 2c4g 可承载 **日 PV < 5000**, 同时在线 < 100。超此规模需升配或迁 Postgres。
+
+> 📌 **老板决策点 Q12**: 是否启用 2c4g 降级模式?
+> - 黑推荐: **默认支持**, `DEPLOY_MODE=prod-4g` 一键启用
+> - 不启用也行 (4c16g 跑 v0.3 默认配置已经够), 但**未来部署到 2c4g 时必开**
+
+#### 13.4.6 监控告警 (2c4g 必备)
+
+```bash
+# /usr/local/bin/healthcheck.sh (定时 5min 跑, 超阈值企业微信告警)
+MEM_PCT=$(free | awk '/^Mem:/{printf "%.0f", $3/$2*100}')
+DISK_PCT=$(df -h / | awk 'NR==2{print $5}' | tr -d '%')
+SWAP_USED=$(free | awk '/^Swap:/{printf "%.0f", $3/$2*100}')
+
+if [ "$MEM_PCT" -gt 85 ]; then
+  curl -X POST "$WECOM_WEBHOOK" -d "{\"msgtype\":\"text\",\"text\":{\"content\":\"⚠️ OJ 内存 $MEM_PCT%\"}}"
+fi
+```
 
 ---
 
@@ -776,7 +982,7 @@ if (block.type === 'customHtml') {
 
 ---
 
-## 16. 待老板拍板 (Q1-Q11, v0.3 增 3 项)
+## 16. 待老板拍板 (Q1-Q12, v0.4 增 1 项)
 
 | # | 决策项 | 黑推荐 | 状态 |
 |---|---|---|---|
@@ -792,13 +998,14 @@ if (block.type === 'customHtml') {
 | **Q9b** 🆕 | **CustomHtmlBlock 开关** | **默认禁用 + Settings 显式开启** | 🟡 |
 | **Q10** 🆕 | **Worker 仓库结构** | **独立 repo** `obsidian-journal-baidu-proxy` | 🟡 |
 | **Q11** 🆕 | **Novel 模型** | **Novel + NovelVolume 双层** | 🟡 |
+| **Q12** 🆕 | **2c4g 降级模式** | **默认支持, DEPLOY_MODE=prod-4g 启用** | 🟡 |
 
 ### 优先级 (黑建议审阅顺序)
 
 | 优先级 | 决策 | 影响 |
 |---|---|---|
 | 🔴 P0 | Q1 项目名 / Q3 百度 / Q11 Novel | 阻塞 Phase 1 |
-| 🟡 P1 | Q4 部署 / Q5 默认主题 / Q9 Page Builder / Q10 Worker 仓库 | 阻塞 Phase 1-3 |
+| 🟡 P1 | Q4 部署 / Q5 默认主题 / Q9 Page Builder / Q10 Worker 仓库 / Q12 降级 | 阻塞 Phase 1-3 |
 | 🟡 P1 | Q9b CustomHtml 开关 | Settings 配置 |
 | 🟢 P2 | Q2 评论 / Q6 LLM / Q7 Worker 部署 / Q8 媒体域名 | 不阻塞 |
 

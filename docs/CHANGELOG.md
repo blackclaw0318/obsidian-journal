@@ -1,5 +1,58 @@
 # 更新日志 (Changelog)
 
+## v0.4 — 2026-06-24 (基于老板硬件信息: 4c16g 当前 → 2c4g 未来生产)
+
+### 新增 (3, 全部)
+
+1. **§13.4 硬件适配章节** (DESIGN.md + ARCHITECTURE.md §A18):
+   - **DEPLOY_MODE 环境变量**: `dev` / `prod-16g` / `prod-4g` 三档自适应
+   - **PM2 配置差异化**: 4c16g cluster max=2 + heap 2G / 2c4g fork + heap 1.5G
+   - **sharp 并发控制**: 4c16g 不限 / 2c4g 强制=1 (内存峰值 900MB→可控)
+   - **Next.js standalone 模式**: 生产必选, 减少 ~80% 部署体积
+   - **2c4g swap 强制**: 2-4 GB, 防 OOM
+   - **sharp 跨平台编译**: 开发机编译 → 生产跳过编译 (避生产编译 OOM)
+
+2. **SQLite 调优配置** (DESIGN.md §6 + ARCHITECTURE.md §A18):
+   - `journal_mode = WAL` (并发读写)
+   - `busy_timeout = 5000` (5s 写等待)
+   - `synchronous = NORMAL` (性能/安全平衡)
+   - `mmap_size = 256MB` (零拷贝读)
+   - `cache_size = -64000` (64MB 缓存)
+   - Prisma 连接池 = 1 (SQLite 单写)
+
+3. **§A18 完整部署配置模板** (ARCHITECTURE.md):
+   - `ecosystem.config.js` (PM2)
+   - `nginx.conf` (worker_processes=auto, gzip, brotli, limit_req)
+   - `swap.conf` (2c4g 必备)
+   - `logrotate.conf`
+   - `tuning.service` (systemd 启动调优脚本)
+   - `healthcheck.sh` (扩展: 含内存/磁盘/Worker 健康)
+
+### 新增决策项
+
+- **Q12** 🆕: 2c4g 降级模式开关 (黑推荐: 默认支持, `DEPLOY_MODE=prod-4g` 启用)
+
+### 文档规模
+- v0.3: ~2200 行
+- v0.4: ~2500 行 (+14%)
+
+### 不变的 (确认)
+- ✅ 核心架构 (Next.js + Prisma + SQLite + dnd-kit + shiki + DOMPurify) 不动
+- ✅ 12 个 model 数据模型不动
+- ✅ 13 种 Block 类型不动
+- ✅ Page Builder 逻辑不动
+- ✅ FTS5 / MediaUsage / Novel 三层模型不动
+- ✅ Cloudflare Worker 独立仓库不动
+
+### 黑补充 (老板必读)
+1. **2c4g 跑得起来**: Next.js 14 + Prisma + SQLite 在 2c4g 有大量生产案例 (Vercel Hobby / Railway $5 plan 都是这个量级), 不需要降级技术栈
+2. **关键调优点是部署层**: 内存限制 + sharp 串行 + swap 必备 + WAL
+3. **图片走 CDN**: 静态资源建议 Cloudflare CDN, 不吃 2c4g 出口带宽
+4. **未来日 PV < 1万**: SQLite 够用, 不需要迁 Postgres
+5. **sharp 跨平台**: 开发机 amd64 编译, 生产装同样架构即可; 若生产是 arm64 (如 Oracle ARM), 需要交叉编译或 npm rebuild
+
+---
+
 ## v0.3 — 2026-06-24 (基于老板第二批 9 条反馈)
 
 ### 🔴 关键问题 (3, 已修复)

@@ -294,3 +294,385 @@ export interface BaiduProxyResponse {
 const url = `${process.env.BAUDU_WORKER_URL}/?surl=${surl}&pwd=${pwd}&autoplay=0`;
 return <iframe src={url} ... />;
 ```
+
+## A18. 硬件部署配置 (v0.4 🆕, 基于 4c16g 当前 → 2c4g 未来生产)
+
+> 完整对应 `DESIGN.md` §13.4, 此处给可直接 copy 的配置模板。
+
+### A18.1 PM2 ecosystem.config.js
+
+```js
+// ecosystem.config.js (项目根目录)
+const mode = process.env.DEPLOY_MODE || 'dev';
+
+const config = {
+  apps: [{
+    name: 'obsidian-journal',
+    script: './.next/standalone/server.js',  // standalone 模式产物
+    cwd: '/opt/obsidian-journal',
+    instances: mode === 'prod-16g' ? 2 : 1,  // 2c4g 强制 1
+    exec_mode: mode === 'prod-16g' ? 'cluster' : 'fork',
+    max_memory_restart: mode === 'prod-4g' ? '1400M' : '1900M',  // OOM 前重启
+    node_args: [
+      `--max-old-space-size=${mode === 'prod-4g' ? 1536 : mode === 'prod-16g' ? 2048 : 4096}`,
+      '--enable-source-maps',
+    ],
+    env: {
+      NODE_ENV: 'production',
+      DEPLOY_MODE: mode,
+      PORT: 3000,
+      DATABASE_URL: process.env.DATABASE_URL,
+      SHARP_CONCURRENCY: mode === 'prod-4g' ? '1' : '4',
+      BAIDU_WORKER_URL: process.env.BAUDU_WORKER_URL,
+      NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    },
+    error_file: './logs/pm2-error.log',
+    out_file: './logs/pm2-out.log',
+    log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
+    merge_logs: true,
+  }],
+};
+
+module.exports = config;
+```
+
+### A18.2 Nginx 配置
+
+```nginx
+# /etc/nginx/sites-available/obsidian-journal
+# worker 数按 CPU 自动 (4c16g → 4, 2c4g → 2)
+worker_processes auto;
+worker_rlimit_nofile 65535;
+
+events {
+    worker_connections 2048;
+    multi_accept on;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+    sendfile      on;
+    tcp_nopush    on;
+    tcp_nodelay   on;
+    keepalive_timeout 65;
+    server_tokens off;
+
+    # ─── 压缩 ───
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_types
+        text/plain
+        text/css
+        text/xml
+        text/javascript
+        application/json
+        application/javascript
+        application/xml+rss
+        application/atom+xml
+        image/svg+xml;
+
+    # ─── Brotli (需模块, 2c4g 可省 CPU) ───
+    # brotli on;
+    # brotli_comp_level 4;
+    # brotli_types text/plain text/css application/json application/javascript text/xml;
+
+    # ─── 限流 ───
+    limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
+    limit_req_zone $binary_remote_addr zone=login:10m rate=3r/m;  # 登录 3次/分钟
+
+    # ─── 客户端最大 body (MD 上传 5MB) ───
+    client_max_body_size 10M;
+
+    # ─── 静态资源缓存 ───
+    proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=STATIC:10m
+                     max_size=1g inactive=60m use_temp_path=off;
+
+    upstream nextjs_upstream {
+        least_conn;
+        server 127.0.0.1:3000;
+        keepalive 32;
+    }
+
+    server {
+        listen 443 ssl http2;
+        server_name yourdomain.com;
+
+        ssl_certificate     /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers HIGH:!aNULL:!MD5;
+
+        # ─── 安全头 ───
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header Referrer-Policy "no-referrer-when-downgrade" always;
+        add_header Content-Security-Policy "default-src 'self'; img-src 'self' data: https:; media-src 'self' https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; frame-src https://player.bilibili.com https://pan.baidu.com https://www.youtube-nocookie.com https://pan-proxy.xxx.workers.dev;" always;
+
+        # ─── 静态资源 (Next.js standalone 已含) ───
+        location /_next/static/ {
+            proxy_pass http://nextjs_upstream;
+            proxy_cache STATIC;
+            proxy_cache_valid 200 365d;
+            add_header Cache-Control "public, max-age=31536000, immutable";
+            access_log off;
+        }
+
+        location /media/ {
+            alias /opt/obsidian-journal/media/;
+            expires 30d;
+            add_header Cache-Control "public, max-age=2592000";
+            access_log off;
+        }
+
+        # ─── API 限流 ───
+        location /api/ {
+            limit_req zone=api burst=20 nodelay;
+            proxy_pass http://nextjs_upstream;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+
+        location ~ ^/api/auth {
+            limit_req zone=login burst=5 nodelay;
+            proxy_pass http://nextjs_upstream;
+        }
+
+        # ─── 默认 ───
+        location / {
+            proxy_pass http://nextjs_upstream;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_buffering off;
+            proxy_read_timeout 60s;
+        }
+    }
+
+    # HTTP → HTTPS
+    server {
+        listen 80;
+        server_name yourdomain.com;
+        return 301 https://$server_name$request_uri;
+    }
+}
+```
+
+### A18.3 swap 配置 (2c4g 必备)
+
+```bash
+#!/bin/bash
+# scripts/setup-swap.sh (一次性, 部署到 2c4g 时跑)
+
+set -e
+SWAP_SIZE_MB=${SWAP_SIZE_MB:-2048}  # 默认 2GB, 可覆盖
+
+if [ "$(swapon --show | wc -l)" -gt 1 ]; then
+  echo "✅ swap 已存在:"
+  swapon --show
+  exit 0
+fi
+
+echo "📦 创建 ${SWAP_SIZE_MB}MB swap..."
+sudo fallocate -l "${SWAP_SIZE_MB}M" /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+
+# 持久化
+if ! grep -q '/swapfile' /etc/fstab; then
+  echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+fi
+
+# 调优 swappiness (2c4g 推荐 10, 内存紧张时再换出)
+echo 'vm.swappiness=10' | sudo tee /etc/sysctl.d/99-swap.conf
+sudo sysctl -p /etc/sysctl.d/99-swap.conf
+
+echo "✅ swap 配置完成:"
+free -h
+```
+
+### A18.4 SQLite 调优 (Prisma 启动 hook)
+
+```ts
+// lib/db.ts (Phase 1 初始化时实施)
+import { PrismaClient } from '@prisma/client';
+
+const isSqlite = process.env.DATABASE_URL?.startsWith('file:');
+
+export const prisma = new PrismaClient({
+  log: process.env.DEPLOY_MODE === 'dev' ? ['query', 'warn', 'error'] : ['error'],
+  // SQLite 不需要连接池, Prisma 默认会序列化
+});
+
+// SQLite 性能调优 (启动时执行一次)
+export async function tuneSqlite(): Promise<void> {
+  if (!isSqlite) return;
+  
+  const pragmas = [
+    `PRAGMA journal_mode = WAL`,        // 并发读写
+    `PRAGMA busy_timeout = 5000`,       // 5s 写等待
+    `PRAGMA synchronous = NORMAL`,      // 性能/安全平衡 (WAL 下 NORMAL 等于 FULL 安全性)
+    `PRAGMA mmap_size = 268435456`,     // 256MB 零拷贝读
+    `PRAGMA cache_size = -64000`,       // 64MB page cache
+    `PRAGMA temp_store = MEMORY`,       // 临时表走内存
+    `PRAGMA foreign_keys = ON`,         // 外键约束 (Prisma 默认不强制)
+  ];
+  
+  for (const sql of pragmas) {
+    try {
+      await prisma.$executeRawUnsafe(sql);
+    } catch (e) {
+      console.warn(`[SQLite tune] failed: ${sql} → ${e}`);
+    }
+  }
+  
+  console.log('[SQLite tune] ✅ 7 PRAGMAs applied');
+}
+
+// 应用启动时调 (instrumentation.ts)
+export async function register() {
+  if (process.env.NEXT_RUNTIME === 'nodejs') {
+    await tuneSqlite();
+  }
+}
+```
+
+### A18.5 Next.js standalone 配置
+
+```js
+// next.config.mjs
+export default {
+  output: 'standalone',  // 🆕 v0.4 生产必备
+  experimental: {
+    instrumentationHook: true,  // 注册 SQLite tuneSqlite hook
+  },
+  images: {
+    // 🆕 2c4g 优化: 限制图片最大尺寸, 减少 sharp 内存峰值
+    deviceSizes: [640, 750, 828, 1080, 1200],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256],
+  },
+  // sharp 并发由 SHARP_CONCURRENCY env 控制 (lib/media/upload.ts)
+};
+```
+
+### A18.6 sharp 跨平台编译
+
+```bash
+# scripts/deploy.sh 片段 (Phase 4 写完整版)
+
+# 检测架构
+ARCH=$(uname -m)
+echo "检测到架构: $ARCH"
+
+if [ "$ARCH" != "amd64" ] && [ "$ARCH" != "x86_64" ]; then
+  echo "⚠️ 非 x86_64 架构, 需要在生产机重新编译 native 模块"
+  npm rebuild sharp
+fi
+
+# sharp 安装 (生产环境 npm ci 跳过 download)
+SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm ci --omit=dev --ignore-scripts
+# 然后单独装 sharp (走 prebuilt binary)
+npm install sharp --omit=dev
+```
+
+### A18.7 健康检查 (含 2c4g 内存告警)
+
+```bash
+#!/bin/bash
+# scripts/healthcheck.sh (定时 5min)
+
+set -e
+WEBHOOK=${WECOM_WEBHOOK:-}
+DOMAIN=${OJ_DOMAIN:-localhost}
+ALERT_THRESHOLD_MEM=${ALERT_THRESHOLD_MEM:-85}
+ALERT_THRESHOLD_DISK=${ALERT_THRESHOLD_DISK:-85}
+
+# 1. HTTP 健康
+HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://$DOMAIN/api/health" || echo "000")
+if [ "$HTTP_CODE" != "200" ]; then
+  send_alert "🔴 OJ 健康检查失败: HTTP $HTTP_CODE"
+fi
+
+# 2. 内存 (2c4g 重点)
+MEM_PCT=$(free | awk '/^Mem:/{printf "%.0f", $3/$2*100}')
+if [ "$MEM_PCT" -gt "$ALERT_THRESHOLD_MEM" ]; then
+  send_alert "⚠️ OJ 内存告警: ${MEM_PCT}% (阈值 ${ALERT_THRESHOLD_MEM}%)"
+fi
+
+# 3. 磁盘
+DISK_PCT=$(df -h / | awk 'NR==2{print $5}' | tr -d '%')
+if [ "$DISK_PCT" -gt "$ALERT_THRESHOLD_DISK" ]; then
+  send_alert "⚠️ OJ 磁盘告警: ${DISK_PCT}% (阈值 ${ALERT_THRESHOLD_DISK}%)"
+fi
+
+# 4. PM2 进程
+PM2_STATUS=$(pm2 jlist 2>/dev/null | python3 -c "
+import sys, json
+try:
+    procs = json.load(sys.stdin)
+    for p in procs:
+        if p['name'] == 'obsidian-journal':
+            print(p['pm2_env']['status'])
+            break
+except: print('error')
+")
+if [ "$PM2_STATUS" != "online" ]; then
+  send_alert "⚠️ OJ PM2 进程状态: $PM2_STATUS"
+fi
+
+# 5. 百度 Worker (若配置)
+if [ -n "$BAIDU_WORKER_URL" ]; then
+  WORKER_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 "$BAIDU_WORKER_URL/health" || echo "000")
+  if [ "$WORKER_CODE" != "200" ]; then
+    send_alert "⚠️ OJ 百度 Worker 异常: HTTP $WORKER_CODE"
+  fi
+fi
+
+# 6. SQLite 数据库大小 + WAL
+DB_SIZE=$(du -sh /opt/obsidian-journal/prisma/prod.db 2>/dev/null | cut -f1)
+echo "[$(date)] OK | mem=${MEM_PCT}% disk=${DISK_PCT}% pm2=$PM2_STATUS db=$DB_SIZE"
+
+send_alert() {
+  if [ -z "$WEBHOOK" ]; then
+    echo "[ALERT] $1"
+    return
+  fi
+  curl -s -X POST "$WEBHOOK" \
+    -H "Content-Type: application/json" \
+    -d "{\"msgtype\":\"text\",\"text\":{\"content\":\"$1\"}}" >/dev/null
+}
+```
+
+### A18.8 systemd unit (开机自启)
+
+```ini
+# /etc/systemd/system/obsidian-journal.service
+[Unit]
+Description=Obsidian Journal (Next.js)
+After=network.target
+
+[Service]
+Type=simple
+User=oj
+WorkingDirectory=/opt/obsidian-journal
+ExecStart=/usr/bin/pm2 start ecosystem.config.js --env production
+ExecReload=/usr/bin/pm2 reload ecosystem.config.js
+ExecStop=/usr/bin/pm2 stop ecosystem.config.js
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+```
+

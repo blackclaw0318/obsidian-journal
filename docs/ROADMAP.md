@@ -66,12 +66,20 @@
 - [ ] `/api/health` 完整版 (含 baiduWorker 检查)
 - [ ] README + 运营文档 + Worker 仓 README
 - [ ] 监控告警 (Plausible + Worker 失败率)
+- [ ] **2c4g 部署验证 (黑必做) 🆕 v0.4**:
+  - [ ] 准备一个 2c4g 测试环境 (老板给或本地模拟)
+  - [ ] `DEPLOY_MODE=prod-4g` 跑通完整链路
+  - [ ] 上传 50 张图 + 10 篇 Post, 监控内存峰值 < 1.4G
+  - [ ] 跑 24h 压力测试, 无 OOM, 无 PM2 重启
+  - [ ] swap 配置验证 + logrotate 验证
+  - [ ] sharp 串行 vs 并发内存对比 (附数据)
+- [ ] **部署文档 (含 4c16g vs 2c4g 双路线) 🆕 v0.4**
 
 ## 阶段依赖 & 风险
 
 | 依赖项 | 风险 | 缓解 |
 |---|---|---|
-| 老板 11 决策 | 阻塞 Phase 1 | 老板当天拍板 |
+| 老板 12 决策 (含 Q12) | 阻塞 Phase 1 | 老板当天拍板 |
 | 百度 B 方案 Worker | 反爬 → 失效 | `.env` 切 C, 监控失败率 |
 | **CustomHtml 开关 UX** 🆕 | 站长找不到开关 | 文档明确步骤 + Settings UI 显著 |
 | Page Builder 复杂度 | 工期超 | 自由搭建平衡, 模板 v2 |
@@ -79,3 +87,5 @@
 | **Worker 独立仓库** 🆕 | 双仓 PR 同步成本 | 接口契约 + 文档化 |
 | FTS5 同步失败 | 搜索不到新文章 | 降级 + 重建按钮 + cron |
 | 媒体库磁盘 | 大量图占空间 | sharp 压缩 + 备份 |
+| **2c4g 内存紧张 🆕 v0.4** | OOM kill | WAL + sharp 并发=1 + heap=1.5G + swap=2G |
+| **sharp 跨平台编译 🆕 v0.4** | 生产机编译失败 | 开发机编译好, npm ci 跳过编译 |
