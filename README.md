@@ -17,6 +17,7 @@
 |---|---|
 | [`docs/DESIGN.md`](./docs/DESIGN.md) | 总设计 (架构/技术栈/功能) |
 | [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) | 架构细节 (渲染策略/数据流/部署拓扑) |
+| [`docs/TESTING.md`](./docs/TESTING.md) | **🆕 v0.5** 测试与可见性方案 (金字塔 + Tunnel + 阶段报告) |
 | [`docs/ROADMAP.md`](./docs/ROADMAP.md) | 路线图 (Phase 0-4) |
 | [`docs/DECISIONS.md`](./docs/DECISIONS.md) | 老板拍板项归档 |
 
@@ -45,4 +46,4 @@
 
 ## 状态
 
-🚧 暂停中 — 等老板审 [`docs/DESIGN.md`](./docs/DESIGN.md) §16 的 6 决策。
+🚧 暂停中 — 等老板审 12 决策 (Q1-Q12) + 测试方案 4 决策 (Q13-Q16)。

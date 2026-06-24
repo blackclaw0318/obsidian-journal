@@ -1,5 +1,37 @@
 # 更新日志 (Changelog)
 
+## v0.5 — 2026-06-24 (测试与可见性方案, 黑新增)
+
+### 新增 (1 文档)
+
+1. **docs/TESTING.md (12 KB, 480 行)**: 测试与可见性完整方案
+   - **3 层测试金字塔**: Unit (Vitest) / Integration (Prisma 内存 SQLite) / E2E + Visual (Playwright)
+   - **2 路可见性**: Cloudflare Tunnel 实时真访问 + 阶段报告 (含截图)
+   - **各 Phase 测试计划**: P1 骨架 65 case / P2 内容 98 case / P3 Admin 137 case / P4 打磨 50 case
+   - **一键命令表**: `pnpm verify` / `pnpm test:visual` / `pnpm lhci` / `pnpm dev:tunnel`
+   - **pre-commit 自动化**: lint-staged + simple-git-hooks (commit 跑 lint+unit, push 跑 verify)
+   - **风险与缓解表**: 8 类风险 (资源/网络/视觉回归/SQLite 并发等) + 缓解
+   - **验收节奏**: 微步 (2-4h) / 里程碑 (子任务) / Phase 收官 (老板 `pnpm verify` 自验)
+
+### 配套基础设施 (本机已就绪)
+
+- **xhs-mcp 容器已停** (释放 ~1 核 + 500MB 内存, load 3.28→1.95)
+- **cloudflared 2026.6.1** 已装 (`/usr/local/bin/cloudflared`)
+
+### 新增决策项
+
+- **Q13** 🆕: 测试金字塔比例 (35/30/25/10) — 黑推荐 ✅
+- **Q14** 🆕: 覆盖率门禁 (总体 ≥ 75%, 核心 ≥ 90%) — 黑推荐 ✅
+- **Q15** 🆕: 视觉回归容差 (≤ 2% 像素差) — 黑推荐 ✅
+- **Q16** 🆕: Pre-push 必跑 `pnpm verify` (~5min) — 黑推荐 ✅
+
+### 文档规模
+
+- v0.4: ~2500 行
+- v0.5: ~3000 行 (+20%)
+
+---
+
 ## v0.4 — 2026-06-24 (基于老板硬件信息: 4c16g 当前 → 2c4g 未来生产)
 
 ### 新增 (3, 全部)
