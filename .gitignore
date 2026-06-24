@@ -69,3 +69,12 @@ test-results/
 # ========== Misc ==========
 *.tmp
 .tmp/
+node_modules/
+data/
+logs/
+# output/ — 阶段产物 (其中 screenshots/ 入仓做可见性, 见 docs/TESTING.md §5)
+output/*.tmp
+output/.cache/
+.next/
+.env
+*.tsbuildinfo
