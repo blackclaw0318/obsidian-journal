@@ -1,62 +1,95 @@
 # 更新日志 (Changelog)
 
-## v0.2 — 2026-06-24 (基于老板反馈重写)
+## v0.3 — 2026-06-24 (基于老板第二批 9 条反馈)
 
-### 🔴 关键问题 (3)
+### 🔴 关键问题 (3, 已修复)
 
-1. **Page Builder 升级**: `PageSection` → `Page` + `Block[]` 联合类型
-   - 13 种 block: hero / text / gallery / stats / skills / timeline / links / posts / videos / divider / customHTML / marquee / music
-   - 站长可在任意页面**添加/删除/拖拽排序/配置**任意 block
-   - 后台 UI: 左 Block 库 + 中实时预览 + 右配置表单 (dnd-kit + react-hook-form + zod)
-2. **百度网盘改为"主推 B 真直接播"**: 老板明确要"直接播放", 黑不再推 C 方案
-   - 默认走 B (第三方解析服务), 标注合规风险 + 服务稳定性风险
-   - 提供降级 C 方案, 站长一键切换
-3. **数据模型严谨化**:
-   - Prisma enum 替换 String 字段 (PostType / PostCategory / BlockType / MediaType)
-   - `Post` (tech/life 文章) 与 `Chapter` (小说章节) 拆开
-   - 新增 `Series` 表 (技术系列/小说卷)
-   - 新增 `Media` 表 (图片/视频/文件)
+1. **CustomHtmlBlock 开启路径缺失** → 加 **Q9b 决策项** + SiteConfig.allowCustomHtml 开关 + Settings 显式开启 + 保存时 DOMPurify 二次清洗 + Block 库 disabled 灰显
+2. **Cloudflare Worker 仓库结构未规划** → 加 **§22 Worker 仓库结构** 章节 + **Q10 决策项** (独立 repo / monorepo, 黑推荐独立 repo)
+3. **小说"作品 (Novel)" 实体缺失** → 加 Novel + NovelVolume 双层模型, Chapter 挂 NovelVolume 不再挂 Series
 
-### 🟡 中等问题 (4)
+### 🟡 中等问题 (4, 已修复)
 
-4. **页面装饰后台补全**: §7.2 表格更新, 明确"添加/删除 block"入口
-5. **搜索改 SQLite FTS5**: 替代 Fuse.js, 零依赖, 万级数据 < 50ms
-6. **媒体库模块 (新增 §19)**: Phase 3 加媒体管理 (上传/多尺寸/blurhash/URL 替换)
-7. **小说与文章数据分离**: `Chapter` 独立表, 关联 `seriesId` + `chapterNo`
+4. **媒体引用追踪缺实现** → 加 MediaUsage 中间表 (多态关联 post/chapter/page/video)
+5. **SiteConfig.socials String JSON 不严谨** → 加 Social 表规范化 (platform/label/url/icon/order/visible)
+6. **FTS5 同步失败无降级** → 明确同步失败降级 + warning log + Admin"重建索引"按钮 + 定时 cron
+7. **Video.series String 不严谨** → 加 VideoSeries 表 + 外键 (统一数据模型)
 
-### 🟢 小问题 (3)
+### 🟢 小问题 (4, 已修复)
 
-8. **默认亮色 + 暗色切换**: 改默认亮色 (现代博客风), 暗色仍高质量实现
-9. **content/ gitignore 明细化**: 列出具体忽略类型
-10. **系列/合集页**: §20 新增 Series 列表 + 详情页设计
+8. **BlockBase 缺 theme 字段** → 加 `theme?: 'light' | 'dark' | 'auto'`, Block 容器动态加 className
+9. **MarqueeBlock 凑数** → **移除** (现代博客几乎不用)
+10. **MusicBlock 反人类** → 保留但**标"高级"**, 加使用场景文档警告
+11. **CalloutBlock 新增** → 替代 Marquee, 现代博客高频 (info/warning/success/danger)
+12. **view 计数方案缺失** → 加 **§23 View 计数方案** 章节 (DB UPDATE + 同 IP 24h 防刷)
 
-### 新增决策项 (Q7-Q9)
+### Block 类型清单变更
 
-- Q7: 第三方解析服务选择 (黑推荐: 自建 Cloudflare Worker 转发 + 多家备用)
-- Q8: 媒体库是否独立子域名 (cdn.xxx.com)
-- Q9: Page Builder 是"自由搭建"还是"模板驱动"
+| Block | v0.2 | v0.3 |
+|---|---|---|
+| Hero / Text / Gallery / Stats / Skills / Timeline / Links / Posts / Videos / Divider / CustomHtml | ✅ | ✅ |
+| **Marquee** | ✅ | ❌ 移除 |
+| **Music** | ✅ | ⚠️ 保留 (标"高级", 默认折叠) |
+| **Callout** 🆕 | — | ✅ 新增 |
+
+**总 Block 数**: 13 → **13** (12 常规 + 1 高级 Music)
+
+### 数据模型变更
+
+| 表 | v0.2 | v0.3 |
+|---|---|---|
+| User / SiteConfig / Post / Page / Media / DailyStat | ✅ | ✅ |
+| Series (tech 文章系列) | ✅ | ✅ (限定 tech/life) |
+| Chapter (小说章节) | ✅ | ✅ (改挂 NovelVolume) |
+| **Novel** 🆕 | — | 小说作品 (元界) |
+| **NovelVolume** 🆕 | — | 小说卷 (元界 第一卷) |
+| **Social** 🆕 | — | 友链/社交规范化 |
+| **MediaUsage** 🆕 | — | 媒体引用追踪 |
+| **VideoSeries** 🆕 | — | 视频系列外键 |
+| Video.series String | — | 改 seriesId 外键 → VideoSeries |
+
+### 新增决策项
+
+- **Q9b** 🆕: CustomHtmlBlock 是否允许开启 (黑推荐: 默认禁用, Settings 显式开启)
+- **Q10** 🆕: Worker 仓库结构 (黑推荐: 独立 repo)
+- **Q11** 🆕: Novel 模型设计采用 (黑推荐: Novel + NovelVolume 双层)
+
+### 文档规模
+- v0.2: 1835 行
+- v0.3: ~2200 行 (+20%)
+
+---
+
+## v0.2 — 2026-06-24
+
+### 🔴 关键 (3)
+- Page Builder 升级 Page + Block[]
+- 百度改 B 方案 + C 降级
+- 数据模型严谨化
+
+### 🟡 中等 (4)
+- Page Builder 3 栏 UI
+- SQLite FTS5 搜索
+- 媒体库模块
+- Post/Chapter 拆表
+
+### 🟢 小 (3)
+- 默认亮色
+- content/ gitignore 明细
+- Series/合集页
 
 ---
 
 ## v0.1 — 2026-06-24 (初稿, 已废)
 
-- 项目立项 + GitHub 仓库创建
-- 基础架构设计 (Next.js 14 + Prisma + Auth.js)
-- 6 大文档 (DESIGN/ARCHITECTURE/ROADMAP/DECISIONS/README/PUSH_NOTES)
-- 2 commits on main
-
-**已废原因**: 老板审核指出 Page Builder 太弱、百度方案 C 不算"直接播放"、数据模型不严谨、缺媒体库。
-
----
-
-## 决策项变化
-
-| 项 | v0.1 | v0.2 |
-|---|---|---|
-| Q3 百度网盘 | C (中间页+提取码) | **B (真直接播)** + C 降级 |
-| Q5 默认主题 | 暗色 | **亮色** + 暗色切换 |
-| Q9 默认搜索 | Fuse.js | **SQLite FTS5** |
-| Page Builder | PageSection (固定) | **Page + Block[] 联合类型** |
-| 数据模型 | Post 单表 String category | **Post + Chapter 拆表 + enum + Series + Media** |
-| 媒体管理 | 无 | **Media 表 + 媒体库后台** |
-| 系列页面 | 无 | **Series 列表 + 详情页** |
+### 已废原因
+- Page Builder 太弱 (老板指出)
+- 百度方案 C 不算"直接播放"
+- 数据模型不严谨
+- 缺媒体库
+- 缺 Novel 层
+- FTS5 无降级
+- 媒体无引用追踪
+- Social 字段不规范化
+- Block 类型有凑数
+- Worker 仓库结构未规划
