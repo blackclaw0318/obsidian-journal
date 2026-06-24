@@ -1,46 +1,71 @@
-# Dependencies
+# ========== Dependencies ==========
 node_modules/
 .pnpm-store/
+.pnp/
+.yarn/
 
-# Build
+# ========== Build ==========
 .next/
 out/
 dist/
 build/
+.turbo/
 
-# Environment
+# ========== Environment ==========
 .env
 .env.local
 .env.production
 .env.development
+.env.*.local
 
-# Database (本地 SQLite, 不入仓)
+# ========== Database (本地 SQLite, 不入仓) ==========
 prisma/*.db
 prisma/*.db-journal
+prisma/*.db-wal
+prisma/*.db-shm
 
-# OS
+# ========== User Content (gitignored, 见 docs/DESIGN.md §5) ==========
+# 原 MD 文件 (Owner 本地编辑, 灾备, 体积可能很大)
+content/tech/
+content/life/
+content/novels/
+content/videos/
+
+# 媒体库 (图片/视频/文件, 体积大, 走备份而非 git)
+media/images/
+media/videos/
+media/docs/
+
+# ========== OS / IDE ==========
 .DS_Store
 Thumbs.db
-
-# IDE
 .vscode/
 .idea/
 *.swp
+*.swo
 
-# Logs
+# ========== Logs ==========
 logs/
 *.log
 npm-debug.log*
 pnpm-debug.log*
+yarn-debug.log*
 
-# TypeScript
+# ========== TypeScript ==========
 *.tsbuildinfo
 next-env.d.ts
 
-# User uploads (not in repo, served from local disk)
-content/
-
-# Test
+# ========== Tests ==========
 coverage/
 playwright-report/
 test-results/
+.playwright/
+
+# ========== Cache ==========
+.cache/
+.eslintcache
+.parcel-cache/
+
+# ========== Misc ==========
+*.tmp
+.tmp/

@@ -1,29 +1,30 @@
 # Obsidian Journal — 个人博客平台设计文档
 
-> 状态: **v0.1 · 方案稿 (待老板审核)**
+> 版本: **v0.2 · 方案稿 (基于老板反馈重写)**
 > 作者: 黑 (Hei)
-> 创建: 2026-06-24
-> 仓库: `blackclaw0318/obsidian-journal` (本仓库)
+> 创建: 2026-06-24 (v0.1) → 重写 2026-06-24 (v0.2)
+> 仓库: `blackclaw0318/obsidian-journal`
+> 详见: `docs/CHANGELOG.md` v0.1→v0.2 改动总览
 
 ---
 
 ## 0. TL;DR (30 秒读完)
 
-- **做什么**: 一个**单作者个人博客**, 支持 Markdown 上传自动发布、视频专栏、5 大内容分类。
-- **技术栈**: **Next.js 14 (App Router) + TypeScript + Tailwind + shadcn/ui + Prisma + SQLite + Auth.js v5 + Framer Motion + Lenis**。
-- **核心亮点**:
-  1. 极简黑白 + 大量微动态 (Lenis 平滑滚动 + Framer Motion 进入/退出动画)
-  2. **双模式**: 游客只读 / 站长登录后可上传 MD 改全站
-  3. **MD 一键发布**: 上传 `.md` → 自动解析 frontmatter → 自动入专栏 → 自动渲染代码高亮
-  4. **视频专栏**: B 站 BV 号 / 百度网盘分享链接 → 解析成可内嵌播放器
-- **项目名候选**: 见 §1
-- **审核重点**: 见 §16 "待老板拍板"
+- **做什么**: 单站长个人博客, 极简黑白风, 大量微动态, **13 种 Block 可视化页面搭建**
+- **核心升级 (v0.2)**:
+  1. **Page Builder**: 站长可在任意页面**自由添加/删除/拖拽** 13 种 Block (技能雷达/时间线/友链/统计...)
+  2. **百度网盘真直接播**: 主推方案 B (第三方解析服务), 降级方案 C
+  3. **数据模型严谨化**: Post / Chapter 拆表 + Prisma enum + Series + Media
+  4. **媒体库**: 上传图片自动生成多尺寸 + blurhash + URL 替换
+  5. **默认亮色**: 暗色仍高质量 (切换器保留)
+- **技术栈**: Next.js 14 + TS + Tailwind + shadcn/ui + Prisma + SQLite + Auth.js v5 + Framer Motion + Lenis + dnd-kit + Shiki + sharp
+- **审核重点**: §16 "待老板拍板" (Q1-Q9, 9 决策)
 
 ---
 
 ## 1. 项目命名建议
 
-> 当前默认: **`obsidian-journal`** (黑曜石日志), 体现"黑 + 极简 + 个人写作"
+> 当前默认: **`obsidian-journal`** (黑曜石日志)
 
 | 候选 | 含义 | 风格 | 黑推荐 |
 |---|---|---|---|
@@ -33,61 +34,60 @@
 | `handfoot-blog` | 商业帝国系 | 品牌一致 | 备选 3 |
 | `sk-journal` | 老板缩写 | 最简洁 | 备选 4 |
 
-> 📌 **老板决策点 P1**: 选哪个? 不拍就先用 `obsidian-journal`。
+> 📌 **老板决策点 Q1**: 选哪个? 不拍就先用 `obsidian-journal`。
 
 ---
 
 ## 2. 设计哲学
 
 ### 2.1 视觉关键词
-- **简洁 (Minimal)**: 大量留白, 单一焦点, 没有多余装饰
-- **现代 (Modern)**: 几何网格, 强对比, 非对称布局
-- **青春 (Youthful)**: 微动效, 弹性缓动, 不刻板
-- **高级 (Premium)**: 排版考究, 字体克制, 细节到位
+**简洁 · 现代 · 青春 · 高级**
 
-### 2.2 配色规范 (黑白配)
+### 2.2 配色规范 (黑白配, v0.2 改默认亮色)
+
+**主色**:
 ```
-主色 (Primary)
-  纯黑:  #000000
-  纯白:  #FFFFFF
-
-灰阶 (Neutral, Tailwind zinc)
-  zinc-50:   #FAFAFA   背景
-  zinc-100:  #F4F4F5   卡片
-  zinc-200:  #E4E4E7   分割线
-  zinc-400:  #A1A1AA   次要文字
-  zinc-600:  #52525B   正文
-  zinc-900:  #18181B   标题
-  zinc-950:  #09090B   深背景 (夜间)
-
-强调 (Accent) — 仅 1 个, 灰白渐变光斑
-  bg-gradient-to-br from-zinc-100 to-white (亮色模式)
-  bg-gradient-to-br from-zinc-800 to-zinc-950 (暗色模式)
+纯黑:  #000000      (强调/按钮/标题)
+纯白:  #FFFFFF      (背景)
 ```
 
-**只支持亮/暗两模式, 暗色为默认** (与"黑曜石"主题契合)。
+**灰阶** (Tailwind zinc):
+```
+zinc-50:   #FAFAFA   卡片背景
+zinc-100:  #F4F4F5   分区背景
+zinc-200:  #E4E4E7   分割线
+zinc-400:  #A1A1AA   次要文字
+zinc-600:  #52525B   正文
+zinc-900:  #18181B   标题
+zinc-950:  #09090B   暗色模式背景
+```
+
+**双主题 (默认亮色 + 暗色切换)**:
+- **亮色 (默认)**: 白底 + 黑字, 大量留白, 现代博客主流
+- **暗色**: 黑底 + 白字, 契合"黑曜石"主题, 晚间阅读
+- 切换器右上角, 带"溶解"过渡动画 (200ms)
 
 ### 2.3 字体方案
-| 用途 | 字体 | 备选 |
-|---|---|---|
-| 中文标题 | **思源黑体 SC** (Source Han Sans) | 苹方, 阿里巴巴普惠体 |
-| 中文正文 | **思源黑体 SC Light** | 苹方-细 |
-| 英文标题 | **Geist Sans** | Inter, Helvetica Neue |
-| 英文正文 | **Geist Sans** | Inter |
-| 代码 | **JetBrains Mono** | Fira Code, Geist Mono |
-| 手写装饰 (可选) | **LXGW WenKai** (霞鹜文楷) | 演示/Logo 装饰 |
+| 用途 | 字体 |
+|---|---|
+| 中文标题 | 思源黑体 SC (Source Han Sans) |
+| 中文正文 | 思源黑体 SC Light |
+| 英文标题 | Geist Sans |
+| 英文正文 | Geist Sans |
+| 代码 | JetBrains Mono |
+| 手写装饰 | LXGW WenKai (霞鹜文楷) |
 
-> 📌 全部走 `next/font` 自托管 + `font-display: swap`, **无第三方 CDN 请求**, 提升 LCP。
+全部 `next/font` 自托管, **0 第三方 CDN 请求**。
 
 ### 2.4 排版尺度
-- **基线网格**: 8px
-- **行高**: 正文 1.7, 标题 1.2
-- **最大行宽**: 720px (正文阅读) / 1280px (列表)
-- **段落间距**: 1.5em
+- 基线网格 8px
+- 行高: 正文 1.7 / 标题 1.2
+- 最大行宽: 720px (正文) / 1280px (列表)
+- 段落间距 1.5em
 
 ---
 
-## 3. 技术栈选型
+## 3. 技术栈选型 (v0.2 加粗标注新增)
 
 ### 3.1 一图速览
 
@@ -96,39 +96,49 @@
 │  Frontend                                                │
 │  Next.js 14 (App Router) · TypeScript 5.x · React 18    │
 │  Tailwind CSS 3.4 + shadcn/ui · Framer Motion 11         │
-│  Lenis (smooth scroll) · next-themes (dark mode)        │
+│  Lenis (smooth scroll) · next-themes (双主题)            │
+│  **dnd-kit (Page Builder 拖拽) 🆕**                       │
+│  **react-hook-form + zod (Block 配置表单) 🆕**            │
 ├─────────────────────────────────────────────────────────┤
 │  Backend (全在 Next.js 内, 无独立后端)                    │
 │  Server Actions · Route Handlers · Middleware (auth)     │
-│  Prisma 5 ORM · SQLite (dev/prod 兼容)                   │
+│  Prisma 5 ORM · SQLite (FTS5 全文搜索 🆕)                 │
 │  Auth.js v5 (NextAuth) · bcrypt                          │
 │  gray-matter + unified (MD 解析) · Shiki (代码高亮)      │
+│  **sharp (图片多尺寸/blurhash 生成) 🆕**                  │
+├─────────────────────────────────────────────────────────┤
+│  视频                                                    │
+│  B 站: BV 号 → iframe 嵌入                                │
+│  **百度网盘: 第三方解析服务真直接播 🆕**                    │
+│  YouTube / 本地: 标准 iframe / video 标签                │
 ├─────────────────────────────────────────────────────────┤
 │  DevOps                                                  │
-│  pnpm · ESLint · Prettier · Vitest (单测) · Playwright   │
-│  Vercel (首选) · 自托管 (PM2 + Nginx) 二选一             │
+│  pnpm · ESLint · Prettier · Vitest · Playwright          │
+│  自托管 VPS (黑推荐) 或 Vercel                            │
 └─────────────────────────────────────────────────────────┘
 ```
 
-### 3.2 选型理由 (黑视角)
+### 3.2 选型理由
 
 | 选型 | 替代方案 | 选定理由 |
 |---|---|---|
-| **Next.js 14 (App Router)** | Astro / Nuxt / SvelteKit | **前后端一体**, Server Actions 天然适配 MD 上传; 生态最成熟; RSC 让公开页接近静态; Vercel 一键部署 |
-| **TypeScript** | JavaScript | 不解释, 任何严肃项目必备 |
-| **Tailwind + shadcn/ui** | styled-components / MUI | 黑白极简风用 Tailwind 最快, shadcn 给无样式可改组件 (与极简风契合) |
-| **Prisma + SQLite** | MongoDB / Postgres | 个人博客数据量小, SQLite 单文件零运维; Prisma 类型安全, 后续换 PG 一行配置 |
-| **Auth.js v5** | Lucia / 自建 JWT | Next.js 生态首选, 支持 Credentials Provider 单用户模式 |
-| **Framer Motion + Lenis** | GSAP / Anime.js | FM 配合 React 最顺; Lenis 是当下 Web 滚动丝滑感天花板 |
-| **gray-matter + unified** | marked / markdown-it | unified 是 remark/rehype 生态, 插件链最强 (GFM/数学公式/代码高亮) |
-| **Shiki** | Prism / highlight.js | **构建期渲染** (VSCode 同款), 零运行时 JS, 完美支持黑白主题 |
+| **Next.js 14** | Astro / Nuxt | 前后端一体, Server Actions 适配 MD 上传, RSC 让公开页接近静态 |
+| **dnd-kit** 🆕 | react-dnd / SortableJS | 现代 React 拖拽, 支持复杂约束, TS 友好, 体积小 |
+| **react-hook-form + zod** 🆕 | Formik / Yup | 性能最好, 类型安全, Block 配置表单必备 |
+| **Prisma enum** 🆕 | String 字段 | 严谨, 避免脏数据, IDE 提示 |
+| **SQLite FTS5** 🆕 | Fuse.js / Meilisearch | 零依赖, 万级 < 50ms, 量大了再上 Meilisearch |
+| **sharp** 🆕 | jimp / ImageMagick | Node.js 图片处理最快, 自动生成 WebP + blurhash |
+| **Framer Motion + Lenis** | GSAP | FM 配合 React 最顺; Lenis 滚动丝滑感天花板 |
+| **shadcn/ui** | MUI / Chakra | 黑白极简风用 shadcn 最契合 (无样式可改组件) |
+| **Auth.js v5** | Lucia | Next.js 生态首选, Credentials 单用户模式 |
+| **Shiki** | Prism | 构建期渲染, 零运行时 JS, VSCode 同款 |
 
 ### 3.3 明确的"不选"
-- ❌ **Notion API 同步**: 不必要的中间层, 直接 MD 文件
-- ❌ **Headless CMS (Strapi/Contentful)**: 单人博客杀鸡用牛刀
-- ❌ **MongoDB**: 关系数据, 上 SQL
-- ❌ **Tailwind UI (付费)**: 黑白极简风 shadcn + 自写完全够
-- ❌ **视频自托管**: 永远不碰, B站/百度解决
+- ❌ Headless CMS (Strapi/Contentful) — 单人博客杀鸡用牛刀
+- ❌ MongoDB — 关系数据, 上 SQL
+- ❌ 自托管视频 — 永远不碰, B 站/百度解决
+- ❌ Fuse.js — FTS5 完胜 (Fuse 200 篇后明显卡顿)
+- ❌ PageSection 单表 — 不够灵活, 升 Page + Block[]
 
 ---
 
@@ -144,17 +154,14 @@
         │           Next.js (Vercel / 自托管)      │
         │ ┌────────────────────────────────────┐   │
         │ │  RSC (Server Components)           │   │
-        │ │  - /                              │   │
-        │ │  - /about /tech /life /novels     │   │
-        │ │  - /posts/[slug]                  │   │
-        │ └────────────────────────────────────┘   │
-        │ ┌────────────────────────────────────┐   │
-        │ │  Route Handlers (REST API)         │   │
-        │ │  - /api/posts /api/videos         │   │
+        │ │  - / (Page 渲染 Block[])           │   │
+        │ │  - /about /tech /life /novels      │   │
+        │ │  - /series/[slug] 🆕               │   │
+        │ │  - /posts/[slug] /chapters/[slug]🆕│   │
         │ └────────────────────────────────────┘   │
         │ ┌────────────────────────────────────┐   │
         │ │  Middleware (auth)                 │   │
-        │ │  - /admin/* 强制鉴权              │   │
+        │ │  - /admin/* 强制鉴权               │   │
         │ └────────────────────────────────────┘   │
         └──────────┬──────────────────┬────────────┘
                    │                  │
@@ -162,133 +169,155 @@
                    ▼                  ▼
             ┌────────────┐     ┌────────────────┐
             │  SQLite    │     │  content/      │
-            │  (单文件)  │     │  *.md 原件     │
+            │  + FTS5    │     │  *.md 原件     │
+            │  (单文件)  │     │  + media/ 🆕   │
             └────────────┘     │  + assets/     │
                                 └────────────────┘
 
                         ┌──────────────────────┐
                         │  站长 (Owner, 登录)   │
                         └──────────┬───────────┘
-                                   │ 4. POST /admin/upload (Server Action)
-                                   │    FormData: file=*.md, category=...
+                                   │ Server Action
                                    ▼
         ┌──────────────────────────────────────────┐
-        │  Server Action: parseAndPublish()        │
-        │  1. gray-matter 解析 frontmatter         │
-        │  2. 检测 video URL (B站/百度)            │
-        │  3. unified 编译 MD → HTML + Shiki      │
-        │  4. 写 SQLite (Post 表)                 │
-        │  5. 备份原 .md 到 content/                │
-        │  6. revalidatePath() 让公开页即刻生效    │
+        │  Server Actions:                          │
+        │  - uploadPost() / uploadChapter() 🆕      │
+        │  - parseAndPublish()                      │
+        │  - updatePageLayout() 🆕 (Page Builder)  │
+        │  - uploadMedia() 🆕                       │
+        │  - upsertSeries() 🆕                      │
         └──────────────────────────────────────────┘
 ```
 
 ### 4.1 关键设计原则
-1. **公开页全走 RSC + DB 读**, 不在请求时编译 MD → 极快
-2. **编译发生在上传瞬间**, 渲染结果 (HTML 字符串) 存进 DB 的 `htmlCache` 字段
-3. **原 MD 同时落盘到 `content/`**, 方便站长本地 git 管理 + 灾备
-4. **Admin 操作全部 Server Action**, 不用单独写 API 路由
+1. **公开页全走 RSC + DB 读**, 不在请求时编译 MD
+2. **编译发生在上传瞬间**, 渲染结果 (HTML) 存进 DB 的 `htmlCache` 字段
+3. **原 MD 同步落盘 `content/`**, 方便本地 git 管理 + 灾备
+4. **Page.layout 存 JSON**, Block 类型 + 数据, 站长可视化编辑
 5. **Middleware 鉴权**: `/admin/*` 全部拦截, 未登录跳 `/login`
+6. **媒体库独立目录 `media/`**, 与 `content/` 分离, 走 CDN URL 🆕
 
 ---
 
-## 5. 目录结构
+## 5. 目录结构 (v0.2 新增项加 🆕)
 
 ```
 obsidian-journal/
-├── docs/                       # 设计/方案文档 (本目录)
+├── docs/                       # 设计/方案文档
 │   ├── DESIGN.md              # 总设计 (本文)
 │   ├── ARCHITECTURE.md        # 详细架构
 │   ├── ROADMAP.md             # 阶段路线图
-│   └── DECISIONS.md           # 老板拍板记录
+│   ├── DECISIONS.md           # 老板拍板记录
+│   ├── CHANGELOG.md           # 改动总览 🆕
+│   └── PUSH_NOTES.md          # 推送备忘
 ├── app/                        # Next.js App Router
 │   ├── (public)/              # 公开页 (游客可见)
-│   │   ├── layout.tsx         #   全站 layout (Lenis + 主题 + Navbar)
-│   │   ├── page.tsx           #   首页 (Hero + 最新文章)
-│   │   ├── about/             #   基础简介
-│   │   ├── tech/              #   技术专栏
-│   │   │   ├── page.tsx       #     列表
-│   │   │   └── [slug]/        #     详情
-│   │   ├── life/              #   生活专栏 (同上结构)
-│   │   ├── novels/            #   小说专栏 (同上结构)
-│   │   ├── videos/            #   视频专栏
-│   │   │   ├── page.tsx       #     网格列表
-│   │   │   └── [id]/          #     详情 + 嵌入播放
-│   │   └── posts/[slug]/      #   通用文章详情 (按 category 重定向)
-│   ├── (admin)/               # 管理后台 (需登录)
-│   │   ├── layout.tsx         #   Admin layout (侧边栏)
-│   │   ├── dashboard/         #   仪表盘 (统计)
-│   │   ├── posts/             #   文章管理 (CRUD)
-│   │   ├── upload/            #   MD 上传页
-│   │   ├── pages/             #   页面自定义
-│   │   ├── videos/            #   视频管理
-│   │   └── settings/          #   站点设置
-│   ├── (auth)/
-│   │   └── login/             #   登录页
-│   ├── api/                   # 少量 Route Handlers
+│   │   ├── layout.tsx
+│   │   ├── page.tsx           # 首页 (Page Block 渲染)
+│   │   ├── about/             # 基础简介 (Page Builder 可改)
+│   │   ├── tech/              # 技术专栏
+│   │   ├── life/              # 生活专栏
+│   │   ├── novels/            # 小说专栏
+│   │   ├── videos/            # 视频专栏
+│   │   ├── series/            # 系列/合集 🆕
+│   │   │   ├── page.tsx       #   系列列表
+│   │   │   └── [slug]/page.tsx # 系列详情 (含 posts/chapters)
+│   │   ├── posts/[slug]/      # 普通文章
+│   │   ├── chapters/[slug]/   # 小说章节 🆕
+│   │   └── videos/[id]/       # 视频详情
+│   ├── (admin)/               # 管理后台
+│   │   ├── layout.tsx
+│   │   ├── dashboard/         # 仪表盘
+│   │   ├── posts/             # 文章管理
+│   │   ├── chapters/          # 章节管理 (小说) 🆕
+│   │   ├── series/            # 系列管理 🆕
+│   │   ├── videos/            # 视频管理
+│   │   ├── media/             # 媒体库 🆕
+│   │   ├── pages/             # Page Builder 🆕
+│   │   │   ├── page.tsx       #   页面列表
+│   │   │   └── [key]/edit/    #   Page Builder 编辑器
+│   │   ├── upload/            # MD 上传页
+│   │   └── settings/          # 站点设置
+│   ├── (auth)/login/
+│   ├── api/
 │   │   ├── auth/[...nextauth]/
-│   │   └── revalidate/        #   手动失效缓存
-│   ├── globals.css            #   Tailwind base + Shiki 主题
-│   └── layout.tsx             #   Root layout
-├── components/                 # 复用组件
-│   ├── ui/                    #   shadcn/ui 基础
-│   ├── motion/                #   Framer Motion 动画组件
-│   │   ├── FadeIn.tsx
-│   │   ├── Stagger.tsx
-│   │   ├── PageTransition.tsx
-│   │   └── SmoothScroll.tsx   #   Lenis 包装
-│   ├── blog/                  #   博客业务组件
-│   │   ├── PostCard.tsx
-│   │   ├── PostList.tsx
-│   │   ├── MDXRenderer.tsx    #   渲染解析后的 HTML
-│   │   └── CodeBlock.tsx      #   Shiki 输出
-│   ├── video/                 #   视频组件
-│   │   ├── BilibiliEmbed.tsx  #   B 站嵌入
-│   │   ├── BaiduPanEmbed.tsx  #   百度网盘嵌入
-│   │   └── VideoCard.tsx
-│   └── nav/                   #   导航
-│       ├── Navbar.tsx
-│       └── AdminSidebar.tsx
-├── lib/                        # 工具与业务逻辑
-│   ├── db.ts                  #   Prisma client 单例
-│   ├── auth.ts                #   Auth.js 配置
-│   ├── md/                    #   MD 解析管线
-│   │   ├── parse.ts           #     gray-matter 入口
-│   │   ├── compile.ts         #     unified + Shiki
-│   │   └── videoDetector.ts   #     B 站/百度 URL 解析
-│   ├── video/                 #   视频解析
-│   │   ├── bilibili.ts        #     BV 号解析
-│   │   └── baidu.ts           #     百度分享链接解析
+│   │   ├── media/[id]/        # 媒体代理 (CDN) 🆕
+│   │   └── revalidate/
+│   ├── globals.css
+│   └── layout.tsx
+├── components/
+│   ├── ui/                    # shadcn/ui
+│   ├── motion/                # Framer Motion
+│   ├── blog/
+│   ├── video/
+│   ├── nav/
+│   ├── media/                 # 媒体组件 🆕
+│   │   ├── MediaPicker.tsx    #   选择器 (在 MD 编辑/Block 用)
+│   │   ├── ImageGallery.tsx
+│   │   └── UploadDropzone.tsx
+│   ├── blocks/                # 🆕 13 种 Block 渲染器
+│   │   ├── HeroBlock.tsx
+│   │   ├── TextBlock.tsx
+│   │   ├── GalleryBlock.tsx
+│   │   ├── StatsBlock.tsx
+│   │   ├── SkillsBlock.tsx
+│   │   ├── TimelineBlock.tsx
+│   │   ├── LinksBlock.tsx
+│   │   ├── PostsBlock.tsx
+│   │   ├── VideosBlock.tsx
+│   │   ├── DividerBlock.tsx
+│   │   ├── CustomHtmlBlock.tsx
+│   │   ├── MarqueeBlock.tsx
+│   │   ├── MusicBlock.tsx
+│   │   └── registry.ts        # 类型注册表
+│   └── admin/                 # 后台组件
+│       └── page-builder/      # Page Builder UI 🆕
+│           ├── BlockLibrary.tsx
+│           ├── PreviewCanvas.tsx
+│           ├── BlockConfigForm.tsx
+│           └── SortableBlock.tsx
+├── lib/
+│   ├── db.ts                  # Prisma + FTS5 🆕
+│   ├── auth.ts                # Auth.js
+│   ├── md/
+│   ├── video/
+│   │   ├── bilibili.ts
+│   │   ├── baidu-b.ts         # B 方案真直接播 🆕
+│   │   └── baidu-c.ts         # C 方案降级
+│   ├── blocks/                # 🆕 Block schema (zod)
+│   │   ├── schemas.ts         #   13 种 zod schema
+│   │   └── renderer.tsx       #   类型 → 组件
+│   ├── media/                 # 🆕
+│   │   ├── upload.ts          #   sharp 处理
+│   │   └── blurhash.ts
 │   └── utils.ts
 ├── prisma/
-│   ├── schema.prisma          #   数据模型
-│   └── seed.ts                #   种子数据
-├── content/                    # MD 原件落盘 (gitignored 体积部分)
-│   ├── tech/
-│   ├── life/
-│   ├── novels/
-│   └── videos/
+│   ├── schema.prisma          # v0.2 重写
+│   └── seed.ts
+├── content/                    # MD 原件落盘
+│   ├── tech/                  # ⚠️ gitignored (体积)
+│   ├── life/                  # ⚠️ gitignored
+│   ├── novels/                # ⚠️ gitignored
+│   └── videos/                # ⚠️ gitignored
+├── media/                      # 🆕 媒体库 (gitignored)
+│   ├── images/
+│   │   ├── originals/
+│   │   ├── 320/               # 自动生成
+│   │   ├── 640/
+│   │   └── 1280/
+│   └── docs/
 ├── public/                     # 静态资源
-│   ├── fonts/                 #   自托管字体 (可选, next/font 自动托管)
-│   ├── og/                    #   OG 分享卡
-│   └── favicon.ico
-├── styles/
-│   └── shiki-theme.json       #   自定义 Shiki 主题
 ├── tests/
-│   ├── unit/                  #   Vitest
-│   └── e2e/                   #   Playwright
-├── .env.example               #   环境变量样例
-├── .gitignore
+├── .env.example
+├── .gitignore                  # v0.2 细化
 ├── next.config.mjs
 ├── tailwind.config.ts
-├── tsconfig.json
-├── package.json
-└── README.md
+└── package.json
 ```
 
 ---
 
-## 6. 数据模型 (Prisma Schema 草稿)
+## 6. 数据模型 (v0.2 重写)
 
 ```prisma
 // prisma/schema.prisma
@@ -299,514 +328,790 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")  // file:./prisma/dev.db
+  url      = env("DATABASE_URL")
+}
+
+// ============ 枚举 (v0.2 新增, 替代 String) ============
+
+enum PostCategory {
+  TECH
+  LIFE
+  NOVEL
+}
+
+enum PostType {
+  ARTICLE   // 普通文章 (tech/life)
+  CHAPTER   // 小说章节
+}
+
+enum VideoPlatform {
+  BILIBILI
+  BAIDU
+  YOUTUBE
+  NATIVE
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  DOCUMENT
+  AUDIO
+}
+
+enum PageType {
+  SYSTEM   // 系统页 (home/about/tech/...)
+  CUSTOM   // 自定义页 (站长新建)
 }
 
 // ============ 用户 (单站长) ============
 model User {
   id           String   @id @default(cuid())
   username     String   @unique
-  passwordHash String                  // bcrypt
+  passwordHash String
   displayName  String
   avatar       String?
   bio          String?
   createdAt    DateTime @default(now())
-  sessions     Session[]
+  uploads      Media[]
 }
 
 // ============ 站点配置 (单行) ============
 model SiteConfig {
-  id            Int      @id @default(1)
-  siteName      String   @default("Obsidian Journal")
-  tagline       String?
-  authorName    String?
-  authorAvatar  String?
-  socials       String?  // JSON: { github, twitter, email, ... }
-  aboutHtml     String?  // 关于页 MD 编译结果
-  footerNote    String?
-  updatedAt     DateTime @updatedAt
+  id           Int      @id @default(1)
+  siteName     String   @default("Obsidian Journal")
+  tagline      String?
+  authorName   String?
+  authorAvatar String?
+  socials      String?  // JSON
+  footerNote   String?
+  defaultTheme String   @default("light")  // v0.2: 默认亮色
+  updatedAt    DateTime @updatedAt
 }
 
-// ============ 文章 ============
-model Post {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  title       String
-  excerpt     String?  // 摘要
-  category    String   // "tech" | "life" | "novel"
-  tags        String?  // JSON array
+// ============ 系列/合集 (v0.2 新增) ============
+model Series {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  name        String
+  description String?
   coverUrl    String?
-  sourcePath  String?  // 原 .md 在 content/ 下的相对路径
-  contentMd   String   // 原 MD (备份)
-  htmlCache   String   // 编译后 HTML (展示用)
-  published   Boolean  @default(true)
-  pinned      Boolean  @default(false)
-  publishedAt DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  views       Int      @default(0)
-  likes       Int      @default(0)
+  category    PostCategory
+  type        PostType    // ARTICLE series OR NOVEL series
+  posts       Post[]
+  chapters    Chapter[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  @@index([category, type])
+}
+
+// ============ 普通文章 (tech/life) ============
+model Post {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  title       String
+  excerpt     String?
+  category    PostCategory
+  type        PostType     @default(ARTICLE)
+  tags        String?      // JSON array
+  coverUrl    String?
+  sourcePath  String?
+  contentMd   String
+  htmlCache   String
+  published   Boolean      @default(true)
+  pinned      Boolean      @default(false)
+  publishedAt DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  views       Int          @default(0)
+  likes       Int          @default(0)
+  
+  seriesId    String?
+  series      Series?      @relation(fields: [seriesId], references: [id])
   
   @@index([category, publishedAt])
+  @@index([seriesId])
 }
 
-// ============ 视频 (独立于 Post) ============
+// ============ 小说章节 (v0.2 独立表) ============
+model Chapter {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  title       String
+  excerpt     String?
+  coverUrl    String?
+  sourcePath  String?
+  contentMd   String
+  htmlCache   String
+  chapterNo   Int          // 章节号 (在 series 内)
+  wordCount   Int          @default(0)
+  published   Boolean      @default(true)
+  publishedAt DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  views       Int          @default(0)
+  
+  seriesId    String
+  series      Series       @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  
+  @@unique([seriesId, chapterNo])
+  @@index([seriesId, publishedAt])
+}
+
+// ============ 视频 ============
 model Video {
-  id          String   @id @default(cuid())
-  slug        String   @unique
+  id          String        @id @default(cuid())
+  slug        String        @unique
   title       String
   description String?
   coverUrl    String?
-  platform    String   // "bilibili" | "baidu" | "youtube" | "native"
-  sourceId    String   // BV 号 / 百度 surl / youtube id / 本地路径
-  password    String?  // 百度网盘提取码
-  duration    Int?     // 秒
-  series      String?  // 系列名 (如 "Web3 教程")
+  platform    VideoPlatform
+  sourceId    String        // BV 号 / 百度 surl / youtube id
+  password    String?       // 百度提取码
+  duration    Int?
+  series      String?       // 系列名 (字符串, 不与 Series 表关联)
   tags        String?
-  publishedAt DateTime @default(now())
-  views       Int      @default(0)
+  publishedAt DateTime      @default(now())
+  views       Int           @default(0)
 }
 
-// ============ 页面装饰 (自定义页面内容) ============
-model PageSection {
+// ============ 页面 (v0.2 升级: Page + Block[]) ============
+model Page {
   id        String   @id @default(cuid())
-  pageKey   String   // "home" | "about" | "tech" | ...
-  sectionKey String  // "hero" | "intro" | "showcase"
-  order     Int
-  type      String   // "text" | "gallery" | "links" | "code"
-  data      String   // JSON
-  visible   Boolean  @default(true)
+  key       String   @unique  // "home" | "about" | "tech" | 自定义 slug
+  title     String
+  type      PageType @default(SYSTEM)
+  layout    String   // JSON: { blocks: Block[] }
+  isPublic  Boolean  @default(true)
+  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  @@unique([pageKey, sectionKey])
 }
 
-// ============ 统计 (日报) ============
+// ============ 媒体 (v0.2 新增) ============
+model Media {
+  id          String    @id @default(cuid())
+  filename    String    // 原始文件名
+  mimeType    String
+  size        Int       // 字节
+  type        MediaType
+  storageKey  String    @unique  // media/images/originals/abc.jpg
+  url         String    // 公开 URL
+  width       Int?
+  height      Int?
+  blurhash    String?
+  alt         String?
+  caption     String?
+  uploadedBy  String
+  uploader    User      @relation(fields: [uploadedBy], references: [id])
+  createdAt   DateTime  @default(now())
+  
+  @@index([type, createdAt])
+}
+
+// ============ 统计 ============
 model DailyStat {
   date       DateTime @id
   postViews  Int      @default(0)
   videoViews Int      @default(0)
   newPosts   Int      @default(0)
 }
+```
 
-// ============ Auth.js 必需 ============
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
+### 6.1 Block 数据结构 (存于 Page.layout JSON) 🆕
+
+```ts
+// lib/blocks/schemas.ts (zod)
+type BlockBase = { id: string; order: number; visible: boolean };
+
+type HeroBlock      = BlockBase & { type: 'hero'; data: { title; subtitle?; ctaText?; ctaUrl?; bgImage? } };
+type TextBlock      = BlockBase & { type: 'text'; data: { md: string; align?: 'left'|'center' } };
+type GalleryBlock   = BlockBase & { type: 'gallery'; data: { images: string[]; columns: 2|3|4; gap: number } };
+type StatsBlock     = BlockBase & { type: 'stats'; data: { items: { label; value: number; suffix?: string }[] } };
+type SkillsBlock    = BlockBase & { type: 'skills'; data: { items: { name; level: number }[] } };  // level 0-100
+type TimelineBlock  = BlockBase & { type: 'timeline'; data: { items: { date; title; content? }[] } };
+type LinksBlock     = BlockBase & { type: 'links'; data: { links: { name; url; desc?; avatar? }[] } };
+type PostsBlock     = BlockBase & { type: 'posts'; data: { category?: PostCategory; seriesId?: string; limit: number; sortBy: 'new'|'hot' } };
+type VideosBlock    = BlockBase & { type: 'videos'; data: { series?: string; limit: number } };
+type DividerBlock   = BlockBase & { type: 'divider'; data: { style: 'line'|'dots'|'space' } };
+type CustomHtmlBlock= BlockBase & { type: 'customHtml'; data: { html: string } };  // ⚠️ 高风险, 默认关闭
+type MarqueeBlock   = BlockBase & { type: 'marquee'; data: { text: string; speed: number } };
+type MusicBlock     = BlockBase & { type: 'music'; data: { src: string; title?; autoplay: boolean } };
+
+type Block = HeroBlock | TextBlock | GalleryBlock | StatsBlock | SkillsBlock 
+           | TimelineBlock | LinksBlock | PostsBlock | VideosBlock 
+           | DividerBlock | CustomHtmlBlock | MarqueeBlock | MusicBlock;
+```
+
+### 6.2 FTS5 全文搜索 🆕
+
+```sql
+-- Prisma migrate 后手执行 (或写在 migration.sql)
+CREATE VIRTUAL TABLE post_search USING fts5(
+  post_id UNINDEXED,
+  title,
+  excerpt,
+  content,
+  tokenize = 'unicode61'
+);
+
+CREATE VIRTUAL TABLE chapter_search USING fts5(
+  chapter_id UNINDEXED,
+  title,
+  excerpt,
+  content,
+  tokenize = 'unicode61'
+);
+
+-- 上传 Post 时同步索引 (Server Action 内)
+INSERT INTO post_search(post_id, title, excerpt, content) VALUES (?, ?, ?, ?);
+
+-- 搜索
+SELECT post_id FROM post_search WHERE post_search MATCH ? LIMIT 20;
 ```
 
 ---
 
-## 7. 双模式设计
+## 7. 双模式设计 (v0.2 修订)
 
 ### 7.1 模式 1: 游客模式 (Public)
 - **行为**: 只读浏览
-- **可访问**: `/`, `/about`, `/tech`, `/life`, `/novels`, `/videos`, `/posts/[slug]`, `/videos/[id]`
-- **不可见**: Admin 入口, 编辑按钮
-- **体验**: 平滑滚动 + 进入动画 + 主题切换 (右上角)
+- **可访问**: 全部公开页 (含 `/series/[slug]`)
+- **体验**: 平滑滚动 + 进入动画 + 双主题切换 (右上角, 默认亮色)
 
 ### 7.2 模式 2: 站长模式 (Owner)
-- **触发**: `/login` 输入账密 → 写 httpOnly cookie (Auth.js session)
-- **能力**:
-  | 功能 | 路径 | 说明 |
-  |---|---|---|
-  | 仪表盘 | `/admin/dashboard` | 文章数/视频数/总浏览/最近 7 日曲线 |
-  | MD 上传 | `/admin/upload` | 拖拽 .md → 选专栏 → 一键发布 |
-  | 文章管理 | `/admin/posts` | 列表/编辑/删除/置顶/草稿 |
-  | 视频管理 | `/admin/videos` | 粘贴 B 站/百度链接 → 自动解析 |
-  | 页面装饰 | `/admin/pages` | 拖拽式: Home/About/Tech 等页面的 Section 顺序与内容 |
-  | 站点设置 | `/admin/settings` | 站名/简介/友链/底部 |
+
+| 功能 | 路径 | 说明 | v0.2 强化 |
+|---|---|---|---|
+| 仪表盘 | `/admin/dashboard` | 文章数/视频数/总浏览/最近 7 日曲线 | |
+| **MD 上传** | `/admin/upload` | 拖拽 .md → 选类型 (article/chapter) → 选系列 → 发布 | ✅ 类型/系列判断 |
+| 文章管理 | `/admin/posts` | 列表/编辑/删除/置顶 | ✅ 关联系列编辑 |
+| **章节管理** | `/admin/chapters` | 小说章节 CRUD | 🆕 |
+| **系列管理** | `/admin/series` | 系列 CRUD, 拖拽排序章节 | 🆕 |
+| 视频管理 | `/admin/videos` | B 站/百度/YouTube 链接粘贴自动解析 | ✅ B 方案真直接播 |
+| **媒体库** | `/admin/media` | 图片上传/多尺寸/blurhash/搜索 | 🆕 |
+| **Page Builder** | `/admin/pages/[key]/edit` | **可视化拖拽添加/删除/编辑 Block** | 🆕 核心升级 |
+| 页面管理 | `/admin/pages` | 系统页/自定义页 CRUD | 🆕 |
+| 站点设置 | `/admin/settings` | 站名/简介/友链/底部/默认主题 | |
 
 ### 7.3 鉴权实现
-- **Auth.js v5** + `CredentialsProvider` (账号密码)
-- **Middleware** (`middleware.ts`) 拦截 `/admin/*`:
-  ```ts
-  export { auth as middleware } from "@/lib/auth"
-  export const config = { matcher: ["/admin/:path*"] }
-  ```
-- **Session 存储**: 走 JWT (Auth.js 默认), 无需 Session 表 (上表只是 Prisma 标准样例, 实际用 JWT)
-- **密码**: bcrypt 哈希, `.env` 初始化时写入
+- Auth.js v5 + `CredentialsProvider` (账号密码)
+- Middleware (`middleware.ts`) 拦截 `/admin/*`
+- Session: JWT (无 Session 表)
 
-> 📌 **老板决策点 P2**: 是否要支持"评论"功能? 个人博客通常无评论, 但加一个 Giscus (GitHub Discussions 后端) 是 0 成本。要不要?
+> 📌 **老板决策点 Q2**: 是否加评论 (Giscus, GitHub Discussions 后端)?
 
 ---
 
-## 8. 页面与路由速查
+## 8. 页面与路由速查 (v0.2 加粗 🆕)
 
-| 路由 | 类型 | 核心组件 | 动画 |
+| 路由 | 类型 | 渲染源 | 动画 |
 |---|---|---|---|
-| `/` | RSC | Hero / FeaturedPosts / LatestVideos | 入场淡入 + 上滑, 数字计数 |
-| `/about` | RSC | Avatar / Bio / Skills / Timeline | 滚动渐显 |
-| `/tech` | RSC + CSR | PostList (category=tech) | 列表项 stagger 错位 |
-| `/life` | RSC + CSR | PostList (category=life) | 同上 |
-| `/novels` | RSC + CSR | PostList (category=novel) | 同上, 卡片更大 |
-| `/videos` | RSC | VideoGrid | 卡片 hover 缩放 + 阴影 |
-| `/posts/[slug]` | RSC | MDXRenderer / TOC | 滚动高亮 TOC |
-| `/videos/[id]` | RSC + CSR | VideoEmbed / Info | 嵌入区 + 评论区 (可选) |
+| `/` | RSC | Page("home") + Block[] | Hero 入场淡入 + 错位 |
+| `/about` | RSC | Page("about") + Block[] | 滚动渐显 |
+| `/tech` | RSC | 列出 Post(category=TECH) | 列表项 stagger |
+| `/life` | RSC | 列出 Post(category=LIFE) | 同上 |
+| `/novels` | RSC | 列出 Series(category=NOVEL) | 大卡片 |
+| `/videos` | RSC | VideoGrid | hover 缩放 |
+| **`/series`** 🆕 | RSC | 列出所有 Series | |
+| **`/series/[slug]`** 🆕 | RSC | Series 详情 + Posts/Chapters | |
+| `/posts/[slug]` | RSC | Post 详情 + MDXRenderer | 滚动高亮 TOC |
+| **`/chapters/[slug]`** 🆕 | RSC | Chapter 详情 (前后章导航) | |
+| `/videos/[id]` | RSC + CSR | VideoEmbed | 嵌入区 |
 | `/login` | Client | LoginForm | 背景粒子 |
-| `/admin/*` | RSC + CSR | AdminSidebar / Tables | 路由切换 fade |
+| `/admin/*` | RSC + CSR | AdminShell | 路由切换 fade |
+| **`/admin/pages/[key]/edit`** 🆕 | Client | Page Builder (3 栏) | Block 拖拽 |
+| **`/admin/media`** 🆕 | RSC + CSR | MediaGrid + UploadDropzone | |
 
 ---
 
-## 9. MD 上传与解析管线 (核心功能详解)
+## 9. MD 上传与解析管线
 
 ### 9.1 用户故事
-> 老板: 写完一篇 `rust-async.md` → 拖到 Admin → 选"技术"专栏 → 点"发布" → 5 秒后公开站可见
+> 老板: 写完 `rust-async.md` → 拖到 Admin → 选"文章/技术/可选系列" → 点"发布" → 5 秒后公开站可见
+> 老板: 写完 `meta-realm-ch1.md` → 拖到 Admin → 选"章节/选系列/章节号" → 发布
 
-### 9.2 流程图
+### 9.2 流程图 (v0.2 区分 type)
+
 ```
-┌────────────┐   drop .md    ┌──────────────────┐
-│  Admin UI  ├──────────────►│ Server Action    │
-│  (drag)    │  FormData     │ uploadPost()     │
-└────────────┘               └────────┬─────────┘
-                                      │
-                                      ▼
-                            ┌──────────────────┐
-                            │ 1. gray-matter   │
-                            │    读 frontmatter │
-                            └────────┬─────────┘
-                                     │
-                                     ▼
-                            ┌──────────────────┐
-                            │ 2. 校验          │
-                            │    - 必填字段     │
-                            │    - slug 唯一性  │
-                            └────────┬─────────┘
-                                     │
-                                     ▼
-                            ┌──────────────────┐
-                            │ 3. unified 编译  │
-                            │    remark-parse  │
-                            │    remark-gfm    │
-                            │    remark-math   │
-                            │    rehype-shiki  │
-                            │    rehype-stringify│
-                            └────────┬─────────┘
-                                     │
-                                     ▼
-                            ┌──────────────────┐
-                            │ 4. 检测 video    │
-                            │    (MD 内嵌链接)  │
-                            │    → 提取 B/百度  │
-                            └────────┬─────────┘
-                                     │
-                                     ▼
-                            ┌──────────────────┐
-                            │ 5. 落库 + 落盘   │
-                            │    SQLite Post    │
-                            │    content/*.md   │
-                            └────────┬─────────┘
-                                     │
-                                     ▼
-                            ┌──────────────────┐
-                            │ 6. revalidate    │
-                            │    /tech /posts/..│
-                            └──────────────────┘
+拖 .md → 解析 frontmatter → 判断 type
+   │
+   ├─ type=article → 入 Post 表 (必填 category, 可选 seriesId)
+   │
+   └─ type=chapter → 入 Chapter 表 (必填 seriesId, chapterNo)
+       │
+       ▼
+   校验 slug 唯一性 → unified 编译 MD → 检测 video URL
+       │
+       ▼
+   落库 + 落盘 content/ + 同步 FTS5 索引 → revalidatePath
 ```
 
-### 9.3 Frontmatter 约定
+### 9.3 Frontmatter 约定 (v0.2 完善)
+
 ```markdown
 ---
 title: Rust 异步编程入门
-slug: rust-async-intro         # 可选, 缺省 = 文件名 slugify
-category: tech                 # tech | life | novel (必填)
-tags: [rust, async, tokio]     # 可选
-cover: /covers/rust-async.jpg  # 可选
-pinned: false                  # 可选
-excerpt: 一句话简介             # 可选, 缺省自动取首段
-date: 2026-06-24               # 可选, 缺省 = now()
+slug: rust-async-intro       # 可选
+type: article                # 🆕 article | chapter (必填, 缺省 article)
+category: tech               # article 必填 (tech/life), chapter 忽略
+series: rust-tutorial        # 🆕 可选, 系列 slug (文章/小说共用)
+chapter: 1                   # 🆕 chapter 必填 (序号)
+tags: [rust, async, tokio]
+cover: /media/images/abc.jpg
+pinned: false
+excerpt: 一句话简介
+date: 2026-06-24
 ---
 
 # 正文从这里开始
 
-这是 `inline code`, 下面是代码块:
-
-\```rust
-fn main() {
-    println!("hello");
-}
-\```
-
 视频示例: https://www.bilibili.com/video/BV1xx411c7mD
+百度网盘: https://pan.baidu.com/s/1xxx?pwd=abcd
 ```
-
-### 9.4 错误处理
-- 前端: 上传后**实时显示解析日志** (灰色提示流), 失败高亮红条
-- 后端: 每步抛 `ActionError`, 写 `logs/upload.error.log`
-- 不破坏原 `.md`, 失败不入库, 老板可改完重传
-
-### 9.5 批量上传
-- 一次拖 10 个 .md → 并行解析 → 显示进度条 → 全部完成后跳列表
 
 ---
 
-## 10. 视频嵌入方案 (重点)
+## 10. 视频嵌入方案 (v0.2 重点升级)
 
-### 10.1 哔哩哔哩 (B 站)
-**输入支持**:
-- 分享链接: `https://www.bilibili.com/video/BV1xx411c7mD`
-- 短链: `https://b23.tv/xxxxx`
-- 嵌入链接: `//player.bilibili.com/player.html?bvid=...`
-- 纯 BV 号: `BV1xx411c7mD`
+### 10.1 哔哩哔哩 — 标准 iframe
 
-**解析**: 正则提取 `BV[a-zA-Z0-9]+` 或 `AV\d+`
-
+**输入**: 分享链接 / 短链 / BV 号 / 嵌入链接
+**解析**: 正则提取 `BV[a-zA-Z0-9]+`
 **嵌入**:
 ```tsx
 <iframe
   src={`//player.bilibili.com/player.html?bvid=${bvid}&autoplay=0&danmaku=0`}
   className="aspect-video w-full"
   allowFullScreen
+  sandbox="allow-scripts allow-same-origin allow-popups"
+  referrerPolicy="no-referrer"
   scrolling="no"
   frameBorder="0"
 />
 ```
 
-**可选增强**: 通过 B 站开放 API 拉标题/封面/时长/播放量 (需 `SESSDATA` cookie, 见 §10.3)
+### 10.2 百度网盘 — **主推方案 B 真直接播** 🆴 v0.2 重大变更
 
-### 10.2 百度网盘 (难点)
-**问题**: 百度**官方不提供 embed API**, 分享链接无法直接 iframe。
+**核心问题**: 百度官方**不提供 embed API**, 分享链接无法直接 iframe 播放。
 
-**方案矩阵**:
+#### 方案 B: 第三方解析服务 (默认启用, 黑推荐 ✅)
 
-| 方案 | 优点 | 缺点 | 黑推荐 |
-|---|---|---|---|
-| A. 官方 embed 链接 | 官方, 合规 | 经常失效, 限速 | ❌ |
-| B. 第三方解析服务 (如 `pan-yz.workers.dev`) | 真正能播 | 第三方稳定性, 合规风险 | ⚠️ 备选 |
-| **C. 中间页 + 复制提取码** | 合规, 稳定 | 需用户点 2 次 | ⭐ **默认** |
-| D. 引导到客户端 | 体验最好 | 用户离开站 | 备选 |
+**原理**: 走第三方解析服务, 把百度分享链接"翻译"成直链 (m3u8/MP4), iframe 嵌第三方播放器。
 
-**方案 C 实施**:
-- 视频卡片: 显示"🔒 百度网盘"标识 + 提取码
-- 点击 → 弹出中间页, 显示:
-  - 视频封面/标题/简介
-  - 提取码 (一键复制按钮)
-  - 大按钮 "前往百度网盘播放" (新窗口打开)
-- 可选: 同页面提供一个"第三方解析播放"按钮 (用方案 B, 标注免责声明)
+**黑调研的服务候选** (按稳定性 + 合规性排):
 
-**老板决策点 P3**: 百度网盘走方案 C 稳妥, 还是想折腾方案 B 全自动?
+| 服务 | 域名示例 | 稳定性 | 合规风险 | 速度 |
+|---|---|---|---|---|
+| A. 自建 Cloudflare Worker | pan-proxy.xxx.workers.dev | ⭐⭐⭐⭐⭐ 自己控 | 极低 | 快 |
+| B. pan-yz | pan-yz.workers.dev | ⭐⭐⭐ | 中 (逆向百度) | 快 |
+| C. 油猴脚本服务端 | 油猴作者提供 | ⭐⭐ 不稳定 | 中 | 中 |
+| D. 百度官方 embed | 如果开放 | ⭐⭐⭐⭐⭐ | 0 | 慢 |
 
-### 10.3 视频管理后台
-- 粘贴 B 站/百度链接 → 实时解析 → 显示预览卡片 → 填标题/系列/标签 → 保存
+**黑推荐: 自建 Cloudflare Worker** (方案 A):
+- 写一个轻量 Worker, 解析 `?url=pan.baidu.com/s/xxx&pwd=abcd`
+- 走 PC 端 UA 模拟登录, 提取真实视频流地址
+- 返回 m3u8, 站内用 `hls.js` 播放
+- 站长独立部署, 不依赖第三方
+- **风险**: 百度反爬升级 → Worker 失效 → 切方案 C 降级
+
+**实施组件**:
+```tsx
+// components/video/BaiduEmbed.tsx
+<iframe
+  src={`https://pan-proxy.xxx.workers.dev/?url=${surl}&pwd=${pwd}&autoplay=0`}
+  className="aspect-video w-full"
+  sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+  referrerPolicy="no-referrer"
+  allowFullScreen
+  frameBorder="0"
+/>
+```
+
+**⚠️ 合规风险 (老板必读)**:
+- 百度 ToS 禁止"绕过客户端分享限制"
+- 第三方解析服务存在法律灰色地带
+- 自建 Worker 仅服务个人站, 不外发, 风险可控
+- 老板自己承担合规责任
+
+#### 方案 C: 中间页 + 提取码 (降级方案, 一键切换)
+
+**触发条件**: 自建 Worker 失效 / 老板不愿承担合规风险
+**实现**: 视频卡片显示"提取码" + 大按钮"前往百度网盘", 新窗口打开官方播放页
+**优点**: 0 合规风险
+**缺点**: 用户体验降级 (跳转)
+
+#### 方案选择机制
+
+```ts
+// lib/video/baidu.ts
+export type BaiduMode = 'B-direct' | 'C-fallback';
+
+export function renderBaidu(video: Video) {
+  const mode = process.env.BAIDU_MODE ?? 'B-direct';
+  if (mode === 'B-direct') return <BaiduDirectEmbed ... />;
+  return <BaiduFallbackEmbed ... />;  // 显示提取码 + 跳转按钮
+}
+```
+
+**`.env`**:
+```
+BAIDU_MODE=B-direct          # 默认方案 B
+BAIDU_WORKER_URL=https://...
+```
+
+> 📌 **老板决策点 Q3**: 是否接受方案 B 的合规风险?
+> - ✅ 接受 → 自建 Worker, 默认 B
+> - ❌ 不接受 → 直接走 C 方案 (体验降级, 0 风险)
+
+> 📌 **老板决策点 Q7**: 百度解析 Worker 部署在哪?
+> - Cloudflare Worker (免费额度 10 万请求/天, 个人站足够)
+> - 自建 VPS 反向代理
+> - Replit / Deno Deploy (类似)
+
+### 10.3 YouTube / 本地视频 (标准)
+
+```tsx
+<iframe src={`https://www.youtube-nocookie.com/embed/${id}`} ... />  // YouTube
+<video src="/videos/intro.mp4" controls />                            // 本地
+```
+
+### 10.4 视频管理后台
+- 粘贴 B 站/百度/YouTube 链接 → 实时解析 → 显示预览卡片 → 填标题/系列/标签 → 保存
 - 列表: 按系列分组, 拖拽排序
 - 数据: 标题/封面/平台/源 ID/提取码 (百度)
 
-### 10.4 视频页播放器组件设计
-```tsx
-<VideoEmbed platform="bilibili" bvid="BV1xx" />
-<VideoEmbed platform="baidu" uk="xxx" surl="yyy" pwd="abcd" />
-<VideoEmbed platform="native" src="/videos/intro.mp4" />
-```
-
-平台自适应渲染, 统一带 loading skeleton + 错误态 (链接失效提示)。
-
 ---
 
-## 11. 动画策略
+## 11. 动画策略 (v0.2 强化)
 
-### 11.1 动画分级
+### 11.1 动画分级 (新增 L6 Block 动画)
 | 级别 | 触发 | 效果 | 实现 |
 |---|---|---|---|
-| L0 全局 | 加载完成 | Lenis 平滑滚动 | `SmoothScroll` 组件 |
-| L1 路由 | 页面切换 | 上滑 + 淡入 (200ms) | Framer Motion `AnimatePresence` |
-| L2 列表 | 滚入视口 | 错位 stagger 渐显 (50ms 间隔) | Framer Motion + `useInView` |
-| L3 元素 | hover | 缩放/位移/阴影 (150ms 缓动) | Tailwind transition + Framer |
-| L4 微动 | 静止状态 | 背景光斑飘动/数字滚动 | Framer Motion `useAnimation` |
-| L5 装饰 | 鼠标移动 | 自定义光标 (可选, 默认关) | 客户端组件 |
+| L0 全局 | 加载完成 | Lenis 平滑滚动 | SmoothScroll |
+| L1 路由 | 页面切换 | 上滑 + 淡入 (200ms) | AnimatePresence |
+| L2 列表 | 滚入视口 | 错位 stagger 渐显 | Framer + useInView |
+| L3 元素 | hover | 缩放/位移/阴影 | Tailwind + Framer |
+| L4 微动 | 静止 | 背景光斑飘动/数字计数 | Framer |
+| **L6 Block** 🆕 | Page Builder | 拖拽 ghost + 入场弹簧 | dnd-kit + Framer |
+| **L7 Block** 🆕 | 入场动画 | 滚动到 Block 时错位渐显 | Framer + useInView |
 
-### 11.2 缓动曲线
-```ts
-const EASE = [0.22, 1, 0.36, 1]      // 苹果风弹性出场
-const EASE_OUT = [0.16, 1, 0.3, 1]   // Material Design
-```
-
-### 11.3 性能约束
-- **滚动动画必须用 `transform` + `opacity`**, 禁用 `width/height/top/left`
-- **Lenis 关掉条件**: `prefers-reduced-motion: reduce` 时立即降级到原生滚动
-- **大列表虚拟化**: >50 项用 `react-virtuoso` 或 `@tanstack/react-virtual`
-
-### 11.4 必须有
-- ✅ 路由切换动效
-- ✅ 卡片错位入场
-- ✅ hover 微动
-- ✅ 数字计数动画
-- ✅ 暗色模式切换的"溶解"效果
-- ⏳ 文字逐字显现 (可选)
-- ⏳ 自定义光标 (可选)
+### 11.2 Block 入场动画 (默认开启, 站长可关)
+- 整个 Block 容器 `whileInView`
+- 子元素 stagger 50ms
+- 缓动 `cubic-bezier(0.22, 1, 0.36, 1)`
 
 ---
 
 ## 12. 性能优化
 
 ### 12.1 指标目标 (Lighthouse 移动端)
-| 指标 | 目标 | 老板期待 |
-|---|---|---|
-| **LCP** | < 1.5s | 极致 |
-| **FID/INP** | < 100ms | 极致 |
-| **CLS** | < 0.05 | 极致 |
-| **TTFB** | < 200ms | 极致 |
-| **Bundle (gzip)** | < 100KB (公开页) | 极致 |
-| **Lighthouse 总分** | ≥ 95 | 极致 |
+| 指标 | 目标 |
+|---|---|
+| **LCP** | < 1.5s |
+| **INP** | < 100ms |
+| **CLS** | < 0.05 |
+| **TTFB** | < 200ms |
+| **Bundle (gzip)** | < 100KB (公开页) |
+| **Lighthouse 总分** | ≥ 95 |
 
 ### 12.2 关键策略
-1. **RSC + 流式 SSR**: 公开页 90% 在服务端, 客户端只水合交互组件
-2. **next/image**: 所有图片走自动 WebP/AVIF + 懒加载
-3. **next/font**: 字体自托管 + 预加载 + `display: swap`
-4. **静态生成 (SSG)**: 文章详情页 `generateStaticParams` 预渲染
-5. **ISR**: 文章改动走 `revalidatePath` 局部失效
-6. **Shiki 编译期**: 代码高亮零运行时
-7. **路由级代码分割**: 每个 page lazy
-8. **Tailwind purge**: CSS < 10KB
-9. **Prisma 单例**: 避免 dev 热重载多连接
-10. **CDN**: Vercel Edge Network 或 Cloudflare
-
-### 12.3 加载体验
-- **首屏骨架屏**: 用 Shiki 主题色 (zinc-900) 占位
-- **Loading bar**: 路由切换顶部细线进度
-- **图片 blur placeholder**: `next/image` placeholder="blur"
+1. RSC + 流式 SSR (公开页 90% 服务端)
+2. **Page.layout 静态化**: 系统页首次构建生成, 改后 revalidate
+3. `next/image` + `next/font` (自托管)
+4. SSG + ISR (文章详情 `generateStaticParams` 预渲染)
+5. **FTS5 搜索零运行时** (编译期建索引)
+6. Shiki 编译期高亮
+7. 路由级代码分割
+8. Tailwind purge (< 10KB CSS)
+9. **媒体 lazy + blurhash 占位** 🆕
 
 ---
 
-## 13. 部署方案
+## 13. 部署方案 (不变)
 
-### 13.1 方案 A: Vercel (强烈推荐)
-- **优点**: Next.js 亲生, 零配置, 全球边缘, 自动 HTTPS
-- **缺点**: 国内访问慢, 免费额度 100GB/月 (个人站绰绰有余)
-- **域名**: 老板自有域名 CNAME 至 `cname.vercel-dns.com`
-- **数据库**: Vercel Postgres / Neon / Supabase (SQLite 部署受限)
-- **费用**: 个人站约 $0-5/月
+### 13.1 方案 A: Vercel (退路)
+- 优点: 零配置, 边缘网络
+- 缺点: 国内慢, SQLite 需切 Postgres
 
-> ⚠️ **问题**: Vercel 部署 SQLite 难 (无持久化), 需切 Postgres
-> 📌 **老板决策点 P4**: 部署平台 — Vercel / 自托管 / 两者都要?
+### 13.2 方案 B: 自托管 VPS (黑推荐 ⭐)
+- 架构: Nginx + PM2 + SQLite + 定期 cron 备份
+- 优点: 国内快, 数据私有
+- 缺点: 自己维护 (黑写 `deploy.sh`)
 
-### 13.2 方案 B: 自托管 (老板"自己的机器")
-- **架构**: 老板 VPS (2核2G 起步) + PM2 + Nginx + Certbot
-- **数据库**: SQLite 文件 (足够个人博客) + 定期 cron 备份
-- **优点**: 国内访问快, 数据私有
-- **缺点**: 需自己维护 (黑可写 `deploy.sh` 一键脚本)
-- **费用**: VPS 约 ¥30-100/月
+### 13.3 百度 Worker 部署 (独立)
+- Cloudflare Worker (免费额度足够)
+- 或 VPS 上 Node.js 反代
 
-### 13.3 方案 C: 两者皆可
-- 主: Vercel (国际访客)
-- 备: 国内 VPS 镜像 (国内访客 + 兜底)
-
-### 13.4 黑推荐
-- **Phase 1-2**: 开发 + Vercel Preview
-- **Phase 3+**: 切自托管 (老板审美要"自己的", 数据也私有)
-- **最终**: 写好 `scripts/deploy.sh`, 一行命令部署
+> 📌 **老板决策点 Q4**: 部署平台?
 
 ---
 
-## 14. 安全考虑
+## 14. 安全考虑 (v0.2 加沙箱)
 
 | 风险 | 缓解 |
 |---|---|
-| 站长密码泄漏 | bcrypt (cost=12) + 强密码策略 + 失败次数限流 |
-| 越权访问 `/admin` | Middleware 拦截 + RSC 二次校验 |
-| MD 上传 XSS | unified 编译 + rehype-sanitize 白名单 + CSP 头 |
-| 视频嵌入被 XSS framejacking | `sandbox` + `referrerpolicy="no-referrer"` |
-| 文件上传炸弹 | `Content-Length` 限制 5MB + 文件类型白名单 `.md` |
-| CSRF | Auth.js 内置 + Server Action 走 `Origin` 校验 |
-| SQL 注入 | Prisma 参数化, 无拼接 |
-| 速率限制 | Vercel Edge Middleware / Nginx limit_req |
+| 站长密码泄漏 | bcrypt (cost=12) + 失败次数限流 |
+| 越权访问 `/admin` | Middleware + RSC 二次校验 |
+| MD 上传 XSS | unified + rehype-sanitize 白名单 + CSP |
+| **视频 iframe framejacking** 🆕 | `sandbox="allow-scripts allow-same-origin allow-popups"` + `referrerpolicy="no-referrer"` |
+| 文件上传炸弹 | `Content-Length` 限制 5MB + `.md` 白名单 |
+| **自定义 HTML Block** 🆕 | 默认 `disabled`, 开启后 + CSP + DOMPurify 二次清洗 |
+| CSRF | Auth.js 内置 + Server Action `Origin` 校验 |
+| 媒体上传类型 | mime 白名单 + sharp 重处理 |
 
 ---
 
-## 15. 开发路线图
+## 15. 开发路线图 (v0.2 加 Page Builder + 媒体库 + Series)
 
-### Phase 0 — 准备 (本阶段)
+### Phase 0 — 准备 ✅
 - [x] 项目立项 + GitHub 仓库
-- [x] 方案文档 (本 DESIGN.md)
-- [ ] 老板审核 + 拍板 (Q1-Q6)
+- [x] 方案文档 v0.1
+- [x] 老板反馈 → v0.2 重写
+- [ ] 老板拍板 Q1-Q9
 
 ### Phase 1 — 骨架 (3-5 天)
-- [ ] Next.js 14 + TS + Tailwind 初始化
-- [ ] Prisma + SQLite + seed
+- [ ] Next.js 14 + TS + Tailwind + Prisma + SQLite 初始化
+- [ ] **schema.prisma v0.2 全量** (Post + Chapter + Series + Page + Media)
+- [ ] seed.ts (示例数据: 1 Series + 1 Post + 1 Chapter + 1 Video)
 - [ ] Auth.js v5 + 登录页 + Middleware
-- [ ] 基础布局: Navbar / Footer / 主题切换
-- [ ] 首页 + About 页 (静态)
-- [ ] Lenis + Framer Motion 基础设施
-- **交付**: 能登录的半成品, 黑白风首页
+- [ ] 基础布局 + 双主题 (默认亮色) + Lenis
+- [ ] **Page + Block 基础架构** (registry + 13 种 renderer 雏形)
+- [ ] 首页 (Page("home") + Block[Hero, Posts])
+- **交付**: 能登录, 黑白首页, Block 渲染框架
 
 ### Phase 2 — 内容展示 (3-5 天)
 - [ ] 5 大专栏列表页
-- [ ] 文章详情页 + Shiki 代码高亮
-- [ ] 视频列表 + B 站嵌入
-- [ ] 搜索 (轻量级, Fuse.js 客户端)
+- [ ] Post + Chapter 详情页 + Shiki
+- [ ] 视频列表 + B 站 + 百度 (B 方案) + YouTube
+- [ ] **Series 列表 + 详情页** 🆕
+- [ ] **FTS5 搜索** 🆕
 - [ ] SEO: sitemap / robots / OG
-- **交付**: 公开站基本可看
+- **交付**: 公开站可看, 可搜索
 
-### Phase 3 — Admin 后台 (5-7 天)
+### Phase 3 — Admin 后台 (7-10 天, v0.2 加量)
 - [ ] Admin 布局 + 侧边栏
-- [ ] MD 上传 + 解析管线 (核心)
-- [ ] 文章 CRUD
-- [ ] 视频管理 (B 站/百度解析)
-- [ ] 页面装饰 (Section 拖拽排序)
+- [ ] **MD 上传 (区分 article/chapter + 系列选择)** 🆕
+- [ ] 文章 / 章节 / 系列 CRUD
+- [ ] 视频管理 (B 站/百度 B 方案/YouTube)
+- [ ] **媒体库 (上传/多尺寸/blurhash/搜索)** 🆕
+- [ ] **Page Builder (3 栏: Block 库 + 预览 + 配置表单)** 🆕 核心
 - [ ] 站点设置
-- **交付**: 老板可独立运营
+- **交付**: 老板独立运营, 可视化搭页面
 
 ### Phase 4 — 打磨 (3-5 天)
-- [ ] 动画细节打磨
+- [ ] 动画细节
 - [ ] 移动端适配
-- [ ] 性能优化 (Lighthouse ≥ 95)
-- [ ] 部署脚本
+- [ ] 性能 (Lighthouse ≥ 95)
+- [ ] 部署脚本 (含 Worker 部署)
 - [ ] README + 运营文档
 - **交付**: 可上线
 
-**总计**: 14-22 天 (按老板每日 1-2h 拍板节奏)
+**总计**: 16-25 天 (Phase 3 加量)
 
 ---
 
-## 16. 待老板拍板 (Q1-Q6)
+## 16. 待老板拍板 (Q1-Q9, v0.2 增 3 项)
 
-> ⚠️ **不拍板不写代码** — 黑执行原则
+> ⚠️ **不拍板不写代码**
 
-| # | 决策项 | 默认 | 备选 |
-|---|---|---|---|
-| **Q1** | 项目名 | `obsidian-journal` | `mono-press` / `inkwell` / `handfoot-blog` / `sk-journal` |
-| **Q2** | 评论区 | 不做 (纯静态) | Giscus (GitHub Discussions) |
-| **Q3** | 百度网盘方案 | C: 中间页 + 提取码 | B: 第三方解析全自动 |
-| **Q4** | 部署平台 | 自托管 (老板 VPS) | Vercel / 两者 |
-| **Q5** | 暗色模式 | 默认暗色 (与"黑曜石"契合) | 默认亮色 + 暗色切换 |
-| **Q6** | 评论的 LLM 自动回复 (像 xhs 那样) | 不做 | 后续 v2 再说 |
+| # | 决策项 | 黑推荐 | 备选 | 状态 |
+|---|---|---|---|---|
+| **Q1** | 项目名 | `obsidian-journal` | mono-press / inkwell / handfoot-blog / sk-journal | 🟡 |
+| **Q2** | 评论区 | 不做 (纯静态) | Giscus | 🟡 |
+| **Q3** | **百度网盘方案** | **B: 第三方解析真直接播** (自建 Worker) | C: 中间页+提取码 (合规) | 🟡 v0.2 升级 |
+| **Q4** | 部署平台 | 自托管 VPS | Vercel | 🟡 |
+| **Q5** | **默认主题** | **亮色** (现代博客风) + 暗色切换 | 默认暗色 | 🟡 v0.2 改 |
+| **Q6** | 评论 LLM 自动回复 | 不做 (v2 再议) | 做 | 🟡 |
+| **Q7** 🆕 | **百度 Worker 部署** | **Cloudflare Worker** (免费, 自己控) | 自建 VPS 反代 / Replit | 🟡 |
+| **Q8** 🆕 | **媒体库域名** | **同站 /media/** (简单) | 独立子域 `cdn.xxx.com` | 🟡 |
+| **Q9** 🆕 | **Page Builder 模式** | **自由搭建** (Block 库全开放) | 模板驱动 (选预设再改) | 🟡 |
 
-### 黑补充建议 (Q7-Q10, 不拍也行, 黑有主张)
-| # | 建议项 | 黑推荐 | 理由 |
-|---|---|---|---|
-| Q7 | 友链页面 | **加** | 博客圈标配, 30 行代码 |
-| Q8 | RSS / Atom Feed | **加** | 个人博客灵魂功能, 50 行 |
-| Q9 | 全站搜索 | **先 Fuse.js 客户端** | 懒, 后续文章多了再 Algolia |
-| Q10 | 数据备份 cron | **加** | SQLite 一行 crontab, 老板心安 |
+### 黑补充 (可缓)
+| # | 建议项 | 黑推荐 |
+|---|---|---|
+| Q10 | 友链页面 | 加 (Blocks.Links 一键) |
+| Q11 | RSS / Atom Feed | 加 |
+| Q12 | 数据备份 cron | 加 |
 
 ---
 
-## 17. 风险与开放问题
+## 17. 风险与开放问题 (v0.2 更新)
 
 | 风险 | 影响 | 黑预案 |
 |---|---|---|
-| 百度网盘解析服务失效 | 视频无法播 | 默认走 C 方案 (合规), 写"链接失效举报"通道 |
-| B 站 iframe 限速 | 国内播放卡 | 提示"前往 B 站观看"按钮, 不强求站内播 |
-| SQLite 写入并发瓶颈 | 高频编辑崩 | 个人站几乎不会触发, 真出事切 Postgres |
-| MD 解析库升级 break | 上传挂 | pin 版本 + 升级前单测覆盖 |
-| Auth.js v5 仍在 beta | API 变 | v5 已稳定, 跟进度, 必要时锁 5.0.x |
+| **百度 Worker 反爬升级** | B 方案失效 | 一键切 C 方案, `.env` 控制 |
+| **百度合规风险** | 理论上违反百度 ToS | 个人站风险可控, 老板自决 |
+| B 站 iframe 限速 | 国内卡 | 提示"前往 B 站观看"按钮 |
+| SQLite 写入并发 | 高频编辑崩 | 个人站几乎不会, 真出事切 Postgres |
+| **自定义 HTML Block XSS** 🆕 | 高风险 | 默认 disabled, 开启需二次确认 + CSP |
+| **媒体库磁盘占用** 🆕 | 大量图片占空间 | sharp 压缩 + 自动清理 + 备份 |
+| **FTS5 中文分词** 🆕 | 中文搜索效果差 | `unicode61` 基础支持, 可加 `tokenize='trigram'` |
 
 ---
 
-## 18. 后续可选 v2 (不在本方案)
-
-- [ ] AI 摘要生成 (复用 minimax API)
-- [ ] 多语言 (i18n)
-- [ ] 评论的 LLM 自动回复
-- [ ] Newsletter 订阅
-- [ ] PWA / 离线阅读
-- [ ] Web3 打赏 (老板的 HandFoot 帝国风)
-- [ ] 公众号 / Twitter 自动同步
+## 18. 后续 v2 (不变)
+- [ ] AI 摘要 (复用 minimax API)
+- [ ] i18n
+- [ ] 评论 LLM 自动回复
+- [ ] Newsletter
+- [ ] PWA
+- [ ] Web3 打赏
+- [ ] 公众号 / Twitter 同步
 
 ---
 
-> 📌 **审核重点**: §1 (命名) + §10.2 (百度) + §13 (部署) + §16 (6 决策)
+## 19. 媒体库模块 (v0.2 新增, 独立章节)
+
+### 19.1 功能
+- 拖拽上传图片 / 视频 / PDF
+- 自动生成多尺寸: `320 / 640 / 1280 / original` (WebP)
+- 自动生成 blurhash (8x4 像素摘要) → 占位
+- 标签/搜索/筛选
+- 媒体引用追踪 (哪些 Post/Page 用了这张图)
+
+### 19.2 上传流程
+
+```
+拖文件 → Server Action: uploadMedia()
+   │
+   ├─ mime 白名单 (image/jpeg, png, webp, gif, svg, mp4, pdf)
+   ├─ 限大小 (图 10MB, 视频 200MB, PDF 20MB)
+   │
+   ├─ sharp 处理图片:
+   │   ├─ 读 metadata (width, height)
+   │   ├─ 生成 320/640/1280 WebP (保留原图)
+   │   ├─ 计算 blurhash
+   │   └─ 输出到 media/images/{320,640,1280,originals}/
+   │
+   ├─ 视频: ffmpeg 截首帧作为封面 (Phase 4 加)
+   │
+   └─ 写 Media 表 (返回 URL)
+```
+
+### 19.3 MD 引用替换 (上传时)
+
+```
+MD 里写: ![cover](./cover.jpg)
+   │
+   ├─ Admin 上传时检测本地引用
+   ├─ 自动上传到 media/, 返回新 URL
+   └─ 替换 MD 文本为: ![cover](https://.../media/images/640/abc.webp)
+```
+
+### 19.4 媒体库 UI
+- 网格视图 (缩略图)
+- 列表视图 (文件名/大小/类型/上传时间)
+- 上传 Dropzone (拖拽 + 进度条)
+- 选中复制 URL / Markdown 引用 / HTML 标签
+- 删除 (检测引用, 警告)
+
+---
+
+## 20. 系列/合集 (v0.2 新增)
+
+### 20.1 概念
+- **文章系列**: tech 文章按"教程/主题"分组, 如 "Rust 入门" 5 篇
+- **小说卷**: novel chapters 按"卷/书"分组, 如 "元界 第一卷" 12 章
+
+### 20.2 路由
+- `/series` — 所有系列列表 (按分类 Tab 切)
+- `/series/[slug]` — 系列详情:
+  - 顶部: 封面 + 名称 + 简介 + 文章数
+  - 列表: Posts/Chapters 按 chapterNo / publishedAt 排
+  - 文章模式: 横向卡片 (标题/摘要/日期)
+  - 章节模式: 竖向列表 (序号/标题/字数/日期)
+
+### 20.3 后台管理
+- `/admin/series` — CRUD
+- `/admin/series/[slug]/edit` — 编辑 + 拖拽排序章节
+
+---
+
+## 21. Page Builder 详解 (v0.2 核心升级)
+
+### 21.1 UI 三栏
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│ ← 返回  页面: /about          [预览] [保存草稿] [发布]         │
+├──────────┬──────────────────────────────┬────────────────────┤
+│ Block 库 │        实时预览 (1200px)     │  Block 配置         │
+│ (180px)  │  ┌────────────────────────┐  │  (320px)           │
+│          │  │                       │  │  ┌──────────────┐  │
+│ ▢ Hero   │  │  [Hero Block]          │  │  │ 选中: Hero   │  │
+│ ▢ Text   │  │  ─────────────────    │  │  │              │  │
+│ ▢ Gallery│  │  [Stats Block]         │  │  │ Title:       │  │
+│ ▢ Stats  │  │  ─────────────────    │  │  │ [______]     │  │
+│ ▢ Skills │  │  [Skills Block]        │  │  │              │  │
+│ ▢ Timeline  │  ─────────────────    │  │  │ Subtitle:    │  │
+│ ▢ Links  │  │                       │  │  │ [______]     │  │
+│ ▢ Posts  │  │                       │  │  │              │  │
+│ ▢ Videos │  │                       │  │  │ BG Image:    │  │
+│ ▢ Divider│  │                       │  │  │ [选择媒体]   │  │
+│ ▢ HTML ⚠ │  │                       │  │  │              │  │
+│ ▢ Marquee│  │                       │  │  │ 可见: ☑      │  │
+│ ▢ Music  │  │                       │  │  │ 顺序: 1      │  │
+│          │  │                       │  │  │              │  │
+│          │  │                       │  │  │ [删除 Block] │  │
+│          │  │                       │  │  └──────────────┘  │
+└──────────┴──────────────────────────────┴────────────────────┘
+```
+
+### 21.2 交互
+1. **添加**: 点击 Block 库 OR 拖拽到预览区
+2. **选中**: 点击预览区中的 Block → 右侧显示配置表单
+3. **配置**: 表单改 → 防抖 500ms 自动保存草稿 → 预览实时更新
+4. **排序**: 拖拽预览区 Block 上下移动 → order 自动重排
+5. **删除**: 配置表单底部"删除"按钮 + 二次确认
+6. **可见性**: 配置表单"可见"复选框 → `visible: false` 时前端隐藏
+
+### 21.3 数据流
+
+```
+用户操作 → 客户端 zustand state → 防抖 → Server Action: savePageLayout()
+   │
+   ├─ zod 校验每个 Block
+   ├─ 写 Page.layout (JSON 字符串)
+   ├─ revalidatePath('/about')  // 公开页失效
+   └─ 触发 Lenis + 公开页刷新
+```
+
+### 21.4 系统页 vs 自定义页
+- **系统页** (home/about/tech/life/novels/videos): 站长可改 Block 但不能改 key
+- **自定义页** (站长新建): `/custom/[slug]`, key = `custom-${slug}`
+
+### 21.5 模板机制 (Q9 决策)
+
+| 模式 | 黑推荐 | 说明 |
+|---|---|---|
+| **自由搭建** ⭐ | ✅ | Block 库全开放, 站长拖拽 |
+| **模板驱动** | 备选 | 提供 5-10 套预设模板 (极简风/杂志风/作品集风), 选模板后改 Block |
+
+> 📌 **老板决策点 Q9**: 自由搭建 or 模板驱动?
+
+---
+
+## 22. 待老板拍板优先级 (黑视角)
+
+| 优先级 | 决策 | 影响 |
+|---|---|---|
+| 🔴 P0 | Q1 (项目名) | 仓库名/品牌/SEO |
+| 🔴 P0 | Q3 (百度方案 B) | 视频功能能否真"直接播放" |
+| 🟡 P1 | Q5 (默认主题) | 第一印象 |
+| 🟡 P1 | Q4 (部署平台) | 数据库选型 (SQLite vs Postgres) |
+| 🟡 P1 | Q9 (Page Builder 模式) | 后台 UI 复杂度 |
+| 🟢 P2 | Q7 (Worker 部署) | 视频功能落地细节 |
+| 🟢 P2 | Q8 (媒体域名) | 是否需要额外 DNS 配置 |
+| 🟢 P2 | Q2 (评论) | 可后续加 |
+| 🟢 P2 | Q6 (LLM 回复) | v2 再说 |
+
+> 老板按 P0 → P1 → P2 顺序审, 黑按序解 Phase 1。
+
+---
+
+> 📌 **审核路径建议**:
+> 1. §0 TL;DR (30 秒)
+> 2. §6 数据模型 (看严谨性)
+> 3. §10 视频 (B 方案合规风险)
+> 4. §16 9 决策 (按 P0→P2)
+> 5. §21 Page Builder (核心升级)
 >
 > 老板审完拍板, 黑立刻动 Phase 1。
