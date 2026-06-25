@@ -85,3 +85,37 @@ test.describe("Phase 2.1 重构 (按 v0.6.1 schema)", () => {
     await expect(page.getByRole("heading", { name: /媒体库/ })).toBeVisible();
   });
 });
+
+test.describe("Q5 主题切换 (v0.6.1 schema)", () => {
+  test("ThemeToggle 按钮可见 (3 个: 亮/暗/自动)", async ({ page }) => {
+    await page.goto("/");
+    const toggle = page.getByRole("group", { name: "主题切换" });
+    await expect(toggle).toBeVisible();
+    await expect(toggle.getByRole("button", { name: "亮色" })).toBeVisible();
+    await expect(toggle.getByRole("button", { name: "暗色" })).toBeVisible();
+    await expect(toggle.getByRole("button", { name: "跟随系统" })).toBeVisible();
+  });
+
+  test("点击暗色按钮后 html.dark 生效", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: "暗色" }).click();
+    await expect(page.locator("html")).toHaveClass(/dark/);
+  });
+
+  test("点击亮色按钮后 html.dark 移除", async ({ page }) => {
+    await page.goto("/");
+    // 先切到暗
+    await page.getByRole("button", { name: "暗色" }).click();
+    await expect(page.locator("html")).toHaveClass(/dark/);
+    // 再切到亮
+    await page.getByRole("button", { name: "亮色" }).click();
+    await expect(page.locator("html")).not.toHaveClass(/dark/);
+  });
+
+  test("主题选择 localStorage 持久化", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: "暗色" }).click();
+    const stored = await page.evaluate(() => localStorage.getItem("obsidian-theme"));
+    expect(stored).toBe("dark");
+  });
+});

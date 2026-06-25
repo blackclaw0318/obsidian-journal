@@ -16,6 +16,24 @@
   --color-accent: #0f172a;
 }
 
+/* ============================================================
+   暗色主题 (Q5 拍板, v0.6.1 实现)
+   ============================================================ */
+.dark {
+  --color-bg: #0a0a0a;
+  --color-bg-muted: #18181b;
+  --color-bg-card: #111113;
+  --color-fg: #fafafa;
+  --color-fg-muted: #9ca3af;
+  --color-border: #27272a;
+  --color-accent: #fbbf24;
+}
+
+.dark body {
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+}
+
 html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
