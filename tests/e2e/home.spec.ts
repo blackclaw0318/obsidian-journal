@@ -30,7 +30,7 @@ test.describe("首页 (老板必看)", () => {
 test.describe("文章页", () => {
   test("文章列表应该可访问", async ({ page }) => {
     await page.goto("/posts");
-    await expect(page.locator("h1")).toContainText("所有文章");
+    await expect(page.locator("h1")).toContainText("全部文章");
   });
 
   test("文章详情应该可访问", async ({ page }) => {
@@ -54,16 +54,34 @@ test.describe("Admin 占位", () => {
   });
 });
 
-test.describe("5 专栏 (Phase 2.1)", () => {
-  for (const slug of ["tech", "life", "novel", "video", "media"]) {
-    test(`/category/${slug} 应该可访问`, async ({ page }) => {
-      const resp = await page.goto(`/category/${slug}`);
-      expect(resp?.status()).toBe(200);
-      await expect(page.locator("h1")).toBeVisible();
-    });
-  }
-  test("/category/xxx 不存在应 404", async ({ page }) => {
-    const resp = await page.goto("/category/xxx");
-    expect(resp?.status()).toBe(404);
+test.describe("Phase 2.1 重构 (按 v0.6.1 schema)", () => {
+  test("/posts?cat=tech 筛选 tech 类", async ({ page }) => {
+    const resp = await page.goto("/posts?cat=tech");
+    expect(resp?.status()).toBe(200);
+    await expect(page.getByRole("heading", { name: /技术文章/ })).toBeVisible();
+  });
+
+  test("/posts?cat=life 筛选 life 类", async ({ page }) => {
+    const resp = await page.goto("/posts?cat=life");
+    expect(resp?.status()).toBe(200);
+    await expect(page.getByRole("heading", { name: /生活文章/ })).toBeVisible();
+  });
+
+  test("/posts 默认显示全部", async ({ page }) => {
+    const resp = await page.goto("/posts");
+    expect(resp?.status()).toBe(200);
+    await expect(page.getByRole("heading", { name: /全部文章/ })).toBeVisible();
+  });
+
+  test("/videos 视频页可访问 (VideoSeries 独立 model)", async ({ page }) => {
+    const resp = await page.goto("/videos");
+    expect(resp?.status()).toBe(200);
+    await expect(page.getByRole("heading", { name: /视频/ })).toBeVisible();
+  });
+
+  test("/media 媒体页可访问 (Phase 3 占位)", async ({ page }) => {
+    const resp = await page.goto("/media");
+    expect(resp?.status()).toBe(200);
+    await expect(page.getByRole("heading", { name: /媒体库/ })).toBeVisible();
   });
 });

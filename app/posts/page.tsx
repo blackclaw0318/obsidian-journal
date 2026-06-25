@@ -4,43 +4,105 @@ import { formatDate, truncate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
-export default async function PostsPage() {
-  const posts = postRepo.list({ status: "published" });
+type PostCategory = "tech" | "life";
+
+const CATEGORIES: Array<{ slug: PostCategory | "all"; name: string; emoji: string; tagline: string }> = [
+  { slug: "all",  name: "全部", emoji: "📚", tagline: "所有发布的文章" },
+  { slug: "tech", name: "技术", emoji: "⚡", tagline: "代码 / AI / 架构 / 工程化" },
+  { slug: "life", name: "生活", emoji: "🌿", tagline: "日常 / 思考 / 创业 / 杂感" }
+];
+
+interface PageProps {
+  searchParams: { cat?: string };
+}
+
+export default async function PostsPage({ searchParams }: PageProps) {
+  // v0.6.1 schema: PostCategory = "tech" | "life", 严格按 schema
+  const requestedCat = (searchParams.cat ?? "all").toLowerCase();
+  const validCat = CATEGORIES.find((c) => c.slug === requestedCat) ?? CATEGORIES[0];
+  const isAll = validCat.slug === "all";
+
+  const posts = isAll
+    ? postRepo.list({ status: "published" })
+    : postRepo.listByCategory({ category: validCat.slug, status: "published" });
+
+  const counts = {
+    all: postRepo.count("published"),
+    tech: postRepo.countByCategory("tech", "published"),
+    life: postRepo.countByCategory("life", "published")
+  };
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12">
-      <h1 className="mb-2 text-3xl font-bold">所有文章</h1>
-      <p className="mb-8 text-fg-muted">共 {posts.length} 篇</p>
+    <div className="mx-auto max-w-6xl px-6 py-12">
+      <header className="mb-8">
+        <h1 className="text-3xl font-bold">
+          {validCat.emoji} {validCat.name}文章
+        </h1>
+        <p className="text-fg-muted mt-2">{validCat.tagline}</p>
+      </header>
 
-      {posts.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-border bg-bg-muted p-12 text-center">
-          <p className="text-fg-muted">还没有发布的文章。</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {posts.map((post) => (
-            <article
-              key={post.id}
-              className="rounded-lg border border-border bg-bg-card p-5 transition hover:border-strong"
+      {/* 分类 Sidebar/Tab (v0.6.1: 只有 tech/life + all) */}
+      <nav className="mb-8 flex flex-wrap gap-2 border-b border-border pb-4">
+        {CATEGORIES.map((c) => {
+          const isActive = c.slug === validCat.slug;
+          const count = counts[c.slug as keyof typeof counts];
+          return (
+            <Link
+              key={c.slug}
+              href={c.slug === "all" ? "/posts" : `/posts?cat=${c.slug}`}
+              className={
+                "px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 " +
+                (isActive
+                  ? "bg-fg text-bg font-semibold"
+                  : "border border-border hover:bg-bg-muted text-fg-muted")
+              }
             >
-              <div className="mb-2 flex items-center gap-2 text-xs text-fg-muted">
-                <span className="rounded bg-bg-muted px-2 py-0.5 uppercase">
-                  {post.category}
-                </span>
-                <time>{post.published_at ? formatDate(new Date(post.published_at * 1000)) : "草稿"}</time>
-              </div>
-              <h2 className="mb-2 text-lg font-semibold">
-                <Link href={`/posts/${post.slug}`} className="hover:text-accent">
-                  {post.title}
-                </Link>
-              </h2>
-              {post.excerpt && (
-                <p className="text-sm text-fg-muted">{truncate(post.excerpt, 160)}</p>
-              )}
-            </article>
-          ))}
-        </div>
-      )}
+              <span>{c.emoji}</span>
+              <span>{c.name}</span>
+              <span className={"text-xs " + (isActive ? "opacity-80" : "opacity-60")}>({count})</span>
+            </Link>
+          );
+        })}
+      </nav>
+
+      <main>
+        <p className="text-sm text-fg-muted mb-4">共 {posts.length} 篇</p>
+
+        {posts.length === 0 ? (
+          <div className="rounded-lg border border-dashed border-border bg-bg-muted p-12 text-center">
+            <p className="text-fg-muted">
+              {isAll ? "还没有发布的文章。" : `${validCat.name}分类下还没有文章。`}
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2">
+            {posts.map((post) => (
+              <article
+                key={post.id}
+                className="rounded-lg border border-border bg-bg-card p-5 transition hover:border-strong"
+              >
+                <div className="mb-2 flex items-center gap-2 text-xs text-fg-muted">
+                  <span className="rounded bg-bg-muted px-2 py-0.5 uppercase">
+                    {post.category}
+                  </span>
+                  <time>
+                    {post.published_at ? formatDate(new Date(post.published_at * 1000)) : "草稿"}
+                  </time>
+                </div>
+                <h2 className="mb-2 text-lg font-semibold">
+                  <Link href={`/posts/${post.slug}`} className="hover:text-accent">
+                    {post.title}
+                  </Link>
+                </h2>
+                {post.excerpt && (
+                  <p className="text-sm text-fg-muted">{truncate(post.excerpt, 160)}</p>
+                )}
+                <div className="mt-3 text-xs text-fg-muted">— {post.author.name ?? post.author.email}</div>
+              </article>
+            ))}
+          </div>
+        )}
+      </main>
     </div>
   );
 }
