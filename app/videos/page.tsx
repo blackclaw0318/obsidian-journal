@@ -1,13 +1,31 @@
 // /videos 路由 (v0.6.1 schema: VideoSeries + Video 独立 model)
 import Link from "next/link";
-import { videoSeriesRepo, videoRepo } from "@/lib/repo";
+import type { Metadata } from "next";
+import { videoSeriesRepo, videoRepo, siteConfigRepo } from "@/lib/repo";
+import { absoluteUrl, canonical, jsonLdVideo } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
+
+export function generateMetadata(): Metadata {
+  return {
+    title: "视频",
+    description: "黑曜石日志 视频 (v0.6.1: VideoSeries + Video 独立 model)",
+    alternates: { canonical: canonical("/videos") },
+    openGraph: {
+      type: "website",
+      title: "视频",
+      description: "黑曜石日志 视频",
+      url: absoluteUrl("/videos"),
+      locale: "zh_CN"
+    }
+  };
+}
 
 export default function VideosPage() {
   const series = videoSeriesRepo.list();
   const allVideos = videoRepo.list();
   const publishedVideos = allVideos.filter((v) => v.status === "published");
+  const site = siteConfigRepo.get();
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
@@ -15,6 +33,24 @@ export default function VideosPage() {
         <h1 className="text-3xl font-bold">🎬 视频</h1>
         <p className="text-fg-muted mt-2">视频系列 + 单集 (v0.6.1 独立 model)</p>
       </header>
+
+      {/* JSON-LD: ItemList of VideoObject (schema.org) */}
+      {site && publishedVideos.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "ItemList",
+              itemListElement: publishedVideos.map((v, i) => ({
+                "@type": "ListItem",
+                position: i + 1,
+                item: site ? jsonLdVideo(v, site) : undefined
+              }))
+            })
+          }}
+        />
+      )}
 
       <section className="mb-12">
         <h2 className="text-xl font-semibold mb-4">系列 ({series.length})</h2>

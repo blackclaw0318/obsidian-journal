@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { postRepo, novelRepo, siteConfigRepo, socialRepo } from "@/lib/repo";
 import { formatDate, truncate, formatCount } from "@/lib/utils";
+import { jsonLdWebSite } from "@/lib/seo";
 
 // 强制动态渲染 (避免 dev 缓存空数据)
 export const dynamic = "force-dynamic";
@@ -18,9 +19,16 @@ export default async function HomePage() {
 
   const siteName = siteConfig?.site_name ?? "黑曜石日志";
   const siteTagline = siteConfig?.site_tagline ?? "用代码与数据说话";
+  const ldWebsite = siteConfig ? jsonLdWebSite(siteConfig) : null;
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
+      {ldWebsite && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: ldWebsite }}
+        />
+      )}
       {/* Hero */}
       <section className="mb-16">
         <h1 className="mb-3 text-4xl font-bold tracking-tight sm:text-5xl">

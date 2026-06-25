@@ -4,6 +4,7 @@ import { ThemeToggle } from "../components/ThemeToggle";
 import { siteConfigRepo } from "../lib/repo";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: {
     default: "黑曜石日志",
     template: "%s | 黑曜石日志"
@@ -16,9 +17,31 @@ export const metadata: Metadata = {
     locale: "zh_CN",
     siteName: "黑曜石日志"
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "黑曜石日志",
+    description: "用代码与数据说话"
+  },
   robots: {
     index: true,
-    follow: true
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1
+    }
+  },
+  alternates: {
+    canonical: "/",
+    types: {
+      "application/atom+xml": [
+        { url: "/feed.xml", title: "黑曜石日志 — Atom" }
+      ],
+      "application/rss+xml": [
+        { url: "/rss.xml", title: "黑曜石日志 — RSS 2.0" }
+      ]
+    }
   }
 };
 
@@ -52,19 +75,8 @@ export default function RootLayout({
     <html lang="zh-CN" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-        {/* Phase 2.4 RSS: Atom + RSS 2.0 autodiscovery (RFC 4287) */}
-        <link
-          rel="alternate"
-          type="application/atom+xml"
-          title="黑曜石日志 — Atom"
-          href="/feed.xml"
-        />
-        <link
-          rel="alternate"
-          type="application/rss+xml"
-          title="黑曜石日志 — RSS 2.0"
-          href="/rss.xml"
-        />
+        {/* Phase 2.4 RSS + Phase 2.3 SEO: Atom + RSS 2.0 autodiscovery link
+            由 Next.js metadata.alternates.types 生成 (metadataBase = NEXT_PUBLIC_SITE_URL) */}
       </head>
       <body className="min-h-screen bg-bg text-fg antialiased">
         <div className="flex min-h-screen flex-col">

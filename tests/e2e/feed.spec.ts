@@ -65,8 +65,9 @@ test.describe("Phase 2.4 RSS / Atom (v0.6.1 schema)", () => {
     const rssLink = page.locator('link[rel="alternate"][type="application/rss+xml"]');
     await expect(atomLink).toHaveCount(1);
     await expect(rssLink).toHaveCount(1);
-    await expect(atomLink).toHaveAttribute("href", "/feed.xml");
-    await expect(rssLink).toHaveAttribute("href", "/rss.xml");
+    // 严守: href 由 Next.js metadataBase 拼成绝对 URL (RFC 4287 推荐)
+    await expect(atomLink).toHaveAttribute("href", /\/feed\.xml$/);
+    await expect(rssLink).toHaveAttribute("href", /\/rss\.xml$/);
   });
 
   test("首页底部 RSS 链接应该指向 /rss.xml", async ({ page }) => {
