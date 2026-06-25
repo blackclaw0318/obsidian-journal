@@ -26,7 +26,8 @@ export default defineConfig({
     {
       name: "chromium",
       use: {
-        viewport: { width: 1280, height: 800 }
+        // 与 e2e config 一致 (Desktop Chrome 默认), 保证 baseline 可用
+        viewport: { width: 1280, height: 720 }
       }
     }
   ],

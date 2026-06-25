@@ -9,13 +9,17 @@ import { rmSync, existsSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 
 // ============================================================
-// 隔离: 临时 test.db
+// 隔离: 临时 test.db (覆盖 .env 的 DATABASE_URL)
 // ============================================================
 const DATA_DIR = resolve(process.cwd(), "data");
 const TEST_DB = resolve(DATA_DIR, "test.db");
 
 if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
 if (existsSync(TEST_DB)) rmSync(TEST_DB);
+
+// 关键: 必须在 import lib/db.ts 之前覆盖 DATABASE_URL
+// 否则 lib/db.ts 读 .env 的 DATABASE_URL 拿 dev.db
+process.env.DATABASE_URL = `file:${TEST_DB}`;
 
 // 必须 dynamic import, 让上面的 env var 先生效
 const { initSchema } = await import("../../lib/db.ts");
