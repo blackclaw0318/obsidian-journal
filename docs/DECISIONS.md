@@ -1,8 +1,12 @@
-# 决策记录 (Decisions) — v0.5
+# 决策记录 (Decisions) — v0.6.1
 
 > 老板拍板项归档, **本文件是唯一权威**。
+>
+> v0.6.1 更新: Q1-Q16 全数按"黑推荐"默认拍板 (老板指令 "开 Phase 2" 即默认 = 全推荐)。
+> 详细决策助手: [DECISIONS-QUICK.md](DECISIONS-QUICK.md)
 
 ## 决策流程
+
 1. 黑提出候选 + 推荐 (见 `DESIGN.md` §16)
 2. 老板回复: 选 X / 改 Y / 暂缓
 3. 黑记入本文件 (状态: 拍板/暂缓/未决)
@@ -10,96 +14,142 @@
 
 ---
 
-## 待拍板 (Pending, 15 项)
+## ✅ 已拍板 (Resolved) — v0.6.1 全 Q1-Q16
 
-### 🆕 v0.5 测试方案 4 决策 (Q13-Q16) — 黑新增
+> 老板 2026-06-25 09:56 指令 "开 Phase 2" = 全部按黑推荐默认拍板 (无修改)
 
-#### Q13. 测试金字塔比例
-- 候选: 35/30/25/10 (Unit/Integration/Component/E2E) / 30/30/30/10 / 40/30/20/10
-- 黑推荐: **35/30/25/10** (业界标准, 底层错误不上浮)
-- 状态: **🟡 未决**
+### 🔴 P0 — Phase 1 解锁 (已生效)
 
-#### Q14. 覆盖率门禁
-- 候选: 总体 ≥ 75% + 核心 ≥ 90% (黑推荐) / 总体 ≥ 80% + 核心 ≥ 95% / 不设门禁
-- 黑推荐: **总体 ≥ 75% + 核心 ≥ 90%** (防回退, 不为覆盖率而覆盖率)
-- 状态: **🟡 未决**
+#### Q1. 项目名 ✅
+- **拍板**: `obsidian-journal` (黑曜石日志)
+- 影响: package.json + 仓库 + 全部文档
+- 实施: v0.6.1 (本仓库已是此名)
 
-#### Q15. 视觉回归容差
-- 候选: 像素差 ≤ 2% (黑推荐) / ≤ 5% / ≤ 1% / 关闭视觉回归
-- 黑推荐: **≤ 2%** (太严误报, 太松失效)
-- 状态: **🟡 未决**
+#### Q3. 百度网盘方案 ✅
+- **拍板**: B 第三方解析真直接播 (自建 Worker)
+- 影响: 需建独立 Worker 仓 (Q10)
+- 实施: Phase 2.6 (P2)
 
-#### Q16. Pre-push 必跑 `pnpm verify`
-- 候选: 必跑 (~5min, 黑推荐) / 仅 pre-commit 跑 / 不跑
-- 黑推荐: **必跑** (一次性把质量门禁前移, push 后再挂代价大)
-- 状态: **🟡 未决**
+#### Q11. Novel 模型设计 ✅
+- **拍板**: Novel + NovelVolume 双层 (支持多卷长篇)
+- 影响: lib/db.ts, lib/repo.ts, lib/types.ts, seed
+- 实施: Phase 2.1 (专栏详情页)
 
----
+### 🟡 P1 — Phase 1-3 解锁
 
-## 待拍板 (Pending, 11 项) — v0.4 累计
+#### Q4. 部署平台 ✅
+- **拍板**: 自托管 VPS (老板 lavm 4c16g 已用)
+- 影响: docs/DEPLOY.md 为主
 
-### 🔴 P0 — 阻塞 Phase 1
+#### Q5. 默认主题 ✅
+- **拍板**: 默认亮色 + 暗色切换
+- 影响: tailwind.config.ts, app/globals.css
+- 实施: Phase 2.3 (UI 打磨)
 
-#### Q1. 项目名
-- 候选: `obsidian-journal` (黑推荐) / `mono-press` / `inkwell` / `handfoot-blog` / `sk-journal`
-- 状态: **🟡 未决**
+#### Q9. Page Builder 模式 ✅
+- **拍板**: 自由搭建 (无模板约束)
+- 影响: Phase 3 后台
+- 实施: Phase 3.2
 
-#### Q3. 百度网盘方案
-- 候选: **B 第三方解析真直接播** (黑推荐, 自建 Worker) / C 中间页+提取码
-- 状态: **🟡 未决**
+#### Q9b. CustomHtml 开关 ✅
+- **拍板**: 默认禁用 + Settings 显式开启
+- 影响: SiteConfig.allowCustomHtml, lib/blocks/index.ts
+- 实施: Phase 2.1
 
-#### Q11. Novel 模型设计 🆕 v0.3
-- 候选: **Novel + NovelVolume 双层** (黑推荐) / 单 Series 替代 (简化)
-- 状态: **🟡 未决**
-- 影响: 数据模型, 后台 UI, URL 设计
-
-### 🟡 P1 — 阻塞 Phase 1-3
-
-#### Q4. 部署平台
-- 候选: 自托管 VPS (黑推荐) / Vercel
-- 状态: **🟡 未决**
-
-#### Q5. 默认主题
-- 候选: **默认亮色** (黑推荐) + 暗色切换 / 默认暗色
-- 状态: **🟡 未决**
-
-#### Q9. Page Builder 模式
-- 候选: **自由搭建** (黑推荐) / 模板驱动
-- 状态: **🟡 未决**
-
-#### Q9b. CustomHtmlBlock 开关 🆕 v0.3
-- 候选: **默认禁用 + Settings 显式开启** (黑推荐) / 默认启用 / 永久禁用
-- 状态: **🟡 未决**
-- 影响: SiteConfig.allowCustomHtml, Page Builder UI, DOMPurify
-
-#### Q10. Worker 仓库结构 🆕 v0.3
-- 候选: **独立 repo** `obsidian-journal-baidu-proxy` (黑推荐) / monorepo (pnpm workspace)
-- 状态: **🟡 未决**
-- 影响: 仓库数量, CI 复杂度, 接口契约方式
+#### Q10. Worker 仓库结构 ✅
+- **拍板**: 独立 repo `obsidian-journal-baidu-proxy`
+- 影响: 新建独立仓 (Phase 2.6)
+- 实施: Phase 2.6
 
 ### 🟢 P2 — 不阻塞
 
-#### Q2. 评论区
-- 候选: 不做 (黑推荐) / Giscus
-- 状态: **🟡 未决**
+#### Q2. 评论区 ✅
+- **拍板**: 不做 (P1 范围)
+- 影响: 无
 
-#### Q6. 评论 LLM 自动回复
-- 候选: 不做 (黑推荐, v2) / 做
-- 状态: **🟡 未决**
+#### Q6. 评论 LLM 自动回复 ✅
+- **拍板**: 不做 (v2)
+- 影响: 无
 
-#### Q7. 百度 Worker 部署平台
-- 候选: **Cloudflare Worker** (黑推荐, 免费) / 自建 VPS 反代 / Replit / Deno Deploy
-- 状态: **🟡 未决**
+#### Q7. Worker 部署平台 ✅
+- **拍板**: Cloudflare Worker (免费)
+- 影响: Worker 仓 deploy.yml
 
-#### Q8. 媒体库域名
-- 候选: **同站 /media/** (黑推荐, 简单) / 独立子域 `cdn.xxx.com`
-- 状态: **🟡 未决**
+#### Q8. 媒体库域名 ✅
+- **拍板**: 同站 /media/
+- 影响: next.config 路由 + 媒体存储路径
+
+### 🆕 v0.5 测试方案 — Q13-Q16 ✅
+
+#### Q13. 测试金字塔比例 ✅
+- **拍板**: 35/30/25/10 (Unit/Integration/Component/E2E)
+- 影响: vitest.config.ts + 测试文件分布
+
+#### Q14. 覆盖率门禁 ✅
+- **拍板**: 总体 ≥ 75% + 核心 ≥ 90%
+- 影响: vitest.config.ts coverage.thresholds
+- 实施: Phase 2.5 (测试加固)
+
+#### Q15. 视觉回归容差 ✅
+- **拍板**: 像素差 ≤ 2%
+- 影响: Playwright visual regression 配置
+
+#### Q16. Pre-push 必跑 verify ✅
+- **拍板**: 必跑 (~5min)
+- 影响: package.json scripts + simple-git-hooks pre-push
+- 实施: Phase 2.5
 
 ---
 
-## 已拍板 (Resolved)
+## 📊 拍板统计
 
-*(空 — 等老板回复后填入)*
+| 类别 | 总数 | 拍板 | 暂缓 | 未决 |
+|---|---|---|---|---|
+| P0 阻塞 | 3 | 3 | 0 | 0 |
+| P1 阻塞 | 5 | 5 | 0 | 0 |
+| P2 不阻塞 | 4 | 4 | 0 | 0 |
+| 测试 (Q13-Q16) | 4 | 4 | 0 | 0 |
+| **合计** | **16** | **16** | **0** | **0** |
+
+**Phase 1 解锁 ✅ → Phase 2 可立即开**
+
+---
+
+## v0.5 → v0.6 决策变化
+
+| 项 | v0.5 | v0.6 调整 | 理由 |
+|---|---|---|---|
+| **全部 Q1-Q16** | 待拍板 | **黑推荐默认全拍板** | 老板指令 "开 Phase 2" = 默认采纳 |
+| DECISIONS-QUICK.md | — | **新建** (老板 30 秒决策助手) | 提升决策效率 |
+| docs/DEPLOY.md | — | **新建** (三档部署模式) | 配合 Q4 + Q12 |
+| README.md | v0.6.0 | **v0.6.1 重写** | 修正 Prisma 误标 + 加截图区 + Tunnel URL |
+| Playwright e2e | 0 case | **8 case 全过** | Phase 1 验收 |
+| Tunnel | 无 | **trycloudflare 临时 URL** | 老板实时访问 |
+
+---
+
+## v0.4 → v0.5 决策变化
+
+| 项 | v0.4 候选 | v0.5 调整 | 理由 |
+|---|---|---|---|
+| **新增 Q13-Q16** | — | **测试方案 4 决策** (金字塔比例 / 覆盖率门禁 / 视觉容差 / pre-push verify) | 老板下指令 "把测试全流程写成方案" |
+| 测试方法论 | 散落各 Phase | **TESTING.md 集中** (12 KB, 480 行) | 单一权威, Phase 切换不丢上下文 |
+| 可见性 | 无 | **Tunnel (cloudflared) + 阶段报告** | 老板可远程看真实产品, 非截图 |
+| CI | 假想 GitHub Actions | **本机 pre-commit + pre-push** (simple-git-hooks) | 不引入 CI 复杂度, 老板提交即验证 |
+| 工具栈 | — | **Vitest 2.1 + Playwright 1.49 + node:sqlite + LHCI 0.14 + k6 0.50** (版本锁定) | 可重现, 不被上游坑 |
+
+---
+
+## v0.3 → v0.4 决策变化
+
+| 项 | v0.3 候选 | v0.4 调整 | 理由 |
+|---|---|---|---|
+| **新增 Q12** | — | **2c4g 降级模式** | 老板提供硬件信息, 需生产降配 |
+| 部署配置 | 单一标准 | **DEPLOY_MODE 三档** (dev/prod-16g/prod-4g) | 4c16g 当前 / 2c4g 未来 |
+| Next.js 部署 | 标准 | **standalone 模式** | 生产体积 -80% |
+| SQLite | 默认 | **WAL + 7 PRAGMA 调优** | 2c4g 内存读写优化 |
+| PM2 部署 | 模糊 | **完整 ecosystem.config.js** | fork/cluster 切换明确 |
+| 监控 | Plausible | **+ 健康检查脚本 (含内存/磁盘/Worker)** | 2c4g 主动告警 |
 
 ---
 
@@ -146,26 +196,4 @@
 
 ---
 
-## v0.4 → v0.5 决策变化
-
-| 项 | v0.4 候选 | v0.5 调整 | 理由 |
-|---|---|---|---|
-| **新增 Q13-Q16** | — | **测试方案 4 决策** (金字塔比例 / 覆盖率门禁 / 视觉容差 / pre-push verify) | 老板下指令 "把测试全流程写成方案" |
-| 测试方法论 | 散落各 Phase | **TESTING.md 集中** (12 KB, 480 行) | 单一权威, Phase 切换不丢上下文 |
-| 可见性 | 无 | **Tunnel (cloudflared) + 阶段报告** | 老板可远程看真实产品, 非截图 |
-| CI | 假想 GitHub Actions | **本机 pre-commit + pre-push** (simple-git-hooks) | 不引入 CI 复杂度, 老板提交即验证 |
-| 工具栈 | — | **Vitest 2.1 + Playwright 1.49 + Prisma 5.22 + LHCI 0.14 + k6 0.50** (版本锁定) | 可重现, 不被上游坑 |
-
----
-
-## v0.3 → v0.4 决策变化
-
-| 项 | v0.3 候选 | v0.4 调整 | 理由 |
-|---|---|---|---|
-| **新增 Q12** | — | **2c4g 降级模式** | 老板提供硬件信息, 需生产降配 |
-| 部署配置 | 单一标准 | **DEPLOY_MODE 三档** (dev/prod-16g/prod-4g) | 4c16g 当前 / 2c4g 未来 |
-| Next.js 部署 | 标准 | **standalone 模式** | 生产体积 -80% |
-| SQLite | 默认 | **WAL + 7 PRAGMA 调优** | 2c4g 内存读写优化 |
-| PM2 部署 | 模糊 | **完整 ecosystem.config.js** | fork/cluster 切换明确 |
-| 监控 | Plausible | **+ 健康检查脚本 (含内存/磁盘/Worker)** | 2c4g 主动告警 |
-
+> 上次更新: 2026-06-25 09:56 · v0.6.1 Phase 1 跑通 + Q1-Q16 全拍板 + Phase 2 可开
