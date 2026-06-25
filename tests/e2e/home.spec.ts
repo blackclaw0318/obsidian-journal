@@ -47,9 +47,20 @@ test.describe("小说页", () => {
   });
 });
 
-test.describe("Admin 占位", () => {
-  test("Admin 页面应该可访问", async ({ page }) => {
+test.describe("Admin 占位 (Phase 3.1: 需登录)", () => {
+  test("未登录访问应重定向到 /admin/login", async ({ page }) => {
+    await page.context().clearCookies();
     await page.goto("/admin");
+    await expect(page).toHaveURL(/\/admin\/login/);
+  });
+
+  test("登录后可访问 /admin 并看到管理后台", async ({ page }) => {
+    // 登录
+    await page.goto("/admin/login");
+    await page.getByLabel("邮箱").fill("admin@obsidian.local");
+    await page.getByLabel("密码").fill("admin123");
+    await page.getByRole("button", { name: "登录" }).click();
+    await page.waitForURL(/\/admin$/, { timeout: 10000 });
     await expect(page.locator("h1")).toContainText("管理后台");
   });
 });

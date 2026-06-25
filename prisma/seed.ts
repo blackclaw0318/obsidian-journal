@@ -1,6 +1,7 @@
 // ============================================================
-// obsidian-journal Seed (Phase 1 默认数据)
+// obsidian-journal Seed (Phase 1 默认数据, Phase 3.1 升级 bcrypt)
 // ============================================================
+import bcrypt from "bcryptjs";
 import {
   userRepo,
   siteConfigRepo,
@@ -24,14 +25,17 @@ if (process.env.NODE_ENV !== "production") {
   resetAllData();
 }
 
-// 1. Admin
+// 1. Admin (Phase 3.1: bcrypt 哈希; 默认密码从 ADMIN_PASSWORD env 读, 缺省 "admin123")
+const ADMIN_EMAIL = "admin@obsidian.local";
+const ADMIN_DEFAULT_PASSWORD = "admin123";
+const adminPassword = process.env.ADMIN_PASSWORD ?? ADMIN_DEFAULT_PASSWORD;
 const admin = userRepo.create({
-  email: "admin@obsidian.local",
-  password_hash: "$2a$10$placeholder_change_me_in_p1_6",
+  email: ADMIN_EMAIL,
+  password_hash: bcrypt.hashSync(adminPassword, 10),
   name: "上坤",
   role: "admin"
 });
-console.log(`✅ User: ${admin.email}`);
+console.log(`✅ User: ${admin.email} (默认密码: ${adminPassword}${adminPassword === ADMIN_DEFAULT_PASSWORD ? " — 首次登录后必须改!" : ""})`);
 
 // 2. SiteConfig
 siteConfigRepo.upsert({

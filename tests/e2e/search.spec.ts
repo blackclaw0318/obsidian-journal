@@ -39,16 +39,30 @@ test.describe("Phase 2.2 FTS5 搜索 (v0.6.1 schema)", () => {
     await expect(page).toHaveURL(/[?&]q=tech/);
   });
 
-  test("/admin/reindex POST 应该返回 ok=true", async ({ request }) => {
-    const res = await request.post("/admin/reindex");
+  test("/admin/reindex POST 应该返回 ok=true (Phase 3.1 需登录)", async ({ page }) => {
+    // 登录拿 cookie
+    await page.goto("/admin/login");
+    await page.getByLabel("邮箱").fill("admin@obsidian.local");
+    await page.getByLabel("密码").fill("admin123");
+    await page.getByRole("button", { name: "登录" }).click();
+    await page.waitForURL(/\/admin$/, { timeout: 10000 });
+
+    // 用 page.request 共享 cookie
+    const res = await page.request.post("/admin/reindex");
     expect(res.status()).toBe(200);
     const body = await res.json();
     expect(body.ok).toBe(true);
     expect(body.count).toBeGreaterThan(0);
   });
 
-  test("/admin/reindex GET 应该返回 usage 提示", async ({ request }) => {
-    const res = await request.get("/admin/reindex");
+  test("/admin/reindex GET 应该返回 usage 提示 (Phase 3.1 需登录)", async ({ page }) => {
+    await page.goto("/admin/login");
+    await page.getByLabel("邮箱").fill("admin@obsidian.local");
+    await page.getByLabel("密码").fill("admin123");
+    await page.getByRole("button", { name: "登录" }).click();
+    await page.waitForURL(/\/admin$/, { timeout: 10000 });
+
+    const res = await page.request.get("/admin/reindex");
     expect(res.status()).toBe(200);
     const body = await res.json();
     expect(body.usage).toContain("POST");

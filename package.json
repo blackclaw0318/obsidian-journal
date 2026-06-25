@@ -32,8 +32,10 @@
     "pre-push": "npm run verify:fast"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "clsx": "2.1.1",
     "isomorphic-dompurify": "2.16.0",
+    "jose": "^6.2.3",
     "lucide-react": "0.460.0",
     "next": "14.2.18",
     "react": "18.3.1",
@@ -44,6 +46,7 @@
   "devDependencies": {
     "@playwright/test": "1.49.0",
     "@testing-library/react": "16.0.1",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "22.9.0",
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",
