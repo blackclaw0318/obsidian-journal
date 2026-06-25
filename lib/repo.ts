@@ -115,6 +115,56 @@ export const postRepo = {
       now
     );
     return { ...data, id, created_at: now, updated_at: now, view_count: 0, fts: null };
+  },
+
+  // Phase 2.2: FTS5 全文搜索 (降级容错 — 失败回退 LIKE)
+  search({ q, status = "published", limit = 20 }: { q: string; status?: string; limit?: number } = { q: "" }): { items: PostWithAuthor[]; degraded: boolean; tookMs: number } {
+    const t0 = Date.now();
+    if (!q || !q.trim()) {
+      return { items: [], degraded: false, tookMs: 0 };
+    }
+    // 1) FTS5 优先
+    try {
+      // 转义: 把 q 拆词, 加双引号 + 通配符
+      const ftsQuery = q.trim().split(/\s+/).filter(Boolean)
+        .map((t) => `"${t.replace(/"/g, "")}"*`)
+        .join(" OR ");
+      const stmt = db.prepare(`
+        SELECT p.*, u.name AS author_name, u.email AS author_email
+        FROM posts_fts f
+        JOIN posts p ON p.rowid = f.rowid
+        JOIN users u ON u.id = p.author_id
+        WHERE posts_fts MATCH ? AND p.status = ?
+        ORDER BY rank
+        LIMIT ?
+      `);
+      const rows = stmt.all(ftsQuery, status, limit);
+      return { items: rows.map(rowToPostWithAuthor), degraded: false, tookMs: Date.now() - t0 };
+    } catch (e) {
+      // 2) 降级 LIKE (FTS5 query syntax error 等)
+      console.warn(`[search] FTS5 failed, fallback to LIKE: ${(e as Error).message}`);
+      const like = `%${q.replace(/[%_]/g, "")}%`;
+      const stmt = db.prepare(`
+        SELECT p.*, u.name AS author_name, u.email AS author_email
+        FROM posts p JOIN users u ON u.id = p.author_id
+        WHERE p.status = ? AND (p.title LIKE ? OR p.excerpt LIKE ? OR p.content LIKE ?)
+        ORDER BY COALESCE(p.published_at, p.created_at) DESC
+        LIMIT ?
+      `);
+      const rows = stmt.all(status, like, like, like, limit);
+      return { items: rows.map(rowToPostWithAuthor), degraded: true, tookMs: Date.now() - t0 };
+    }
+  },
+
+  // Phase 2.2: 重建 FTS 索引 (Admin /admin/reindex 用)
+  reindexFts(): { ok: boolean; count: number; error?: string } {
+    try {
+      db.exec("INSERT INTO posts_fts(posts_fts) VALUES('rebuild');");
+      const row = db.prepare("SELECT COUNT(*) AS c FROM posts_fts").get() as { c: number };
+      return { ok: true, count: row.c };
+    } catch (e) {
+      return { ok: false, count: 0, error: (e as Error).message };
+    }
   }
 };
 

@@ -13,7 +13,7 @@ const CATEGORIES: Array<{ slug: PostCategory | "all"; name: string; emoji: strin
 ];
 
 interface PageProps {
-  searchParams: { cat?: string };
+  searchParams: { cat?: string; q?: string };
 }
 
 export default async function PostsPage({ searchParams }: PageProps) {
@@ -22,9 +22,15 @@ export default async function PostsPage({ searchParams }: PageProps) {
   const validCat = CATEGORIES.find((c) => c.slug === requestedCat) ?? CATEGORIES[0];
   const isAll = validCat.slug === "all";
 
-  const posts = isAll
-    ? postRepo.list({ status: "published" })
-    : postRepo.listByCategory({ category: validCat.slug, status: "published" });
+  // Phase 2.2: FTS5 搜索 (与 cat 互斥 — q 优先)
+  const q = (searchParams.q ?? "").trim();
+  const isSearching = q.length > 0;
+
+  const posts = isSearching
+    ? postRepo.search({ q, status: "published", limit: 50 }).items
+    : isAll
+      ? postRepo.list({ status: "published" })
+      : postRepo.listByCategory({ category: validCat.slug, status: "published" });
 
   const counts = {
     all: postRepo.count("published"),
@@ -36,10 +42,41 @@ export default async function PostsPage({ searchParams }: PageProps) {
     <div className="mx-auto max-w-6xl px-6 py-12">
       <header className="mb-8">
         <h1 className="text-3xl font-bold">
-          {validCat.emoji} {validCat.name}文章
+          {isSearching ? `🔍 搜索: ${q}` : `${validCat.emoji} ${validCat.name}文章`}
         </h1>
-        <p className="text-fg-muted mt-2">{validCat.tagline}</p>
+        <p className="text-fg-muted mt-2">
+          {isSearching ? `FTS5 全文检索 (Phase 2.2)` : validCat.tagline}
+        </p>
       </header>
+
+      {/* Phase 2.2: 搜索框 (GET /posts?q=) */}
+      <form action="/posts" method="get" className="mb-6 flex gap-2">
+        {isSearching ? null : (
+          <input type="hidden" name="cat" value={isAll ? "all" : validCat.slug} />
+        )}
+        <input
+          type="text"
+          name="q"
+          defaultValue={q}
+          placeholder="搜索文章 (标题/内容/标签)..."
+          className="flex-1 rounded-lg border border-border bg-bg px-4 py-2 text-sm focus:border-accent focus:outline-none"
+          maxLength={100}
+        />
+        <button
+          type="submit"
+          className="rounded-lg bg-fg px-4 py-2 text-sm font-semibold text-bg hover:opacity-80"
+        >
+          搜索
+        </button>
+        {isSearching && (
+          <Link
+            href="/posts"
+            className="rounded-lg border border-border px-4 py-2 text-sm hover:bg-bg-muted"
+          >
+            清除
+          </Link>
+        )}
+      </form>
 
       {/* 分类 Sidebar/Tab (v0.6.1: 只有 tech/life + all) */}
       <nav className="mb-8 flex flex-wrap gap-2 border-b border-border pb-4">
@@ -71,7 +108,7 @@ export default async function PostsPage({ searchParams }: PageProps) {
         {posts.length === 0 ? (
           <div className="rounded-lg border border-dashed border-border bg-bg-muted p-12 text-center">
             <p className="text-fg-muted">
-              {isAll ? "还没有发布的文章。" : `${validCat.name}分类下还没有文章。`}
+              {isSearching ? `未找到包含 "${q}" 的文章。` : isAll ? "还没有发布的文章。" : `${validCat.name}分类下还没有文章。`}
             </p>
           </div>
         ) : (

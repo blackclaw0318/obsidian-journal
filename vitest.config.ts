@@ -15,7 +15,7 @@ export default defineConfig({
         singleFork: true
       }
     },
-    include: ["tests/unit/**/*.test.ts", "tests/unit/**/*.test.tsx", "tests/integration/**/*.test.{ts,mts}", "tests/component/**/*.test.tsx"],
+    include: ["tests/unit/**/*.test.{ts,mts,tsx}", "tests/integration/**/*.test.{ts,mts}", "tests/component/**/*.test.tsx"],
     exclude: ["node_modules", ".next", "tests/e2e/**"],
     server: {
       deps: {

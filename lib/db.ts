@@ -227,6 +227,34 @@ export function initSchema(): void {
       created_at INTEGER NOT NULL DEFAULT (unixepoch())
     );
     CREATE INDEX IF NOT EXISTS idx_socials_order ON socials("order");
+
+    -- 9. FTS5 全文搜索 (Phase 2.2) — posts_fts virtual table
+    -- content=posts 走外部内容表, 触发器同步 (AI/AD/AU)
+    CREATE VIRTUAL TABLE IF NOT EXISTS posts_fts USING fts5(
+      title, content, excerpt, tags,
+      content='posts', content_rowid='rowid',
+      tokenize='unicode61 remove_diacritics 2'
+    );
+
+    -- 同步触发器: INSERT
+    CREATE TRIGGER IF NOT EXISTS posts_ai AFTER INSERT ON posts BEGIN
+      INSERT INTO posts_fts(rowid, title, content, excerpt, tags)
+      VALUES (new.rowid, new.title, new.content, IFNULL(new.excerpt, ''), IFNULL(new.tags, ''));
+    END;
+
+    -- 同步触发器: DELETE
+    CREATE TRIGGER IF NOT EXISTS posts_ad AFTER DELETE ON posts BEGIN
+      INSERT INTO posts_fts(posts_fts, rowid, title, content, excerpt, tags)
+      VALUES('delete', old.rowid, old.title, old.content, IFNULL(old.excerpt, ''), IFNULL(old.tags, ''));
+    END;
+
+    -- 同步触发器: UPDATE
+    CREATE TRIGGER IF NOT EXISTS posts_au AFTER UPDATE ON posts BEGIN
+      INSERT INTO posts_fts(posts_fts, rowid, title, content, excerpt, tags)
+      VALUES('delete', old.rowid, old.title, old.content, IFNULL(old.excerpt, ''), IFNULL(old.tags, ''));
+      INSERT INTO posts_fts(rowid, title, content, excerpt, tags)
+      VALUES (new.rowid, new.title, new.content, IFNULL(new.excerpt, ''), IFNULL(new.tags, ''));
+    END;
   `);
 }
 
