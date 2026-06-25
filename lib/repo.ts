@@ -52,6 +52,26 @@ export const postRepo = {
     return rows.map(rowToPostWithAuthor);
   },
 
+  // Phase 2.1: 按 category 筛选 (tech/life)
+  listByCategory({ category, status = "published", limit = 50 }: { category: string; status?: string; limit?: number }): PostWithAuthor[] {
+    const stmt = db.prepare(`
+      SELECT p.*, u.name AS author_name, u.email AS author_email
+      FROM posts p
+      JOIN users u ON u.id = p.author_id
+      WHERE p.category = ? AND p.status = ?
+      ORDER BY COALESCE(p.published_at, p.created_at) DESC
+      LIMIT ?
+    `);
+    const rows = stmt.all(category, status, limit);
+    return rows.map(rowToPostWithAuthor);
+  },
+
+  countByCategory(category: string, status = "published"): number {
+    const stmt = db.prepare(`SELECT COUNT(*) AS c FROM posts WHERE category = ? AND status = ?`);
+    const row = stmt.get(category, status) as { c: number };
+    return row.c;
+  },
+
   count(status = "published"): number {
     const stmt = db.prepare(`SELECT COUNT(*) AS c FROM posts WHERE status = ?`);
     const row = stmt.get(status) as { c: number };
@@ -201,6 +221,12 @@ export const videoSeriesRepo = {
       id, data.slug, data.title, data.description ?? null, data.cover_image ?? null, data.order, now
     );
     return { ...data, id, created_at: now };
+  },
+
+  // Phase 2.1: 列出所有视频系列
+  list(): VideoSeries[] {
+    const stmt = db.prepare(`SELECT * FROM video_series ORDER BY "order" ASC, created_at DESC`);
+    return stmt.all() as VideoSeries[];
   }
 };
 

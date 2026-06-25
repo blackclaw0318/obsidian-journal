@@ -53,3 +53,17 @@ test.describe("Admin 占位", () => {
     await expect(page.locator("h1")).toContainText("管理后台");
   });
 });
+
+test.describe("5 专栏 (Phase 2.1)", () => {
+  for (const slug of ["tech", "life", "novel", "video", "media"]) {
+    test(`/category/${slug} 应该可访问`, async ({ page }) => {
+      const resp = await page.goto(`/category/${slug}`);
+      expect(resp?.status()).toBe(200);
+      await expect(page.locator("h1")).toBeVisible();
+    });
+  }
+  test("/category/xxx 不存在应 404", async ({ page }) => {
+    const resp = await page.goto("/category/xxx");
+    expect(resp?.status()).toBe(404);
+  });
+});
