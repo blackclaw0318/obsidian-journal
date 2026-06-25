@@ -52,6 +52,19 @@ export default function RootLayout({
     <html lang="zh-CN" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        {/* Phase 2.4 RSS: Atom + RSS 2.0 autodiscovery (RFC 4287) */}
+        <link
+          rel="alternate"
+          type="application/atom+xml"
+          title="黑曜石日志 — Atom"
+          href="/feed.xml"
+        />
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="黑曜石日志 — RSS 2.0"
+          href="/rss.xml"
+        />
       </head>
       <body className="min-h-screen bg-bg text-fg antialiased">
         <div className="flex min-h-screen flex-col">
