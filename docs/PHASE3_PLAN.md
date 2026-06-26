@@ -144,4 +144,12 @@
 ## 当前进度
 
 - ✅ 3.1 Auth + Admin 布局 (142/142 tests pass)
-- ⏳ 3.2-3.10 待启动 (Q18/Q19/Q20 决策后)
+- ✅ 3.2 帖子 CRUD (182/182 tests pass, 软删 + 恢复 + slug 唯一)
+- ✅ 3.3 小说三层 CRUD (220/220 tests pass, NovelStatus 3 值 + Chapter.published Boolean + 级联软删)
+- ⏳ 3.4 视频系列管理 (黑推荐下一站)
+- ⏳ 3.5 页面管理
+- ⏳ 3.6 媒体库 (Q19 待拍)
+- ⏳ 3.7 Page Builder v1 (Q18 待拍)
+- ⏳ 3.8 站点设置 (SiteConfig)
+- ⏳ 3.9 用户管理 (含改密码踢所有 session)
+- ⏳ 3.10 部署加固 + 2c4g 压测 (Q20 待拍)

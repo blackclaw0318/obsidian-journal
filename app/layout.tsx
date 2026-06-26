@@ -103,7 +103,7 @@ export default function RootLayout({
                   <a href="/media" className="hover:text-fg">媒体</a>
                 </li>
                 <li>
-                  <a href="/admin" className="hover:text-fg">管理</a>
+                  <a href="/admin" className="hover:text-fg">⚙ 管理</a>
                 </li>
               </ul>
               <ThemeToggle defaultTheme={defaultTheme} />

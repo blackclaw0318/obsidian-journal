@@ -86,6 +86,8 @@ export function initSchema(): void {
     CREATE INDEX IF NOT EXISTS idx_posts_category ON posts(category);
 
     -- 3. Novel + NovelVolume + Chapter
+    -- 严守 v0.6.1: NovelStatus 3 值 (ongoing|completed|hiatus), 软删走 deleted_at (≠ status enum)
+    -- 严守 v0.6.1: Chapter 用 published Boolean, 无 status 字段
     CREATE TABLE IF NOT EXISTS novels (
       id TEXT PRIMARY KEY,
       slug TEXT UNIQUE NOT NULL,
@@ -93,9 +95,11 @@ export function initSchema(): void {
       description TEXT,
       cover_image TEXT,
       status TEXT NOT NULL DEFAULT 'ongoing',
+      deleted_at INTEGER,
       created_at INTEGER NOT NULL DEFAULT (unixepoch()),
       updated_at INTEGER NOT NULL DEFAULT (unixepoch())
     );
+    CREATE INDEX IF NOT EXISTS idx_novels_deleted ON novels(deleted_at);
 
     CREATE TABLE IF NOT EXISTS novel_volumes (
       id TEXT PRIMARY KEY,
@@ -103,10 +107,12 @@ export function initSchema(): void {
       "order" INTEGER NOT NULL,
       title TEXT NOT NULL,
       description TEXT,
+      deleted_at INTEGER,
       created_at INTEGER NOT NULL DEFAULT (unixepoch()),
       UNIQUE(novel_id, "order")
     );
     CREATE INDEX IF NOT EXISTS idx_volumes_novel ON novel_volumes(novel_id);
+    CREATE INDEX IF NOT EXISTS idx_volumes_deleted ON novel_volumes(deleted_at);
 
     CREATE TABLE IF NOT EXISTS chapters (
       id TEXT PRIMARY KEY,
@@ -116,15 +122,17 @@ export function initSchema(): void {
       title TEXT NOT NULL,
       content TEXT NOT NULL,
       excerpt TEXT,
-      status TEXT NOT NULL DEFAULT 'draft',
+      published INTEGER NOT NULL DEFAULT 0,
       published_at INTEGER,
+      deleted_at INTEGER,
       created_at INTEGER NOT NULL DEFAULT (unixepoch()),
       updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
       view_count INTEGER NOT NULL DEFAULT 0,
       fts TEXT,
       UNIQUE(volume_id, "order")
     );
-    CREATE INDEX IF NOT EXISTS idx_chapters_status ON chapters(status, published_at);
+    CREATE INDEX IF NOT EXISTS idx_chapters_published ON chapters(published, published_at);
+    CREATE INDEX IF NOT EXISTS idx_chapters_deleted ON chapters(deleted_at);
 
     -- 4. Video + VideoSeries
     CREATE TABLE IF NOT EXISTS video_series (

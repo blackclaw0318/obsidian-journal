@@ -101,7 +101,7 @@ export async function POST() {
     title: "觉醒",
     excerpt: "那天夜里, 星光比往常更亮。",
     content: `# 第一章 觉醒\n\n那天夜里, 星光比往常更亮。`,
-    status: "published",
+    published: true,
     published_at: Math.floor(Date.now() / 1000) - 7 * 86400
   });
 

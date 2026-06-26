@@ -57,6 +57,7 @@ const baseNovel: Novel = {
   description: "一个关于意识、边界与觉醒的科幻故事。",
   cover_image: null,
   status: "ongoing",
+  deleted_at: null,
   created_at: 1719120000,
   updated_at: 1719120000
 };

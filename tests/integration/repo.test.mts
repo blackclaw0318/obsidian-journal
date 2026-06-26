@@ -210,7 +210,7 @@ await suite("chapterRepo", async () => {
     const v = volumeRepo.create({ novel_id: n.id, order: 1, title: "V", description: null });
     const ch = chapterRepo.create({
       volume_id: v.id, order: 1, slug: "c1", title: "C1",
-      content: "x", excerpt: null, status: "published",
+      content: "x", excerpt: null, published: true,
       published_at: Math.floor(Date.now() / 1000)
     });
     assert.match(ch.id, /^ch_/);

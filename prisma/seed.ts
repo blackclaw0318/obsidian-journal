@@ -184,7 +184,7 @@ chapterRepo.create({
 她没有回头, 只是点了点头。
 
 > 这是元界第一卷的第一章, 标志着故事的正式开始。`,
-  status: "published",
+  published: true,
   published_at: Math.floor(Date.now() / 1000) - 7 * 86400
 });
 
@@ -199,7 +199,7 @@ chapterRepo.create({
 当意识跨过边界, 一切都将重新定义。
 
 小雅第一次感受到了元界的呼吸 - 那是一种无法言说的韵律, 像潮汐, 又像心跳。`,
-  status: "published",
+  published: true,
   published_at: Math.floor(Date.now() / 1000) - 6 * 86400
 });
 console.log("✅ Novel + 1 Volume + 2 Chapters");

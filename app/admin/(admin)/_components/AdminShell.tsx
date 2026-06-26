@@ -83,7 +83,7 @@ export function AdminShell({ user, children }: { user: SafeUser; children: React
         </nav>
 
         <div className="border-t border-border px-4 py-3 text-xs text-fg-muted">
-          v0.8 · Phase 3.1
+          v0.10 · Phase 3.3
         </div>
       </aside>
 

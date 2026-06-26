@@ -5,6 +5,7 @@
 
 export type PostStatus = "draft" | "published" | "archived";
 export type PostCategory = "tech" | "life";
+// 严守 v0.6.1 DESIGN §6: NovelStatus 3 值 (ongoing|completed|hiatus), 软删走 deleted_at 字段
 export type NovelStatus = "ongoing" | "completed" | "hiatus";
 export type VideoStatus = "draft" | "published";
 export type PageStatus = "draft" | "published";
@@ -59,6 +60,7 @@ export interface Novel {
   description: string | null;
   cover_image: string | null;
   status: NovelStatus;
+  deleted_at: number | null;
   created_at: number;
   updated_at: number;
 }
@@ -69,6 +71,7 @@ export interface NovelVolume {
   order: number;
   title: string;
   description: string | null;
+  deleted_at: number | null;
   created_at: number;
 }
 
@@ -80,8 +83,10 @@ export interface Chapter {
   title: string;
   content: string;
   excerpt: string | null;
-  status: PageStatus;
+  // 严守 v0.6.1 DESIGN §6: Chapter 用 published Boolean, 无 status 字段
+  published: boolean;
   published_at: number | null;
+  deleted_at: number | null;
   created_at: number;
   updated_at: number;
   view_count: number;

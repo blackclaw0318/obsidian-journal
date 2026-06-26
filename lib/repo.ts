@@ -260,9 +260,12 @@ export const postRepo = {
 };
 
 // ============ Novel + Volume + Chapter ============
+// Phase 3.3: 完整 CRUD 扩展
+// 注意: chapter.slug 是全局 UNIQUE (DB schema), volume/chapter "order" 各自 per-parent UNIQUE
+
 export const novelRepo = {
   list(): (Novel & { volumes: (NovelVolume & { chapters: Chapter[] })[] })[] {
-    const novels = db.prepare(`SELECT * FROM novels ORDER BY updated_at DESC`).all() as Novel[];
+    const novels = db.prepare(`SELECT * FROM novels WHERE deleted_at IS NULL ORDER BY updated_at DESC`).all() as Novel[];
     return novels.map((n) => ({
       ...n,
       volumes: volumeRepo.byNovel(n.id).map((v) => ({
@@ -273,12 +276,12 @@ export const novelRepo = {
   },
 
   count(): number {
-    const row = db.prepare(`SELECT COUNT(*) AS c FROM novels`).get() as { c: number };
+    const row = db.prepare(`SELECT COUNT(*) AS c FROM novels WHERE deleted_at IS NULL`).get() as { c: number };
     return row.c;
   },
 
   latest(): (Novel & { volumes: (NovelVolume & { chapters: Chapter[] })[] }) | null {
-    const row = db.prepare(`SELECT * FROM novels ORDER BY updated_at DESC LIMIT 1`).get() as Novel | undefined;
+    const row = db.prepare(`SELECT * FROM novels WHERE deleted_at IS NULL ORDER BY updated_at DESC LIMIT 1`).get() as Novel | undefined;
     if (!row) return null;
     return {
       ...row,
@@ -289,48 +292,312 @@ export const novelRepo = {
     };
   },
 
-  create(data: Omit<Novel, "id" | "created_at" | "updated_at">): Novel {
+  // ============ Phase 3.3: Admin CRUD ============
+
+  byId(id: string): Novel | null {
+    const row = db.prepare(`SELECT * FROM novels WHERE id = ?`).get(id) as Novel | undefined;
+    return row ?? null;
+  },
+
+  bySlug(slug: string): Novel | null {
+    const row = db.prepare(`SELECT * FROM novels WHERE slug = ?`).get(slug) as Novel | undefined;
+    return row ?? null;
+  },
+
+  // Admin 列表 (支持 status 筛选/搜索/分页, 默认排除 deleted)
+  listAll({
+    status,
+    q,
+    includeDeleted = false,
+    limit = 50,
+    offset = 0
+  }: {
+    status?: string;
+    q?: string;
+    includeDeleted?: boolean;
+    limit?: number;
+    offset?: number;
+  } = {}): { items: (Novel & { volume_count: number; chapter_count: number })[]; total: number } {
+    const where: string[] = [];
+    const params: any[] = [];
+    if (!includeDeleted) { where.push("n.deleted_at IS NULL"); }
+    if (status) {
+      // 兼容 legacy UI 传 'archived' — 转为查 deleted_at IS NOT NULL
+      if (status === "archived") where.push("n.deleted_at IS NOT NULL");
+      else { where.push("n.status = ?"); params.push(status); }
+    }
+    if (q && q.trim()) { where.push("(n.title LIKE ? OR n.slug LIKE ? OR n.description LIKE ?)"); const like = `%${q.replace(/[%_]/g, "")}%`; params.push(like, like, like); }
+    const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
+
+    const countRow = db.prepare(`SELECT COUNT(*) AS c FROM novels n ${whereSql}`).get(...params) as { c: number };
+
+    const rows = db.prepare(`
+      SELECT n.*,
+        (SELECT COUNT(*) FROM novel_volumes WHERE novel_id = n.id AND deleted_at IS NULL) AS volume_count,
+        (SELECT COUNT(*) FROM chapters c JOIN novel_volumes v ON c.volume_id = v.id WHERE v.novel_id = n.id AND c.deleted_at IS NULL AND v.deleted_at IS NULL) AS chapter_count
+      FROM novels n
+      ${whereSql}
+      ORDER BY n.updated_at DESC
+      LIMIT ? OFFSET ?
+    `).all(...params, limit, offset) as any[];
+
+    return { items: rows.map((r) => ({
+      id: r.id, slug: r.slug, title: r.title, description: r.description,
+      cover_image: r.cover_image, status: r.status,
+      deleted_at: r.deleted_at,
+      created_at: r.created_at, updated_at: r.updated_at,
+      volume_count: r.volume_count, chapter_count: r.chapter_count
+    })), total: countRow.c };
+  },
+
+  slugExists(slug: string, excludeId?: string): boolean {
+    const row = excludeId
+      ? db.prepare(`SELECT id FROM novels WHERE slug = ? AND id != ?`).get(slug, excludeId)
+      : db.prepare(`SELECT id FROM novels WHERE slug = ?`).get(slug);
+    return !!row;
+  },
+
+  create(data: Omit<Novel, "id" | "created_at" | "updated_at" | "deleted_at">): Novel {
     const id = uid("novel");
     const now = Math.floor(Date.now() / 1000);
-    db.prepare(`INSERT INTO novels (id, slug, title, description, cover_image, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`).run(
+    db.prepare(`INSERT INTO novels (id, slug, title, description, cover_image, status, deleted_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, NULL, ?, ?)`).run(
       id, data.slug, data.title, data.description ?? null, data.cover_image ?? null, data.status, now, now
     );
-    return { ...data, id, created_at: now, updated_at: now };
+    return { ...data, id, created_at: now, updated_at: now, deleted_at: null };
+  },
+
+  update(id: string, data: Partial<Omit<Novel, "id" | "created_at" | "deleted_at">>): Novel | null {
+    const existing = this.byId(id);
+    if (!existing) return null;
+    const merged = { ...existing, ...data };
+    const now = Math.floor(Date.now() / 1000);
+    db.prepare(`
+      UPDATE novels SET slug = ?, title = ?, description = ?, cover_image = ?, status = ?, updated_at = ?
+      WHERE id = ?
+    `).run(
+      merged.slug, merged.title, merged.description ?? null,
+      merged.cover_image ?? null, merged.status, now, id
+    );
+    return { ...merged, updated_at: now };
+  },
+
+  // 软删除: 写 deleted_at (严守 v0.6.1, 不动 status 字段)
+  // 注: NovelStatus 仅表业务状态 (ongoing|completed|hiatus), 删除维度走 deleted_at
+  softDelete(id: string): boolean {
+    const result = db.prepare(`UPDATE novels SET deleted_at = ?, updated_at = ? WHERE id = ?`).run(
+      Math.floor(Date.now() / 1000),
+      Math.floor(Date.now() / 1000),
+      id
+    );
+    return result.changes > 0;
+  },
+
+  // 恢复: 清 deleted_at, status 保持 (业务状态不恢复 — 软删是审计维度)
+  restore(id: string): boolean {
+    const result = db.prepare(`UPDATE novels SET deleted_at = NULL, updated_at = ? WHERE id = ?`).run(
+      Math.floor(Date.now() / 1000),
+      id
+    );
+    return result.changes > 0;
   }
 };
 
 export const volumeRepo = {
   byNovel(novelId: string): NovelVolume[] {
-    return db.prepare(`SELECT * FROM novel_volumes WHERE novel_id = ? ORDER BY "order" ASC`).all(novelId) as NovelVolume[];
+    return db.prepare(`SELECT * FROM novel_volumes WHERE novel_id = ? AND deleted_at IS NULL ORDER BY "order" ASC`).all(novelId) as NovelVolume[];
   },
 
-  create(data: Omit<NovelVolume, "id" | "created_at">): NovelVolume {
-    const id = uid("vol");
-    const now = Math.floor(Date.now() / 1000);
-    db.prepare(`INSERT INTO novel_volumes (id, novel_id, "order", title, description, created_at) VALUES (?, ?, ?, ?, ?, ?)`).run(
-      id, data.novel_id, data.order, data.title, data.description ?? null, now
-    );
-    return { ...data, id, created_at: now };
-  }
-};
+  // ============ Phase 3.3: Admin CRUD ============
 
-export const chapterRepo = {
-  byVolume(volumeId: string): Chapter[] {
-    return db.prepare(`SELECT * FROM chapters WHERE volume_id = ? ORDER BY "order" ASC`).all(volumeId) as Chapter[];
-  },
-
-  bySlug(slug: string): Chapter | null {
-    const row = db.prepare(`SELECT * FROM chapters WHERE slug = ?`).get(slug) as Chapter | undefined;
+  byId(id: string): NovelVolume | null {
+    const row = db.prepare(`SELECT * FROM novel_volumes WHERE id = ?`).get(id) as NovelVolume | undefined;
     return row ?? null;
   },
 
-  create(data: Omit<Chapter, "id" | "created_at" | "updated_at" | "view_count" | "fts">): Chapter {
+  // 下一个 order (per-novel max+1, 排除 deleted)
+  nextOrder(novelId: string): number {
+    const row = db.prepare(`SELECT COALESCE(MAX("order"), 0) AS max_order FROM novel_volumes WHERE novel_id = ? AND deleted_at IS NULL`).get(novelId) as { max_order: number };
+    return row.max_order + 1;
+  },
+
+  // Admin 列表 (按 novel 查全部, 含 chapter 数, 默认排除 deleted)
+  listByNovel(novelId: string, includeDeleted = false): (NovelVolume & { chapter_count: number; live_chapter_count: number })[] {
+    const del = includeDeleted ? "" : "AND v.deleted_at IS NULL";
+    return db.prepare(`
+      SELECT v.*,
+        (SELECT COUNT(*) FROM chapters WHERE volume_id = v.id) AS chapter_count,
+        (SELECT COUNT(*) FROM chapters WHERE volume_id = v.id AND deleted_at IS NULL) AS live_chapter_count
+      FROM novel_volumes v WHERE v.novel_id = ? ${del} ORDER BY v."order" ASC
+    `).all(novelId) as any[];
+  },
+
+  create(data: Omit<NovelVolume, "id" | "created_at" | "deleted_at">): NovelVolume {
+    const id = uid("vol");
+    const now = Math.floor(Date.now() / 1000);
+    db.prepare(`INSERT INTO novel_volumes (id, novel_id, "order", title, description, deleted_at, created_at) VALUES (?, ?, ?, ?, ?, NULL, ?)`).run(
+      id, data.novel_id, data.order, data.title, data.description ?? null, now
+    );
+    return { ...data, id, created_at: now, deleted_at: null };
+  },
+
+  update(id: string, data: Partial<Omit<NovelVolume, "id" | "created_at" | "novel_id" | "deleted_at">>): NovelVolume | null {
+    const existing = this.byId(id);
+    if (!existing) return null;
+    const merged = { ...existing, ...data };
+    db.prepare(`
+      UPDATE novel_volumes SET "order" = ?, title = ?, description = ? WHERE id = ?
+    `).run(merged.order, merged.title, merged.description ?? null, id);
+    return merged;
+  },
+
+  // 软删除: 写 deleted_at (严守 v0.6.1, 不动 status 字段)
+  softDelete(id: string): boolean {
+    const now = Math.floor(Date.now() / 1000);
+    const result = db.prepare(`UPDATE novel_volumes SET deleted_at = ? WHERE id = ?`).run(now, id);
+    return result.changes > 0;
+  },
+
+  restore(id: string): boolean {
+    const result = db.prepare(`UPDATE novel_volumes SET deleted_at = NULL WHERE id = ?`).run(id);
+    return result.changes > 0;
+  },
+
+  // 软删除: 写 deleted_at + 级联软删所有 chapters (严守 v0.6.1, 不动 published)
+  softDeleteWithChapters(id: string): { volumeOk: boolean; chapterCount: number } {
+    const now = Math.floor(Date.now() / 1000);
+    const chaptersArchived = db.prepare(`UPDATE chapters SET deleted_at = ?, updated_at = ? WHERE volume_id = ? AND deleted_at IS NULL`).run(now, now, id);
+    const volumeResult = db.prepare(`UPDATE novel_volumes SET deleted_at = ? WHERE id = ?`).run(now, id);
+    return { volumeOk: volumeResult.changes > 0, chapterCount: Number(chaptersArchived.changes) };
+  },
+
+  restoreWithChapters(id: string): { volumeOk: boolean; chapterCount: number } {
+    const now = Math.floor(Date.now() / 1000);
+    const chaptersRestored = db.prepare(`UPDATE chapters SET deleted_at = NULL, updated_at = ? WHERE volume_id = ? AND deleted_at IS NOT NULL`).run(now, id);
+    const volumeResult = db.prepare(`UPDATE novel_volumes SET deleted_at = NULL WHERE id = ?`).run(id);
+    return { volumeOk: volumeResult.changes > 0, chapterCount: Number(chaptersRestored.changes) };
+  }
+};
+
+// 辅助: 把 DB 行的 published INTEGER (0/1) 转 boolean (严守 v0.6.1: Chapter.published Boolean)
+function toChapter(row: any): Chapter {
+  return { ...row, published: row.published === 1, deleted_at: row.deleted_at ?? null };
+}
+
+export const chapterRepo = {
+  byVolume(volumeId: string): Chapter[] {
+    const rows = db.prepare(`SELECT * FROM chapters WHERE volume_id = ? ORDER BY "order" ASC`).all(volumeId) as any[];
+    return rows.map(toChapter);
+  },
+
+  bySlug(slug: string): Chapter | null {
+    const row = db.prepare(`SELECT * FROM chapters WHERE slug = ?`).get(slug) as any;
+    return row ? toChapter(row) : null;
+  },
+
+  // ============ Phase 3.3: Admin CRUD ============
+
+  byId(id: string): Chapter | null {
+    const row = db.prepare(`SELECT * FROM chapters WHERE id = ?`).get(id) as any;
+    return row ? toChapter(row) : null;
+  },
+
+  // 下一个 order (per-volume max+1, 排除 deleted)
+  nextOrder(volumeId: string): number {
+    const row = db.prepare(`SELECT COALESCE(MAX("order"), 0) AS max_order FROM chapters WHERE volume_id = ? AND deleted_at IS NULL`).get(volumeId) as { max_order: number };
+    return row.max_order + 1;
+  },
+
+  // Admin 列表 (按 volume, 支持 status/q 筛选/分页, 默认排除 deleted)
+  listByVolume({
+    volumeId,
+    status,
+    q,
+    includeDeleted = false,
+    limit = 100,
+    offset = 0
+  }: {
+    volumeId: string;
+    status?: string;
+    q?: string;
+    includeDeleted?: boolean;
+    limit?: number;
+    offset?: number;
+  }): { items: Chapter[]; total: number } {
+    const where: string[] = ["volume_id = ?"];
+    const params: any[] = [volumeId];
+    if (!includeDeleted) { where.push("deleted_at IS NULL"); }
+    if (status) {
+      // status 接收 'draft' | 'published' | 'archived' (legacy 兼容)
+      if (status === "archived") where.push("deleted_at IS NOT NULL");
+      else if (status === "published") where.push("published = 1");
+      else if (status === "draft") where.push("published = 0 AND deleted_at IS NULL");
+    }
+    if (q && q.trim()) { where.push("(title LIKE ? OR excerpt LIKE ? OR slug LIKE ?)"); const like = `%${q.replace(/[%_]/g, "")}%`; params.push(like, like, like); }
+    const whereSql = `WHERE ${where.join(" AND ")}`;
+
+    const countRow = db.prepare(`SELECT COUNT(*) AS c FROM chapters ${whereSql}`).get(...params) as { c: number };
+
+    const rows = db.prepare(`
+      SELECT * FROM chapters ${whereSql} ORDER BY "order" ASC LIMIT ? OFFSET ?
+    `).all(...params, limit, offset) as any[];
+
+    return { items: rows.map(toChapter), total: countRow.c };
+  },
+
+  slugExists(slug: string, excludeId?: string): boolean {
+    const row = excludeId
+      ? db.prepare(`SELECT id FROM chapters WHERE slug = ? AND id != ? AND deleted_at IS NULL`).get(slug, excludeId)
+      : db.prepare(`SELECT id FROM chapters WHERE slug = ? AND deleted_at IS NULL`).get(slug);
+    return !!row;
+  },
+
+  create(data: Omit<Chapter, "id" | "created_at" | "updated_at" | "view_count" | "fts" | "deleted_at">): Chapter {
     const id = uid("ch");
     const now = Math.floor(Date.now() / 1000);
-    db.prepare(`INSERT INTO chapters (id, volume_id, "order", slug, title, content, excerpt, status, published_at, created_at, updated_at, view_count) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`).run(
-      id, data.volume_id, data.order, data.slug, data.title, data.content, data.excerpt ?? null, data.status, data.published_at ?? null, now, now
+    db.prepare(`INSERT INTO chapters (id, volume_id, "order", slug, title, content, excerpt, published, published_at, deleted_at, created_at, updated_at, view_count) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, 0)`).run(
+      id, data.volume_id, data.order, data.slug, data.title, data.content, data.excerpt ?? null, data.published ? 1 : 0, data.published_at ?? null, now, now
     );
-    return { ...data, id, created_at: now, updated_at: now, view_count: 0, fts: null };
+    return { ...data, id, created_at: now, updated_at: now, view_count: 0, fts: null, deleted_at: null };
+  },
+
+  update(id: string, data: Partial<Omit<Chapter, "id" | "created_at" | "view_count" | "fts" | "volume_id" | "deleted_at">>): Chapter | null {
+    const existing = this.byId(id);
+    if (!existing) return null;
+    const merged = { ...existing, ...data };
+    const now = Math.floor(Date.now() / 1000);
+    // 自动管理 published_at: 首次发布 (true + 原 published_at 为 null) 写时间戳; 改回 draft 清空
+    if (data.published === true && !existing.published_at) {
+      merged.published_at = now;
+    } else if (data.published === false) {
+      merged.published_at = null;
+    }
+    db.prepare(`
+      UPDATE chapters SET "order" = ?, slug = ?, title = ?, content = ?, excerpt = ?,
+        published = ?, published_at = ?, updated_at = ?
+      WHERE id = ?
+    `).run(
+      merged.order, merged.slug, merged.title, merged.content, merged.excerpt ?? null,
+      merged.published ? 1 : 0, merged.published_at ?? null, now, id
+    );
+    return { ...merged, updated_at: now, published: merged.published };
+  },
+
+  // 软删除: 写 deleted_at (严守 v0.6.1, 不动 published)
+  softDelete(id: string): boolean {
+    const result = db.prepare(`UPDATE chapters SET deleted_at = ?, updated_at = ? WHERE id = ?`).run(
+      Math.floor(Date.now() / 1000),
+      Math.floor(Date.now() / 1000),
+      id
+    );
+    return result.changes > 0;
+  },
+
+  restore(id: string): boolean {
+    const result = db.prepare(`UPDATE chapters SET deleted_at = NULL, updated_at = ? WHERE id = ?`).run(
+      Math.floor(Date.now() / 1000),
+      id
+    );
+    return result.changes > 0;
   }
 };
 

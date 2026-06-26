@@ -1,6 +1,6 @@
-# 路线图 (v0.7 Phase 2 收官)
+# 路线图 (v0.10 Phase 3.3 收官)
 
-> 总览, 详细见 `DESIGN.md` §15 / `CHANGELOG.md` / `PHASE2_PLAN.md`。
+> 总览, 详细见 `DESIGN.md` §15 / `CHANGELOG.md` / `PHASE3_PLAN.md` / `PHASE3_STATUS_2026_06_26.md`。
 
 ```
 2026-06-24  ┌─ Phase 0 ──────┐ 立项 + 方案 v0.1/v0.2/v0.3/v0.4/v0.5 ✅
@@ -10,9 +10,9 @@
             └─────────────────┘ 1 天
 2026-06-25~ ┌─ Phase 2: 展示 ┐ 5 专栏 + FTS5 + SEO + RSS + 测试加固 ⭐ v0.7 收官
             └─────────────────┘ 1.5 天
-2026-06-27~ ┌─ Phase 3: Admin ┐ Auth 完整 + MD/Page Builder + 媒体库 + 站点设置
-            └─────────────────┘ ~5-8 天
-2026-07-06~ ┌─ Phase 4: 打磨 ┐ 性能 + 动画 + 双仓库部署 + 2c4g 压测 + 监控
+2026-06-26  ┌─ Phase 3: Admin ┐ 3.1 Auth + 3.2 帖子 + 3.3 小说三层 ⭐ v0.10 收官
+            └─────────────────┘ 已收 3 子任务, 剩 7 子任务 (3.4-3.10)
+2026-07-??~ ┌─ Phase 4: 打磨 ┐ 性能 + 动画 + 双仓库部署 + 2c4g 压测 + 监控
             └─────────────────┘ ~3-5 天
 ```
 
@@ -41,19 +41,18 @@
 - ⏸ 2.6 Worker 独立仓库 (P3 / 老板建仓决策后启动)
 - ✅ 2.7 文档 + 截图 (本版本 v0.7)
 
-### Phase 3 — Admin 后台 ⏳ 0% (v0.8+)
-- [ ] Auth 完整闭环 (NextAuth login/logout/session, F.1 老板)
-- [ ] Admin 布局 + Dashboard
-- [ ] MD 上传 (article/chapter 区分, chapter 选 volume)
-- [ ] Novel 三层 CRUD (作品 → 卷 → 章, 含 status 切换)
-- [ ] Series/Post/Video CRUD
-- [ ] Social CRUD
-- [ ] 媒体库 (上传/多尺寸/blurhash/MediaUsage 引用追踪 + 删除警告)
-- [ ] Page Builder (CustomHtml 受 SiteConfig.allowCustomHtml 开关控制 + DOMPurify 清洗)
-- [ ] Settings UI (allowCustomHtml 开关 + 二次确认 + baiduWorkerUrl 配置)
-- [ ] Admin /admin/reindex (F.1 Phase 2.2 已实现, Phase 3 加 UI 调度)
+### Phase 3 — Admin 后台 ⏳ 30% (v0.10 已收 3.1+3.2+3.3)
+- ✅ 3.1 Auth 完整闭环 (自建 JWT, Q17 修订) (e123591)
+- ✅ 3.2 帖子 CRUD (c532f46)
+- ✅ 3.3 小说三层 CRUD (Novel + Volume + Chapter, 含 status 切换 + 级联软删) (本次)
+- [ ] 3.4 视频系列管理 (黑推荐下一站)
+- [ ] 3.5 页面管理
+- [ ] 3.6 媒体库 (上传/多尺寸/blurhash/MediaUsage 引用追踪 + 删除警告) — Q19 待拍
+- [ ] 3.7 Page Builder v1 (CustomHtml 受 SiteConfig.allowCustomHtml 开关控制 + DOMPurify 清洗) — Q18 待拍
+- [ ] 3.8 站点设置 (SiteConfig 全字段编辑)
+- [ ] 3.9 用户管理 (含改密码踢所有 session)
+- [ ] 3.10 部署加固 + 2c4g 压测 — Q20 待拍
 - [ ] 百度 Worker 独立仓库 (Q3/Q7/Q10) — **需老板建仓决策**
-- [ ] 站点设置 (SiteConfig 全字段编辑)
 
 ### Phase 4 — 打磨 ⏳ 0% (v0.9+)
 - [ ] 动画细节 (Lenis scroll + Block 入场)
