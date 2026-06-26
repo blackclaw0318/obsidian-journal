@@ -78,3 +78,5 @@ output/.cache/
 .next/
 .env
 *.tsbuildinfo
+*.tunnel-url
+*.tunnel-warn-flag

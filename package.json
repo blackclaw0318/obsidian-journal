@@ -25,6 +25,8 @@
     "verify:full": "npm run verify:fast && npm run test:e2e && npm run test:visual",
     "simple-git-hooks:setup": "simple-git-hooks",
     "dev:tunnel": "bash scripts/tunnel.sh",
+    "tunnel:url": "bash scripts/tunnel-url.sh",
+    "tunnel:health": "bash scripts/tunnel-health.sh",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\""
   },
   "simple-git-hooks": {
