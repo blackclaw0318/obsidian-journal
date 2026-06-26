@@ -21,7 +21,7 @@
   7. **FTS5 同步降级**: 失败不阻塞发布 + 重建索引按钮 + 定时 cron
   8. **BlockBase.theme**: 单 Block 暗色/亮色背景切换
   9. **CalloutBlock 新增** + **MarqueeBlock 移除** (凑数清理)
-- **技术栈**: Next.js 14 + TS + Tailwind + shadcn/ui + Prisma + SQLite + Auth.js v5 + Framer Motion + Lenis + dnd-kit + Shiki + sharp + DOMPurify
+- **技术栈**: Next.js 14 + TS + Tailwind + shadcn/ui + ~~Prisma~~ node:sqlite + ~~Auth.js v5~~ 自建 JWT (Q17 修订) + Framer Motion + Lenis + dnd-kit + Shiki + sharp + DOMPurify
 - **审核重点**: §16 "待老板拍板" (Q1-Q11, **11 决策**)
 
 ---
@@ -95,7 +95,7 @@ zinc-950:  #09090B   暗色模式背景
 │  Backend (全在 Next.js 内)                                │
 │  Server Actions · Route Handlers · Middleware            │
 │  Prisma 5 ORM · SQLite (FTS5)                            │
-│  Auth.js v5 · bcrypt                                    │
+│  Auth.js v5 · bcrypt                                    │  → **修订: 自建 JWT · bcryptjs · jose (Q17, 2026-06-26 老板拍)**
 │  gray-matter + unified + Shiki · sharp · **DOMPurify 🆕**│
 ├─────────────────────────────────────────────────────────┤
 │  视频                                                    │
@@ -866,7 +866,7 @@ fi
 | **CustomHtmlBlock XSS** 🆕 | SiteConfig.allowCustomHtml=false 默认 + **DOMPurify 编译期二次清洗** | §14.1 |
 | 视频 iframe framejacking | sandbox + referrerPolicy | |
 | 文件上传炸弹 | Content-Length 限制 + mime 白名单 | |
-| CSRF | Auth.js + Origin 校验 | |
+| CSRF | 自建 JWT + sameSite=strict cookie (Q17) | 修订: 原设计 Auth.js + Origin 校验, 自建后用 cookie sameSite 替代 |
 | 媒体上传类型 | mime 白名单 + sharp 重处理 | |
 
 ### 14.1 CustomHtmlBlock 开启路径 🆕
@@ -944,7 +944,7 @@ if (block.type === 'customHtml') {
 ### Phase 1 — 骨架 (3-5 天)
 - [ ] Next.js 14 + 全 v0.3 schema (11 model)
 - [ ] seed.ts: 1 Novel + 2 Volume + 4 Chapter + 1 Series + 2 Post + 1 Video + 1 VideoSeries + 3 Media + 5 Social + Page("home") 配 5 Block
-- [ ] Auth.js + 登录 + Middleware
+- [x] **自建 JWT + 登录 + Middleware (Q17 修订, 2026-06-26 落地)**
 - [ ] 基础布局 + 双主题 (默认亮色) + Lenis
 - [ ] **13 种 Block 渲染器** (含 Callout, 不含 Marquee)
 - [ ] 首页 (Page("home") + Block[Hero, Stats, Posts, Callout])

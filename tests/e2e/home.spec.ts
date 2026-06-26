@@ -55,6 +55,8 @@ test.describe("Admin 占位 (Phase 3.1: 需登录)", () => {
   });
 
   test("登录后可访问 /admin 并看到管理后台", async ({ page }) => {
+    // 重置 server 端 rate limit (跨 test 隔离)
+    await page.request.post("/api/auth/test-reset");
     // 登录
     await page.goto("/admin/login");
     await page.getByLabel("邮箱").fill("admin@obsidian.local");

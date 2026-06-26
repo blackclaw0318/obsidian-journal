@@ -1,6 +1,6 @@
 // ============================================================
-// /admin/(authed)/layout.tsx - 已登录用户布局 (Phase 3.1)
-// route group "(authed)" 隔离 login 页, URL 仍是 /admin/posts, /admin/novels 等
+// /admin/(admin)/layout.tsx - 已登录用户布局 (Phase 3.1)
+// route group "(admin)" 隔离 login 页, URL 仍是 /admin/posts, /admin/novels 等
 // ============================================================
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";

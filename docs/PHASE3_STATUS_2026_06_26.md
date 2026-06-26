@@ -15,8 +15,8 @@
 | 3 | lib/auth.ts (200 行核心) | ✅ | lib/auth.ts |
 | 4 | 3 个 API route (login/logout/me) | ✅ | app/api/auth/* |
 | 5 | /admin/login 登录页 | ✅ | app/admin/login/page.tsx |
-| 6 | /(authed)/layout.tsx (route group 隔离 login) | ✅ | app/admin/(authed)/ |
-| 7 | AdminShell 组件 (顶栏 + 侧边栏 + 用户菜单) | ✅ | app/admin/(authed)/_components/AdminShell.tsx |
+| 6 | /(admin)/layout.tsx (route group 隔离 login) | ✅ | app/admin/(admin)/ |
+| 7 | AdminShell 组件 (顶栏 + 侧边栏 + 用户菜单) | ✅ | app/admin/(admin)/_components/AdminShell.tsx |
 | 8 | middleware.ts (Edge, JWT 验签) | ✅ | middleware.ts |
 | 9 | seed 升级 (bcrypt, 默认密码 admin123) | ✅ | prisma/seed.ts |
 | 10 | 测试 (16 integration + 8 e2e) + 旧测试更新 (3 个) | ✅ | tests/integration/auth.test.mts, tests/e2e/auth.spec.ts, home.spec.ts, search.spec.ts |
@@ -48,8 +48,8 @@
 
 ### 2. Route Group 隔离登录页
 - **陷阱**: App Router 中 `/admin/login` 继承 `/admin/layout.tsx` 会导致死循环
-- **解决**: 用 route group `(authed)` 把已登录页面包裹, login 独立
-- **URL 不变**: `(authed)` 不出现在 URL, 仍是 `/admin/posts` 等
+- **解决**: 用 route group `(admin)` 把已登录页面包裹, login 独立
+- **URL 不变**: `(admin)` 不出现在 URL, 仍是 `/admin/posts` 等
 
 ### 3. JWT 存 cookie (非 hex token)
 - **设计迭代**: v1 用 hex token 存 cookie, middleware 验签失败
@@ -72,10 +72,10 @@ app/api/auth/login/route.ts                  (51 行, POST login)
 app/api/auth/logout/route.ts                 (18 行, POST logout)
 app/api/auth/me/route.ts                     (16 行, GET me)
 app/admin/login/page.tsx                     (105 行, 登录页)
-app/admin/(authed)/layout.tsx                (17 行, 已登录 layout)
-app/admin/(authed)/_components/AdminShell.tsx (151 行, 顶栏+侧栏)
-app/admin/(authed)/page.tsx                  (移自 app/admin/page.tsx)
-app/admin/(authed)/reindex/                  (移自 app/admin/reindex/)
+app/admin/(admin)/layout.tsx                (17 行, 已登录 layout)
+app/admin/(admin)/_components/AdminShell.tsx (151 行, 顶栏+侧栏)
+app/admin/(admin)/page.tsx                  (移自 app/admin/page.tsx)
+app/admin/(admin)/reindex/                  (移自 app/admin/reindex/)
 middleware.ts                                (49 行, Edge 保护)
 tests/integration/auth.test.mts              (16 个测试)
 tests/e2e/auth.spec.ts                       (8 个测试)
@@ -89,8 +89,8 @@ prisma/seed.ts                               (admin bcrypt + 默认密码)
 tests/e2e/home.spec.ts                       (Admin 测试加登录)
 tests/e2e/search.spec.ts                     (/admin/reindex 测试加登录)
 package.json                                 (jose + bcryptjs 依赖)
-app/admin/page.tsx → app/admin/(authed)/page.tsx (route group 迁移)
-app/admin/reindex/ → app/admin/(authed)/reindex/ (route group 迁移)
+app/admin/page.tsx → app/admin/(admin)/page.tsx (route group 迁移)
+app/admin/reindex/ → app/admin/(admin)/reindex/ (route group 迁移)
 ```
 
 ---

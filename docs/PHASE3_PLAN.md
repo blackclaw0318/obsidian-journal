@@ -30,7 +30,7 @@
 - [x] lib/auth.ts (bcrypt + jose + sessions 表)
 - [x] /api/auth/{login,logout,me} 3 endpoints
 - [x] /admin/login 登录页
-- [x] /admin/(authed)/layout.tsx (顶栏 + 侧边栏 + 用户菜单)
+- [x] /admin/(admin)/layout.tsx (顶栏 + 侧边栏 + 用户菜单)
 - [x] middleware.ts (Edge, JWT 验签)
 - [x] seed admin 升级 (bcrypt, 默认密码 admin123)
 - [x] tests: 16 integration + 8 e2e + 0 unit (auth 全在 integration)
@@ -111,7 +111,7 @@
     ├─ invalid → 307 redirect /admin/login
     └─ valid   → next()
 
-  (authed)/layout.tsx (Node RSC):
+  (admin)/layout.tsx (Node RSC):
     cookie → jwtVerify → sid → findSessionBySid (撤销检查) → user
     ├─ not found → redirect /admin/login
     └─ ok        → <AdminShell user={user}>

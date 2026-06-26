@@ -12,6 +12,8 @@ test.describe.serial("Auth 登录流 (Phase 3.1)", () => {
   test.beforeEach(async ({ page }) => {
     // 清理 cookie
     await page.context().clearCookies();
+    // 重置 server 端 rate limit (上 test 失败计数不污染本 test)
+    await page.request.post("/api/auth/test-reset");
   });
 
   test("未登录访问 /admin 应重定向到 /admin/login", async ({ page }) => {
@@ -95,7 +97,8 @@ test.describe.serial("Auth 登录流 (Phase 3.1)", () => {
   });
 
   test("错误密码 5 次后第 6 次应提示限流", async ({ page }) => {
-    // 走 API 跑 5 次, 第 6 次拿 429
+    // ⚠️ 本 test 故意验证 rate limit, 不在 beforeEach reset
+    // beforeEach 已在每个 test 前 reset, 所以本 test 起始计数为 0
     let lastStatus = 0;
     let lastBody: any = {};
     for (let i = 0; i < 6; i++) {
@@ -108,5 +111,7 @@ test.describe.serial("Auth 登录流 (Phase 3.1)", () => {
     expect(lastStatus).toBe(429);
     expect(lastBody.error).toBe("rate_limited");
     expect(lastBody).not.toHaveProperty("jwt");
+    // 清理: 重置限流避免影响后续 test
+    await page.request.post("/api/auth/test-reset");
   });
 });

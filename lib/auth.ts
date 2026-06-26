@@ -218,3 +218,9 @@ export const AUTH_CONSTANTS = {
   BCRYPT_COST,
   JWT_ALG
 };
+
+// ============ 测试 helper (仅供 tests/ 调用) ============
+// 清除 in-memory rate limit Map (测试间隔离, 避免上一个 test 的 5 次错误计数影响下一个)
+export function __resetRateLimitForTesting(): void {
+  loginAttempts.clear();
+}

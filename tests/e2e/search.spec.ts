@@ -40,6 +40,8 @@ test.describe("Phase 2.2 FTS5 搜索 (v0.6.1 schema)", () => {
   });
 
   test("/admin/reindex POST 应该返回 ok=true (Phase 3.1 需登录)", async ({ page }) => {
+    // 重置 server 端 rate limit (跨 test 隔离)
+    await page.request.post("/api/auth/test-reset");
     // 登录拿 cookie
     await page.goto("/admin/login");
     await page.getByLabel("邮箱").fill("admin@obsidian.local");
@@ -56,6 +58,8 @@ test.describe("Phase 2.2 FTS5 搜索 (v0.6.1 schema)", () => {
   });
 
   test("/admin/reindex GET 应该返回 usage 提示 (Phase 3.1 需登录)", async ({ page }) => {
+    // 重置 server 端 rate limit (跨 test 隔离)
+    await page.request.post("/api/auth/test-reset");
     await page.goto("/admin/login");
     await page.getByLabel("邮箱").fill("admin@obsidian.local");
     await page.getByLabel("密码").fill("admin123");
