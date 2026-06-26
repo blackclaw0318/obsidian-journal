@@ -8,6 +8,7 @@ export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: false, // 2c4g 串行更稳 (v0.4 §13.4)
   workers: 1,
+  globalSetup: "./tests/e2e/global-setup.ts",
   reporter: [["list"], ["html", { open: "never" }]],
   timeout: 30_000,
   use: {

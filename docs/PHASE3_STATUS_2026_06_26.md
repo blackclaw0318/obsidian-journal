@@ -135,3 +135,74 @@ app/admin/reindex/ → app/admin/(admin)/reindex/ (route group 迁移)
 - test(auth): 16 integration + 8 e2e
 - fix(e2e): 旧测试加登录 (home + search spec)
 - docs(phase3): PHASE3_PLAN + PHASE3_STATUS
+
+---
+
+# Phase 3.2 收官报告 (2026-06-26 10:30)
+
+> 🎯 目标: 实现帖子 CRUD, 复用 AdminShell 布局
+> ⏱ 时长: 2026-06-26 09:06 - 10:30 (约 1.5h, 含 e2e 调试)
+> 📦 增量: 11 文件 (+1180 行)
+
+## 实施清单
+
+| # | 任务 | 状态 | 文件 |
+|---|---|---|---|
+| 1 | postRepo 扩展 (byId/listAll/slugExists/update/softDelete/restore) | ✅ | lib/repo.ts |
+| 2 | API: POST /api/admin/posts (创建) | ✅ | app/api/admin/posts/route.ts |
+| 3 | API: PUT/DELETE/PATCH /api/admin/posts/[id] (更新/软删/恢复) | ✅ | app/api/admin/posts/[id]/route.ts |
+| 4 | 列表页 + 筛选 + 搜索 | ✅ | app/admin/(admin)/posts/page.tsx |
+| 5 | 新建页 | ✅ | app/admin/(admin)/posts/new/page.tsx |
+| 6 | 编辑页 (复用 PostForm) | ✅ | app/admin/(admin)/posts/[id]/edit/page.tsx |
+| 7 | PostForm 组件 (client, slug 自动生成) | ✅ | app/admin/(admin)/posts/_components/PostForm.tsx |
+| 8 | PostListActions 组件 (软删/恢复) | ✅ | app/admin/(admin)/posts/_components/PostListActions.tsx |
+| 9 | integration 测试 (16 个 CRUD lifecycle) | ✅ | tests/integration/posts.test.mts |
+| 10 | e2e 测试 (8 个 CRUD 流) | ✅ | tests/e2e/admin-posts.spec.ts |
+| 11 | e2e 全局 setup (跨 spec 隔离) | ✅ | tests/e2e/global-setup.ts + /api/test-reset-db |
+
+## 测试结果 (182/182 ✅)
+
+| 层级 | 数量 | 通过 |
+|---|---|---|
+| typecheck | — | ✅ |
+| lint | — | ✅ (0 warn / 0 error) |
+| unit | 54 | ✅ |
+| integration | 63 (20+11+16+16) | ✅ |
+| e2e | 61 (含 8 新增 admin-posts) | ✅ |
+| visual | 4 | ✅ |
+
+## 关键设计决策
+
+### 1. 软删除 (status='archived')
+- 不真删, 改 status → archived, 数据可恢复
+- 比硬删更安全 (误操作可恢复, 满足审计需求)
+- 列表页用 status 筛选可见性
+
+### 2. slug 自动生成
+- 用户输标题时, 如 slug 留空, 自动从标题生成 (英文/数字/中文/连字符)
+- 用户可手动覆盖
+- 唯一性约束, 重复时返回 409
+
+### 3. 搜索范围
+- 标题 + 摘要 + slug 都参与 LIKE 搜索
+- 不用 FTS5 (admin 列表简单场景 LIKE 够用, 性能 OK)
+
+### 4. e2e 跨 spec 隔离
+- **新增** `/api/test-reset-db` dev-only 端点 (生产 403)
+- **新增** playwright globalSetup, 跑 e2e 前重置 DB 到 seed 状态
+- 同时挂到 visual config, 避免 e2e 残留数据污染 visual baseline
+
+### 5. 路由陷阱
+- Next.js 路由目录**不能用 `_` 开头** (private folder)
+- 我之前用 `_test-reset-db` 写, 立刻 404, 重命名为 `test-reset-db`
+
+## 待 Phase 3.3 复用
+- AdminShell 布局已就位, 后续 3.3-3.10 子页面直接放 `(admin)/novels/` `(admin)/videos/` 等
+- postForm/listActions 模式可复制到 novelForm/videoForm
+- API 模式 (`/api/admin/<resource>`) 可复制
+
+## 当前进度
+
+- ✅ 3.1 Auth + Admin 布局 (142/142 tests pass)
+- ✅ 3.2 帖子 CRUD (182/182 tests pass)
+- ⏳ 3.3-3.10 待启动 (Q18/Q19/Q20 决策后)

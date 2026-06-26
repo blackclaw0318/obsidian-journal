@@ -165,6 +165,97 @@ export const postRepo = {
     } catch (e) {
       return { ok: false, count: 0, error: (e as Error).message };
     }
+  },
+
+  // ============ Phase 3.2: Admin CRUD ============
+
+  byId(id: string): PostWithAuthor | null {
+    const stmt = db.prepare(`
+      SELECT p.*, u.name AS author_name, u.email AS author_email
+      FROM posts p JOIN users u ON u.id = p.author_id
+      WHERE p.id = ?
+    `);
+    const row = stmt.get(id);
+    return row ? rowToPostWithAuthor(row) : null;
+  },
+
+  // Admin 列表 (支持 status/category/搜索/分页, 状态不限 published)
+  listAll({
+    status,
+    category,
+    q,
+    limit = 50,
+    offset = 0
+  }: {
+    status?: string;
+    category?: string;
+    q?: string;
+    limit?: number;
+    offset?: number;
+  } = {}): { items: PostWithAuthor[]; total: number } {
+    const where: string[] = [];
+    const params: any[] = [];
+    if (status) { where.push("p.status = ?"); params.push(status); }
+    if (category) { where.push("p.category = ?"); params.push(category); }
+    if (q && q.trim()) { where.push("(p.title LIKE ? OR p.excerpt LIKE ? OR p.slug LIKE ?)"); const like = `%${q.replace(/[%_]/g, "")}%`; params.push(like, like, like); }
+    const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
+
+    const countRow = db.prepare(`SELECT COUNT(*) AS c FROM posts p ${whereSql}`).get(...params) as { c: number };
+
+    const rows = db.prepare(`
+      SELECT p.*, u.name AS author_name, u.email AS author_email
+      FROM posts p JOIN users u ON u.id = p.author_id
+      ${whereSql}
+      ORDER BY COALESCE(p.published_at, p.created_at) DESC
+      LIMIT ? OFFSET ?
+    `).all(...params, limit, offset);
+
+    return { items: rows.map(rowToPostWithAuthor), total: countRow.c };
+  },
+
+  slugExists(slug: string, excludeId?: string): boolean {
+    const row = excludeId
+      ? db.prepare(`SELECT id FROM posts WHERE slug = ? AND id != ?`).get(slug, excludeId)
+      : db.prepare(`SELECT id FROM posts WHERE slug = ?`).get(slug);
+    return !!row;
+  },
+
+  update(id: string, data: Partial<Omit<Post, "id" | "created_at" | "view_count" | "fts">>): Post | null {
+    const existing = this.byId(id);
+    if (!existing) return null;
+    const merged = { ...existing, ...data };
+    const now = Math.floor(Date.now() / 1000);
+    db.prepare(`
+      UPDATE posts SET
+        slug = ?, title = ?, excerpt = ?, content = ?, cover_image = ?,
+        status = ?, category = ?, tags = ?, author_id = ?,
+        published_at = ?, updated_at = ?
+      WHERE id = ?
+    `).run(
+      merged.slug, merged.title, merged.excerpt ?? null, merged.content,
+      merged.cover_image ?? null, merged.status, merged.category,
+      merged.tags ?? null, merged.author_id,
+      merged.published_at ?? null, now, id
+    );
+    return { ...merged, updated_at: now };
+  },
+
+  // 软删除: status -> archived
+  softDelete(id: string): boolean {
+    const result = db.prepare(`UPDATE posts SET status = 'archived', updated_at = ? WHERE id = ?`).run(
+      Math.floor(Date.now() / 1000),
+      id
+    );
+    return result.changes > 0;
+  },
+
+  // 恢复: status -> draft
+  restore(id: string): boolean {
+    const result = db.prepare(`UPDATE posts SET status = 'draft', updated_at = ? WHERE id = ?`).run(
+      Math.floor(Date.now() / 1000),
+      id
+    );
+    return result.changes > 0;
   }
 };
 

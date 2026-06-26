@@ -28,7 +28,7 @@ if (process.env.NODE_ENV !== "production") {
 // 1. Admin (Phase 3.1: bcrypt 哈希; 默认密码从 ADMIN_PASSWORD env 读, 缺省 "admin123")
 const ADMIN_EMAIL = "admin@obsidian.local";
 const ADMIN_DEFAULT_PASSWORD = "admin123";
-const adminPassword = process.env.ADMIN_PASSWORD ?? ADMIN_DEFAULT_PASSWORD;
+const adminPassword = process.env.ADMIN_PASSWORD || ADMIN_DEFAULT_PASSWORD;
 const admin = userRepo.create({
   email: ADMIN_EMAIL,
   password_hash: bcrypt.hashSync(adminPassword, 10),

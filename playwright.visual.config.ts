@@ -11,6 +11,7 @@ export default defineConfig({
   testMatch: /.*\.spec\.ts$/,
   fullyParallel: false,
   workers: 1,
+  globalSetup: "./tests/e2e/global-setup.ts",
   reporter: [["list"]],
   timeout: 30_000,
   use: {
