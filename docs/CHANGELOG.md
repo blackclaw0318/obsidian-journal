@@ -1,5 +1,72 @@
 # Changelog
 
+## v0.11.0 (2026-06-29) — 批 1 收官 + 3.4/3.5/3.6 落地 ⭐
+
+### 🎉 Phase 3 进度: 30% → 60% (3.1+3.2+3.3+3.4+3.5+3.6+批1)
+
+**v0.6.1 §6 还原**: Series 表 (v0.6.1 设计 tech/life 文章系列, Phase 2.1 实施时偷懒砍了, 现还源)
+**新增**: DailyStat 表 (Phase 4 监控铺路)
+
+### 🆕 v0.10 → v0.11 新增 (15 个 model + admin 全部联动)
+
+**Phase 3.4 视频系列管理** (working tree 收官)
+- `videoSeriesRepo` + `videoRepo` 扩展: byId/bySlug/listAll/slugExists/update/hardDelete
+- `/admin/videos` + `/admin/video-series` CRUD 路由
+- 3 集成 + 3 e2e 测试
+
+**Phase 3.5 页面管理** (working tree 收官, 基础版)
+- `pageRepo`: byId/bySlug/listAll/update/softDelete/restore
+- `/admin/pages` CRUD 路由
+- 3 集成 + 3 e2e 测试
+
+**Phase 3.6 媒体库** (working tree 收官)
+- `mediaRepo`: byId/byFilename/listAll/update/hardDelete + addUsage/removeUsage
+- `/admin/media` 列表 + 上传 + 引用追踪
+- 3 集成 + 3 e2e 测试
+
+**批 1 加成** (Phase 3.1 验证后补齐)
+- **Series 表还原 v0.6.1 §6**: tech/life 文章系列 (与 video_series 区分)
+  - `posts.series_id` 外键 (Phase 2.1 实施时偷懒改成 video_series, 现还原)
+  - `seriesRepo` 完整 CRUD
+  - 7 集成 + 3 e2e 测试
+  - `/admin/series` CRUD UI (新建/编辑/删除/列表)
+- **DailyStat 表**: 每日 PV/UV/post_views/new_comments 聚合
+  - `dailyStatsRepo`: upsert/byDate/range/recent/totalPv
+  - 3 集成测试
+- **/admin/socials 友链管理** (v0.6.1 §7.2)
+  - `socialRepo` 扩展: byId/update/hardDelete/count
+  - `/admin/socials` 列表 + inline 创建/编辑/删除/可见切换
+  - 5 集成 + 2 e2e 测试
+- **/admin 仪表盘**: 8 卡片统计 + 最近 7d 流量 + 最近发布 + 最新小说
+  - 2 e2e 测试
+- **/admin/upload MD 上传**: type 区分 article/chapter, frontmatter 解析
+  - 2 个 API: /api/admin/upload/article + /chapter
+  - 2 e2e 测试 (页面加载 + 预览解析)
+
+### 🔧 修复
+- 老 dev.db schema 兼容: `posts` 缺 `series_id` 列 → migrateSchema 加 ALTER TABLE
+- idx_posts_series 从 initSchema 移到 migrateSchema (避免老库 init 中断)
+- Post /admin/(admin)/page.tsx formatDate 调用方式
+- /admin/socials + /admin/upload 跨 server→client 边界 null prototype 序列化
+- Login form input 选择器: `name=` → `type=`
+- /admin dashboard 导航, 增 加 "系列" + "友链" 入口
+
+### 🧪 测试覆盖 (verify:full)
+- typecheck: 0 错误
+- lint: No warnings or errors
+- unit: 54/54
+- integration: 111/111 (原 96 + 15 新: 7 series + 5 socials + 3 daily)
+- e2e: 90/90 (原 81 + 9 新: 3 series + 2 socials + 2 dashboard + 2 upload)
+- visual: 4/4
+- **总计 259/259 通过**
+
+### ⏭ Phase 3 继续 (v0.12+)
+- 3.7 Page Builder v1 (Block 编辑, Q18 待拍)
+- 3.8 站点设置 SiteConfig UI
+- 3.9 用户管理 (含改密码踢 session)
+- 3.10 部署加固 + 2c4g 压测 (Q20 待拍)
+- 批 2: Block 渲染器 + 公开详情页 (novels/videos/pages/media)
+
 ## v0.10.0 (2026-06-26) — Phase 3.3 小说 + 卷 + 章节管理 ⭐
 
 ### 🎉 Phase 3.3 DoD 全部达成

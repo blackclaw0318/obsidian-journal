@@ -18,11 +18,12 @@ interface NavItem {
 const NAV: NavItem[] = [
   { label: "概览", href: "/admin", icon: "📊" },
   { label: "帖子", href: "/admin/posts", icon: "📝" },
+  { label: "系列", href: "/admin/series", icon: "🗂" },
   { label: "小说", href: "/admin/novels", icon: "📚" },
   { label: "视频", href: "/admin/videos", icon: "🎬" },
   { label: "页面", href: "/admin/pages", icon: "📄" },
   { label: "媒体库", href: "/admin/media", icon: "🖼" },
-  { label: "工具", href: "/admin/tools", icon: "🔧" },
+  { label: "友链", href: "/admin/socials", icon: "🔗" },
   { label: "设置", href: "/admin/settings", icon: "⚙️" }
 ];
 

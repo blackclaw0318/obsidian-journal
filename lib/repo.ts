@@ -6,15 +6,22 @@ import { db, initSchema } from "./db";
 import type {
   Post,
   PostWithAuthor,
+  PostWithSeries,
+  Series,
+  SeriesWithCount,
   Novel,
   NovelVolume,
   Chapter,
   VideoSeries,
   Video,
+  MediaItem,
+  MediaUsage,
+  RefType,
   SiteConfig,
   Social,
   User,
-  Page
+  Page,
+  DailyStat
 } from "./types";
 
 // 首次调用时建表
@@ -97,8 +104,8 @@ export const postRepo = {
     const id = uid("post");
     const now = Math.floor(Date.now() / 1000);
     db.prepare(`
-      INSERT INTO posts (id, slug, title, excerpt, content, cover_image, status, category, tags, author_id, published_at, created_at, updated_at, view_count)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
+      INSERT INTO posts (id, slug, title, excerpt, content, cover_image, status, category, tags, author_id, series_id, published_at, created_at, updated_at, view_count)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
     `).run(
       id,
       data.slug,
@@ -110,6 +117,7 @@ export const postRepo = {
       data.category,
       data.tags ?? null,
       data.author_id,
+      data.series_id ?? null,
       data.published_at ?? null,
       now,
       now
@@ -228,13 +236,13 @@ export const postRepo = {
     db.prepare(`
       UPDATE posts SET
         slug = ?, title = ?, excerpt = ?, content = ?, cover_image = ?,
-        status = ?, category = ?, tags = ?, author_id = ?,
+        status = ?, category = ?, tags = ?, author_id = ?, series_id = ?,
         published_at = ?, updated_at = ?
       WHERE id = ?
     `).run(
       merged.slug, merged.title, merged.excerpt ?? null, merged.content,
       merged.cover_image ?? null, merged.status, merged.category,
-      merged.tags ?? null, merged.author_id,
+      merged.tags ?? null, merged.author_id, merged.series_id ?? null,
       merged.published_at ?? null, now, id
     );
     return { ...merged, updated_at: now };
@@ -256,6 +264,182 @@ export const postRepo = {
       id
     );
     return result.changes > 0;
+  }
+};
+
+// ============ Series (v0.11 还原 v0.6.1 §6) ============
+// tech/life 文章系列 (与 video_series 区分)
+// 公开端可读 / Admin 可写
+
+export const seriesRepo = {
+  // 公开端: 按 category 列出有文章关联的系列
+  listActive(category?: string): SeriesWithCount[] {
+    const sql = category
+      ? db.prepare(`
+          SELECT s.*, COUNT(p.id) AS post_count
+          FROM series s
+          LEFT JOIN posts p ON p.series_id = s.id AND p.status = 'published'
+          WHERE s.category = ?
+          GROUP BY s.id
+          HAVING post_count > 0
+          ORDER BY s."order" ASC, s.created_at DESC
+        `).all(category)
+      : db.prepare(`
+          SELECT s.*, COUNT(p.id) AS post_count
+          FROM series s
+          LEFT JOIN posts p ON p.series_id = s.id AND p.status = 'published'
+          GROUP BY s.id
+          HAVING post_count > 0
+          ORDER BY s."order" ASC, s.created_at DESC
+        `).all();
+    return sql as SeriesWithCount[];
+  },
+
+  // Admin: 全部系列
+  listAll(category?: string): SeriesWithCount[] {
+    const sql = category
+      ? db.prepare(`
+          SELECT s.*, COUNT(p.id) AS post_count
+          FROM series s
+          LEFT JOIN posts p ON p.series_id = s.id
+          WHERE s.category = ?
+          GROUP BY s.id
+          ORDER BY s."order" ASC, s.created_at DESC
+        `).all(category)
+      : db.prepare(`
+          SELECT s.*, COUNT(p.id) AS post_count
+          FROM series s
+          LEFT JOIN posts p ON p.series_id = s.id
+          GROUP BY s.id
+          ORDER BY s."order" ASC, s.created_at DESC
+        `).all();
+    return sql as SeriesWithCount[];
+  },
+
+  byId(id: string): Series | null {
+    const row = db.prepare(`SELECT * FROM series WHERE id = ?`).get(id) as Series | undefined;
+    return row ?? null;
+  },
+
+  bySlug(slug: string): Series | null {
+    const row = db.prepare(`SELECT * FROM series WHERE slug = ?`).get(slug) as Series | undefined;
+    return row ?? null;
+  },
+
+  // 给 post 详情页用: 带 series 信息
+  bySlugWithPosts(slug: string): { series: Series; posts: PostWithAuthor[] } | null {
+    const s = this.bySlug(slug);
+    if (!s) return null;
+    const posts = db.prepare(`
+      SELECT p.*, u.name AS author_name, u.email AS author_email
+      FROM posts p JOIN users u ON u.id = p.author_id
+      WHERE p.series_id = ? AND p.status = 'published'
+      ORDER BY COALESCE(p.published_at, p.created_at) DESC
+    `).all(s.id) as any[];
+    return { series: s, posts: posts.map(rowToPostWithAuthor) };
+  },
+
+  slugExists(slug: string, excludeId?: string): boolean {
+    const row = excludeId
+      ? db.prepare(`SELECT id FROM series WHERE slug = ? AND id != ?`).get(slug, excludeId)
+      : db.prepare(`SELECT id FROM series WHERE slug = ?`).get(slug);
+    return !!row;
+  },
+
+  create(data: Omit<Series, "id" | "created_at" | "updated_at">): Series {
+    const id = uid("ser");
+    const now = Math.floor(Date.now() / 1000);
+    db.prepare(`
+      INSERT INTO series (id, slug, name, description, cover_image, category, "order", created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      id, data.slug, data.name, data.description ?? null, data.cover_image ?? null,
+      data.category, data.order, now, now
+    );
+    return { ...data, id, created_at: now, updated_at: now };
+  },
+
+  update(id: string, data: Partial<Omit<Series, "id" | "created_at">>): Series | null {
+    const existing = this.byId(id);
+    if (!existing) return null;
+    const merged = { ...existing, ...data };
+    const now = Math.floor(Date.now() / 1000);
+    db.prepare(`
+      UPDATE series SET
+        slug = ?, name = ?, description = ?, cover_image = ?, category = ?, "order" = ?, updated_at = ?
+      WHERE id = ?
+    `).run(
+      merged.slug, merged.name, merged.description ?? null, merged.cover_image ?? null,
+      merged.category, merged.order, now, id
+    );
+    return { ...merged, updated_at: now };
+  },
+
+  hardDelete(id: string): boolean {
+    const result = db.prepare(`DELETE FROM series WHERE id = ?`).run(id);
+    return result.changes > 0;
+  },
+
+  count(category?: string): number {
+    const row = category
+      ? db.prepare(`SELECT COUNT(*) AS c FROM series WHERE category = ?`).get(category) as { c: number }
+      : db.prepare(`SELECT COUNT(*) AS c FROM series`).get() as { c: number };
+    return row.c;
+  }
+};
+
+// ============ DailyStat (v0.11, Phase 4 监控铺路) ============
+
+export const dailyStatsRepo = {
+  upsert(date: string, fields: { pv?: number; uv?: number; post_views?: number; new_comments?: number }): DailyStat {
+    const existing = this.byDate(date);
+    const now = Math.floor(Date.now() / 1000);
+    if (existing) {
+      const merged = {
+        pv: existing.pv + (fields.pv ?? 0),
+        uv: existing.uv + (fields.uv ?? 0),
+        post_views: existing.post_views + (fields.post_views ?? 0),
+        new_comments: existing.new_comments + (fields.new_comments ?? 0)
+      };
+      db.prepare(`
+        UPDATE daily_stats SET pv = ?, uv = ?, post_views = ?, new_comments = ? WHERE id = ?
+      `).run(merged.pv, merged.uv, merged.post_views, merged.new_comments, existing.id);
+      return { ...existing, ...merged };
+    }
+    const id = uid("ds");
+    const row = {
+      pv: fields.pv ?? 0,
+      uv: fields.uv ?? 0,
+      post_views: fields.post_views ?? 0,
+      new_comments: fields.new_comments ?? 0
+    };
+    db.prepare(`
+      INSERT INTO daily_stats (id, date, pv, uv, post_views, new_comments, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(id, date, row.pv, row.uv, row.post_views, row.new_comments, now);
+    return { id, date, ...row, created_at: now };
+  },
+
+  byDate(date: string): DailyStat | null {
+    const row = db.prepare(`SELECT * FROM daily_stats WHERE date = ?`).get(date) as DailyStat | undefined;
+    return row ?? null;
+  },
+
+  range(fromDate: string, toDate: string): DailyStat[] {
+    return db.prepare(`
+      SELECT * FROM daily_stats WHERE date BETWEEN ? AND ? ORDER BY date ASC
+    `).all(fromDate, toDate) as DailyStat[];
+  },
+
+  recent(days = 7): DailyStat[] {
+    const today = new Date().toISOString().slice(0, 10);
+    const from = new Date(Date.now() - (days - 1) * 86400_000).toISOString().slice(0, 10);
+    return this.range(from, today);
+  },
+
+  totalPv(): number {
+    const row = db.prepare(`SELECT COALESCE(SUM(pv), 0) AS s FROM daily_stats`).get() as { s: number };
+    return row.s;
   }
 };
 
@@ -618,6 +802,103 @@ export const videoRepo = {
       id, data.series_id ?? null, data.slug, data.title, data.description ?? null, data.embed_url, data.cover_image ?? null, data.duration ?? null, data.status, data.published_at ?? null, now, now
     );
     return { ...data, id, created_at: now, updated_at: now, view_count: 0 };
+  },
+
+  // ============ Phase 3.4: Admin CRUD ============
+  byId(id: string): Video | null {
+    const row = db.prepare(`SELECT * FROM videos WHERE id = ?`).get(id) as Video | undefined;
+    return row ?? null;
+  },
+
+  bySlug(slug: string): Video | null {
+    const row = db.prepare(`SELECT * FROM videos WHERE slug = ?`).get(slug) as Video | undefined;
+    return row ?? null;
+  },
+
+  // Admin 列表 (支持 status / series / 搜索 / 分页)
+  listAll({
+    status,
+    seriesId,
+    q,
+    limit = 50,
+    offset = 0
+  }: {
+    status?: string;
+    seriesId?: string;
+    q?: string;
+    limit?: number;
+    offset?: number;
+  } = {}): { items: Video[]; total: number } {
+    const where: string[] = [];
+    const params: any[] = [];
+    if (status) { where.push("status = ?"); params.push(status); }
+    if (seriesId) { where.push("series_id = ?"); params.push(seriesId); }
+    if (q && q.trim()) { where.push("(title LIKE ? OR description LIKE ? OR slug LIKE ?)"); const like = `%${q.replace(/[%_]/g, "")}%`; params.push(like, like, like); }
+    const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
+
+    const countRow = db.prepare(`SELECT COUNT(*) AS c FROM videos ${whereSql}`).get(...params) as { c: number };
+
+    const rows = db.prepare(`
+      SELECT * FROM videos ${whereSql}
+      ORDER BY COALESCE(published_at, created_at) DESC
+      LIMIT ? OFFSET ?
+    `).all(...params, limit, offset);
+
+    return { items: rows as Video[], total: countRow.c };
+  },
+
+  slugExists(slug: string, excludeId?: string): boolean {
+    const row = excludeId
+      ? db.prepare(`SELECT id FROM videos WHERE slug = ? AND id != ?`).get(slug, excludeId)
+      : db.prepare(`SELECT id FROM videos WHERE slug = ?`).get(slug);
+    return !!row;
+  },
+
+  update(id: string, data: Partial<Omit<Video, "id" | "created_at" | "view_count">>): Video | null {
+    const existing = this.byId(id);
+    if (!existing) return null;
+    const merged = { ...existing, ...data };
+    const now = Math.floor(Date.now() / 1000);
+    db.prepare(`
+      UPDATE videos SET
+        series_id = ?, slug = ?, title = ?, description = ?,
+        embed_url = ?, cover_image = ?, duration = ?,
+        status = ?, published_at = ?, updated_at = ?
+      WHERE id = ?
+    `).run(
+      merged.series_id ?? null, merged.slug, merged.title, merged.description ?? null,
+      merged.embed_url, merged.cover_image ?? null, merged.duration ?? null,
+      merged.status, merged.published_at ?? null, now, id
+    );
+    return { ...merged, updated_at: now };
+  },
+
+  // 软删除: status -> archived (videos 用 status enum, 与 posts 一致)
+  softDelete(id: string): boolean {
+    const result = db.prepare(`UPDATE videos SET status = 'archived', updated_at = ? WHERE id = ?`).run(
+      Math.floor(Date.now() / 1000),
+      id
+    );
+    return result.changes > 0;
+  },
+
+  restore(id: string): boolean {
+    const result = db.prepare(`UPDATE videos SET status = 'draft', updated_at = ? WHERE id = ?`).run(
+      Math.floor(Date.now() / 1000),
+      id
+    );
+    return result.changes > 0;
+  },
+
+  // 物理删除 (admin 慎用, 会级联清空 media_usages 引用)
+  hardDelete(id: string): boolean {
+    const result = db.prepare(`DELETE FROM videos WHERE id = ?`).run(id);
+    return result.changes > 0;
+  },
+
+  // 列出某系列下所有视频
+  listBySeries(seriesId: string): Video[] {
+    return db.prepare(`SELECT * FROM videos WHERE series_id = ? ORDER BY COALESCE(published_at, created_at) DESC`).all(seriesId) as Video[];
   }
 };
 
@@ -635,6 +916,62 @@ export const videoSeriesRepo = {
   list(): VideoSeries[] {
     const stmt = db.prepare(`SELECT * FROM video_series ORDER BY "order" ASC, created_at DESC`);
     return stmt.all() as VideoSeries[];
+  },
+
+  // ============ Phase 3.4: Admin CRUD ============
+  byId(id: string): VideoSeries | null {
+    const row = db.prepare(`SELECT * FROM video_series WHERE id = ?`).get(id) as VideoSeries | undefined;
+    return row ?? null;
+  },
+
+  bySlug(slug: string): VideoSeries | null {
+    const row = db.prepare(`SELECT * FROM video_series WHERE slug = ?`).get(slug) as VideoSeries | undefined;
+    return row ?? null;
+  },
+
+  slugExists(slug: string, excludeId?: string): boolean {
+    const row = excludeId
+      ? db.prepare(`SELECT id FROM video_series WHERE slug = ? AND id != ?`).get(slug, excludeId)
+      : db.prepare(`SELECT id FROM video_series WHERE slug = ?`).get(slug);
+    return !!row;
+  },
+
+  update(id: string, data: Partial<Omit<VideoSeries, "id" | "created_at">>): VideoSeries | null {
+    const existing = this.byId(id);
+    if (!existing) return null;
+    const merged = { ...existing, ...data };
+    db.prepare(`
+      UPDATE video_series SET
+        slug = ?, title = ?, description = ?, cover_image = ?, "order" = ?
+      WHERE id = ?
+    `).run(
+      merged.slug, merged.title, merged.description ?? null, merged.cover_image ?? null, merged.order, id
+    );
+    return merged;
+  },
+
+  // 物理删除: 会把 videos.series_id 置 NULL (ON DELETE SET NULL)
+  hardDelete(id: string): boolean {
+    const result = db.prepare(`DELETE FROM video_series WHERE id = ?`).run(id);
+    return result.changes > 0;
+  },
+
+  // Admin 列表 (含每个系列的视频数)
+  listWithCount(): { series: VideoSeries; videoCount: number }[] {
+    const rows = db.prepare(`
+      SELECT s.*, COUNT(v.id) AS video_count
+      FROM video_series s
+      LEFT JOIN videos v ON v.series_id = s.id
+      GROUP BY s.id
+      ORDER BY s."order" ASC, s.created_at DESC
+    `).all() as (VideoSeries & { video_count: number })[];
+    return rows.map((r) => ({ series: { id: r.id, slug: r.slug, title: r.title, description: r.description, cover_image: r.cover_image, order: r.order, created_at: r.created_at }, videoCount: r.video_count }));
+  },
+
+  // 取下一个 order (auto increment)
+  nextOrder(): number {
+    const row = db.prepare(`SELECT COALESCE(MAX("order"), 0) + 1 AS next FROM video_series`).get() as { next: number };
+    return row.next;
   }
 };
 
@@ -690,6 +1027,37 @@ export const socialRepo = {
       id, data.platform, data.label, data.url, data.icon ?? null, data.order, data.visible, now
     );
     return { ...data, id, created_at: now };
+  },
+
+  // ============ Phase 3.x: Admin CRUD (v0.11) ============
+  byId(id: string): Social | null {
+    const row = db.prepare(`SELECT * FROM socials WHERE id = ?`).get(id) as Social | undefined;
+    return row ?? null;
+  },
+
+  update(id: string, data: Partial<Omit<Social, "id" | "created_at">>): Social | null {
+    const existing = this.byId(id);
+    if (!existing) return null;
+    const merged = { ...existing, ...data };
+    db.prepare(`
+      UPDATE socials SET
+        platform = ?, label = ?, url = ?, icon = ?, "order" = ?, visible = ?
+      WHERE id = ?
+    `).run(
+      merged.platform, merged.label, merged.url, merged.icon ?? null,
+      merged.order, merged.visible, id
+    );
+    return merged;
+  },
+
+  hardDelete(id: string): boolean {
+    const result = db.prepare(`DELETE FROM socials WHERE id = ?`).run(id);
+    return result.changes > 0;
+  },
+
+  count(): number {
+    const row = db.prepare(`SELECT COUNT(*) AS c FROM socials`).get() as { c: number };
+    return row.c;
   }
 };
 
@@ -724,12 +1092,213 @@ export const pageRepo = {
   bySlug(slug: string): Page | null {
     const row = db.prepare(`SELECT * FROM pages WHERE slug = ?`).get(slug) as Page | undefined;
     return row ?? null;
+  },
+
+  // ============ Phase 3.5: Admin CRUD ============
+  byId(id: string): Page | null {
+    const row = db.prepare(`SELECT * FROM pages WHERE id = ?`).get(id) as Page | undefined;
+    return row ?? null;
+  },
+
+  // Admin 列表 (支持 status / 搜索 / 分页, 状态不限 published)
+  listAll({
+    status,
+    q,
+    limit = 50,
+    offset = 0
+  }: {
+    status?: string;
+    q?: string;
+    limit?: number;
+    offset?: number;
+  } = {}): { items: Page[]; total: number } {
+    const where: string[] = [];
+    const params: any[] = [];
+    if (status) { where.push("status = ?"); params.push(status); }
+    if (q && q.trim()) { where.push("(title LIKE ? OR description LIKE ? OR slug LIKE ?)"); const like = `%${q.replace(/[%_]/g, "")}%`; params.push(like, like, like); }
+    const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
+
+    const countRow = db.prepare(`SELECT COUNT(*) AS c FROM pages ${whereSql}`).get(...params) as { c: number };
+
+    const rows = db.prepare(`
+      SELECT * FROM pages ${whereSql}
+      ORDER BY COALESCE(published_at, created_at) DESC
+      LIMIT ? OFFSET ?
+    `).all(...params, limit, offset);
+
+    return { items: rows as Page[], total: countRow.c };
+  },
+
+  slugExists(slug: string, excludeId?: string): boolean {
+    const row = excludeId
+      ? db.prepare(`SELECT id FROM pages WHERE slug = ? AND id != ?`).get(slug, excludeId)
+      : db.prepare(`SELECT id FROM pages WHERE slug = ?`).get(slug);
+    return !!row;
+  },
+
+  create(data: Omit<Page, "id" | "created_at" | "updated_at" | "view_count" | "fts">): Page {
+    const id = uid("pg");
+    const now = Math.floor(Date.now() / 1000);
+    db.prepare(`
+      INSERT INTO pages (id, slug, title, description, blocks, status, author_id, published_at, created_at, updated_at, view_count)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
+    `).run(
+      id, data.slug, data.title, data.description ?? null, data.blocks,
+      data.status, data.author_id, data.published_at ?? null, now, now
+    );
+    return { ...data, id, created_at: now, updated_at: now, view_count: 0, fts: null };
+  },
+
+  update(id: string, data: Partial<Omit<Page, "id" | "created_at" | "view_count" | "fts">>): Page | null {
+    const existing = this.byId(id);
+    if (!existing) return null;
+    const merged = { ...existing, ...data };
+    const now = Math.floor(Date.now() / 1000);
+    db.prepare(`
+      UPDATE pages SET
+        slug = ?, title = ?, description = ?, blocks = ?,
+        status = ?, author_id = ?, published_at = ?, updated_at = ?
+      WHERE id = ?
+    `).run(
+      merged.slug, merged.title, merged.description ?? null, merged.blocks,
+      merged.status, merged.author_id, merged.published_at ?? null, now, id
+    );
+    return { ...merged, updated_at: now };
+  },
+
+  // 软删除: status -> archived
+  softDelete(id: string): boolean {
+    const result = db.prepare(`UPDATE pages SET status = 'archived', updated_at = ? WHERE id = ?`).run(
+      Math.floor(Date.now() / 1000),
+      id
+    );
+    return result.changes > 0;
+  },
+
+  // 恢复: status -> draft
+  restore(id: string): boolean {
+    const result = db.prepare(`UPDATE pages SET status = 'draft', updated_at = ? WHERE id = ?`).run(
+      Math.floor(Date.now() / 1000),
+      id
+    );
+    return result.changes > 0;
+  }
+};
+
+// ============ Media (Phase 3.6) ============
+export const mediaRepo = {
+  byId(id: string): MediaItem | null {
+    const row = db.prepare(`SELECT * FROM media_items WHERE id = ?`).get(id) as MediaItem | undefined;
+    return row ?? null;
+  },
+
+  byFilename(filename: string): MediaItem | null {
+    const row = db.prepare(`SELECT * FROM media_items WHERE filename = ?`).get(filename) as MediaItem | undefined;
+    return row ?? null;
+  },
+
+  // Admin 列表 (支持 mime / 搜索 / 分页)
+  listAll({
+    mimePrefix,
+    q,
+    limit = 100,
+    offset = 0
+  }: {
+    mimePrefix?: string; // 'image/' / 'video/' / 'application/' etc.
+    q?: string;
+    limit?: number;
+    offset?: number;
+  } = {}): { items: MediaItem[]; total: number } {
+    const where: string[] = [];
+    const params: any[] = [];
+    if (mimePrefix) { where.push("mime_type LIKE ?"); params.push(`${mimePrefix}%`); }
+    if (q && q.trim()) { where.push("(filename LIKE ? OR alt LIKE ?)"); const like = `%${q.replace(/[%_]/g, "")}%`; params.push(like, like); }
+    const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
+
+    const countRow = db.prepare(`SELECT COUNT(*) AS c FROM media_items ${whereSql}`).get(...params) as { c: number };
+
+    const rows = db.prepare(`
+      SELECT * FROM media_items ${whereSql}
+      ORDER BY uploaded_at DESC
+      LIMIT ? OFFSET ?
+    `).all(...params, limit, offset);
+
+    return { items: rows as MediaItem[], total: countRow.c };
+  },
+
+  create(data: Omit<MediaItem, "id" | "uploaded_at">): MediaItem {
+    const id = uid("med");
+    const now = Math.floor(Date.now() / 1000);
+    db.prepare(`
+      INSERT INTO media_items (id, filename, mime_type, size, width, height, alt, url, storage_type, uploaded_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      id, data.filename, data.mime_type, data.size,
+      data.width ?? null, data.height ?? null, data.alt ?? null,
+      data.url, data.storage_type, now
+    );
+    return { ...data, id, uploaded_at: now };
+  },
+
+  update(id: string, data: Partial<Omit<MediaItem, "id" | "uploaded_at">>): MediaItem | null {
+    const existing = this.byId(id);
+    if (!existing) return null;
+    const merged = { ...existing, ...data };
+    db.prepare(`
+      UPDATE media_items SET
+        filename = ?, mime_type = ?, size = ?, width = ?, height = ?,
+        alt = ?, url = ?, storage_type = ?
+      WHERE id = ?
+    `).run(
+      merged.filename, merged.mime_type, merged.size,
+      merged.width ?? null, merged.height ?? null,
+      merged.alt ?? null, merged.url, merged.storage_type, id
+    );
+    return merged;
+  },
+
+  // 物理删除 + 级联清 media_usages
+  hardDelete(id: string): { mediaOk: boolean; usageCount: number } {
+    const usageCount = (db.prepare(`SELECT COUNT(*) AS c FROM media_usages WHERE media_id = ?`).get(id) as { c: number }).c;
+    db.prepare(`DELETE FROM media_usages WHERE media_id = ?`).run(id);
+    const result = db.prepare(`DELETE FROM media_items WHERE id = ?`).run(id);
+    return { mediaOk: result.changes > 0, usageCount };
+  },
+
+  // 引用追踪
+  listUsages(mediaId: string): MediaUsage[] {
+    return db.prepare(`SELECT * FROM media_usages WHERE media_id = ? ORDER BY created_at DESC`).all(mediaId) as MediaUsage[];
+  },
+
+  addUsage(mediaId: string, refType: RefType, refId: string, field?: string | null): void {
+    db.prepare(`
+      INSERT OR IGNORE INTO media_usages (id, media_id, ref_type, ref_id, field)
+      VALUES (?, ?, ?, ?, ?)
+    `).run(uid("mu"), mediaId, refType, refId, field ?? null);
+  },
+
+  removeUsage(mediaId: string, refType: RefType, refId: string, field?: string | null): void {
+    db.prepare(`
+      DELETE FROM media_usages WHERE media_id = ? AND ref_type = ? AND ref_id = ? AND IFNULL(field, '') = IFNULL(?, '')
+    `).run(mediaId, refType, refId, field ?? null);
+  },
+
+  // 统计
+  count(): number {
+    const row = db.prepare(`SELECT COUNT(*) AS c FROM media_items`).get() as { c: number };
+    return row.c;
+  },
+
+  totalSize(): number {
+    const row = db.prepare(`SELECT COALESCE(SUM(size), 0) AS s FROM media_items`).get() as { s: number };
+    return row.s;
   }
 };
 
 // ============ Reset (dev only) ============
 export function resetAllData(): void {
   db.exec(`
+    DELETE FROM daily_stats;
     DELETE FROM media_usages;
     DELETE FROM media_items;
     DELETE FROM pages;
@@ -739,6 +1308,7 @@ export function resetAllData(): void {
     DELETE FROM videos;
     DELETE FROM video_series;
     DELETE FROM posts;
+    DELETE FROM series;
     DELETE FROM socials;
     DELETE FROM sessions;
     DELETE FROM users;

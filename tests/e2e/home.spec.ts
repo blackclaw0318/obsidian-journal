@@ -63,7 +63,7 @@ test.describe("Admin 占位 (Phase 3.1: 需登录)", () => {
     await page.getByLabel("密码").fill("admin123");
     await page.getByRole("button", { name: "登录" }).click();
     await page.waitForURL(/\/admin$/, { timeout: 10000 });
-    await expect(page.locator("h1")).toContainText("管理后台");
+    await expect(page.locator("h1")).toContainText("概览");
   });
 });
 

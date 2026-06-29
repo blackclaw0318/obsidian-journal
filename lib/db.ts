@@ -64,7 +64,22 @@ export function initSchema(): void {
     CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
     CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at);
 
-    -- 2. Post
+    -- 2. Series (Phase 3.5+ v0.11, v0.6.1 §6 还原)
+    -- tech/life 文章系列 (与 video_series 区分)
+    CREATE TABLE IF NOT EXISTS series (
+      id TEXT PRIMARY KEY,
+      slug TEXT UNIQUE NOT NULL,
+      name TEXT NOT NULL,
+      description TEXT,
+      cover_image TEXT,
+      category TEXT NOT NULL DEFAULT 'tech',
+      "order" INTEGER NOT NULL DEFAULT 0,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+    );
+    CREATE INDEX IF NOT EXISTS idx_series_category ON series(category, "order");
+
+    -- 3. Post
     CREATE TABLE IF NOT EXISTS posts (
       id TEXT PRIMARY KEY,
       slug TEXT UNIQUE NOT NULL,
@@ -76,6 +91,7 @@ export function initSchema(): void {
       category TEXT NOT NULL DEFAULT 'tech',
       tags TEXT,
       author_id TEXT NOT NULL REFERENCES users(id),
+      series_id TEXT REFERENCES series(id) ON DELETE SET NULL,
       published_at INTEGER,
       created_at INTEGER NOT NULL DEFAULT (unixepoch()),
       updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
@@ -84,8 +100,13 @@ export function initSchema(): void {
     );
     CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status, published_at);
     CREATE INDEX IF NOT EXISTS idx_posts_category ON posts(category);
+    -- idx_posts_series 老库缺 series_id 列, 在 migrateSchema 里补建 (避免 init 失败)
 
-    -- 3. Novel + NovelVolume + Chapter
+    -- 兼容老库: 若 posts 缺 series_id 列, 补上 (v0.11 迁移)
+    -- SQLite ALTER TABLE 不支持 IF NOT EXISTS, 用 try/catch 包裹
+    -- (实际由 initSchema 调用方在 try 内执行)
+
+    -- 4. Novel + NovelVolume + Chapter
     -- 严守 v0.6.1: NovelStatus 3 值 (ongoing|completed|hiatus), 软删走 deleted_at (≠ status enum)
     -- 严守 v0.6.1: Chapter 用 published Boolean, 无 status 字段
     CREATE TABLE IF NOT EXISTS novels (
@@ -134,7 +155,7 @@ export function initSchema(): void {
     CREATE INDEX IF NOT EXISTS idx_chapters_published ON chapters(published, published_at);
     CREATE INDEX IF NOT EXISTS idx_chapters_deleted ON chapters(deleted_at);
 
-    -- 4. Video + VideoSeries
+    -- 5. Video + VideoSeries
     CREATE TABLE IF NOT EXISTS video_series (
       id TEXT PRIMARY KEY,
       slug TEXT UNIQUE NOT NULL,
@@ -163,7 +184,7 @@ export function initSchema(): void {
     CREATE INDEX IF NOT EXISTS idx_videos_status ON videos(status, published_at);
     CREATE INDEX IF NOT EXISTS idx_videos_series ON videos(series_id);
 
-    -- 5. MediaItem + MediaUsage
+    -- 6. MediaItem + MediaUsage
     CREATE TABLE IF NOT EXISTS media_items (
       id TEXT PRIMARY KEY,
       filename TEXT UNIQUE NOT NULL,
@@ -189,7 +210,7 @@ export function initSchema(): void {
     );
     CREATE INDEX IF NOT EXISTS idx_usages_ref ON media_usages(ref_type, ref_id);
 
-    -- 6. Page (Block 组合)
+    -- 7. Page (Block 组合)
     CREATE TABLE IF NOT EXISTS pages (
       id TEXT PRIMARY KEY,
       slug TEXT UNIQUE NOT NULL,
@@ -206,7 +227,7 @@ export function initSchema(): void {
     );
     CREATE INDEX IF NOT EXISTS idx_pages_status ON pages(status, published_at);
 
-    -- 7. SiteConfig (单例)
+    -- 8. SiteConfig (单例)
     CREATE TABLE IF NOT EXISTS site_config (
       id TEXT PRIMARY KEY DEFAULT 'singleton',
       site_name TEXT NOT NULL DEFAULT '黑曜石日志',
@@ -223,7 +244,7 @@ export function initSchema(): void {
       updated_at INTEGER NOT NULL DEFAULT (unixepoch())
     );
 
-    -- 8. Social
+    -- 9. Social
     CREATE TABLE IF NOT EXISTS socials (
       id TEXT PRIMARY KEY,
       platform TEXT NOT NULL,
@@ -236,7 +257,20 @@ export function initSchema(): void {
     );
     CREATE INDEX IF NOT EXISTS idx_socials_order ON socials("order");
 
-    -- 9. FTS5 全文搜索 (Phase 2.2) — posts_fts virtual table
+    -- 11. DailyStat (v0.11, v0.6.1 §6 还原) — Phase 4 监控铺路
+    -- 单条记录 = 某天 (YYYY-MM-DD) 的 PV/UV 聚合
+    CREATE TABLE IF NOT EXISTS daily_stats (
+      id TEXT PRIMARY KEY,
+      date TEXT UNIQUE NOT NULL,         -- 'YYYY-MM-DD'
+      pv INTEGER NOT NULL DEFAULT 0,     -- 页面浏览
+      uv INTEGER NOT NULL DEFAULT 0,     -- 独立访客 (近似去重 IP)
+      post_views INTEGER NOT NULL DEFAULT 0,  -- 文章详情浏览
+      new_comments INTEGER NOT NULL DEFAULT 0,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch())
+    );
+    CREATE INDEX IF NOT EXISTS idx_daily_stats_date ON daily_stats(date);
+
+    -- 10. FTS5 全文搜索 (Phase 2.2) — posts_fts virtual table
     -- content=posts 走外部内容表, 触发器同步 (AI/AD/AU)
     CREATE VIRTUAL TABLE IF NOT EXISTS posts_fts USING fts5(
       title, content, excerpt, tags,
@@ -266,11 +300,49 @@ export function initSchema(): void {
   `);
 }
 
+// ============================================================
+// schema 迁移 (v0.11+) — 老库补列
+// ============================================================
+function migrateSchema(): void {
+  // v0.11: posts 加 series_id 列 + 索引 (老库兼容)
+  try {
+    db.exec(`ALTER TABLE posts ADD COLUMN series_id TEXT REFERENCES series(id) ON DELETE SET NULL;`);
+    db.exec(`CREATE INDEX IF NOT EXISTS idx_posts_series ON posts(series_id);`);
+  } catch {
+    // 列已存在, 索引可能也在, 静默吞
+  }
+  // v0.11: site_config 加 allow_custom_html (默认 0)
+  try {
+    db.exec(`ALTER TABLE site_config ADD COLUMN allow_custom_html INTEGER NOT NULL DEFAULT 0;`);
+  } catch {
+    // 已存在
+  }
+  // v0.11: site_config 加 favicon
+  try {
+    db.exec(`ALTER TABLE site_config ADD COLUMN favicon TEXT;`);
+  } catch {
+    // 已存在
+  }
+  // v0.11: site_config 加 og_image
+  try {
+    db.exec(`ALTER TABLE site_config ADD COLUMN og_image TEXT;`);
+  } catch {
+    // 已存在
+  }
+  // v0.11: site_config 加 analytics
+  try {
+    db.exec(`ALTER TABLE site_config ADD COLUMN analytics TEXT;`);
+  } catch {
+    // 已存在
+  }
+}
+
 // 自动初始化 (dev/prod 启动时建表)
 if (process.env.SKIP_DB_INIT !== "1") {
   try {
     initSchema();
+    migrateSchema();
   } catch (err) {
-    console.error("[db] init schema failed:", err);
+    console.error("[db] init/migrate schema failed:", err);
   }
 }

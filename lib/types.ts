@@ -7,8 +7,10 @@ export type PostStatus = "draft" | "published" | "archived";
 export type PostCategory = "tech" | "life";
 // 严守 v0.6.1 DESIGN §6: NovelStatus 3 值 (ongoing|completed|hiatus), 软删走 deleted_at 字段
 export type NovelStatus = "ongoing" | "completed" | "hiatus";
-export type VideoStatus = "draft" | "published";
-export type PageStatus = "draft" | "published";
+// VideoStatus 3 值 (与 PostStatus/PageStatus 一致), 软删走 status='archived'
+export type VideoStatus = "draft" | "published" | "archived";
+// PageStatus 3 值 (与 PostStatus 一致), 软删走 status='archived' (无 deleted_at 字段, 沿用 posts 模式)
+export type PageStatus = "draft" | "published" | "archived";
 export type Theme = "light" | "dark" | "auto";
 export type MediaStorage = "local" | "r2";
 export type RefType = "post" | "chapter" | "page" | "video";
@@ -42,6 +44,7 @@ export interface Post {
   category: PostCategory;
   tags: string | null;
   author_id: string;
+  series_id?: string | null;
   published_at: number | null;
   created_at: number;
   updated_at: number;
@@ -51,6 +54,36 @@ export interface Post {
 
 export interface PostWithAuthor extends Post {
   author: { name: string | null; email: string };
+}
+
+export interface PostWithSeries extends PostWithAuthor {
+  series: Series | null;
+}
+
+export interface Series {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  cover_image: string | null;
+  category: PostCategory;
+  order: number;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface SeriesWithCount extends Series {
+  post_count: number;
+}
+
+export interface DailyStat {
+  id: string;
+  date: string;        // 'YYYY-MM-DD'
+  pv: number;
+  uv: number;
+  post_views: number;
+  new_comments: number;
+  created_at: number;
 }
 
 export interface Novel {
@@ -105,7 +138,7 @@ export interface VideoSeries {
 
 export interface Video {
   id: string;
-  series_id: string | null;
+  series_id?: string | null;
   slug: string;
   title: string;
   description: string | null;
