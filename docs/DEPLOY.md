@@ -219,3 +219,51 @@ curl http://localhost:3000/api/health
 - [ ] 2c4g 真机压测 (k6 报告)
 - [ ] Dockerfile + docker-compose
 - [ ] systemd unit 替代 PM2 (更原生)
+
+---
+
+## v0.17 部署加固 (Phase 3.10, 2026-06-30)
+
+### 一键命令
+
+```bash
+# 健康检查 (8 项: HTTP/进程/tunnel/域名/DB/磁盘/Swap/内存)
+npm run healthcheck
+
+# 数据库自动备份 (SQLite WAL-safe → gzip, 保留 7 天)
+npm run backup
+# 或指定 db: bash scripts/backup.sh data/prod.db
+
+# 一键部署 (git pull → npm ci → verify:fast → 重启 → healthcheck)
+sudo bash scripts/deploy.sh
+# 或跳过测试: SKIP_TESTS=1 sudo bash scripts/deploy.sh
+```
+
+### 健康检查项
+
+| # | 项 | 健康阈值 | 失败应对 |
+|---|---|---|---|
+| 1 | 本地 HTTP (localhost:3000) | 200 | 重启 next server |
+| 2 | next-server 进程 | 在跑 | 启动 |
+| 3 | cloudflared.service | active | `systemctl restart cloudflared` |
+| 4 | 域名可达 (5 次 retry) | 200 | tunnel 抖动可容忍,持续失败 → cloudflared restart |
+| 5 | SQLite 文件 | 有效 + ≥10 表 | `npm run db:init` |
+| 6 | 磁盘 | < 80% | 清理日志 + 老备份 |
+| 7 | Swap (2c4g 必备) | ≥2GB | `fallocate -l 2G /swapfile` |
+| 8 | 内存 | < 80% | OOM 风险,检查 next.js heap |
+
+### Q20 决策记录
+
+| 项 | 候选 | 拍板 | 理由 |
+|---|---|---|---|
+| **Q20 部署加固节奏** | 立即压测 2c4g / 仅写脚本(留压测) / 等 Phase 4 | **仅写脚本** (v0.17) | 黑推荐: 2c4g 压测需要等真正部署到生产机, 当前 dev 环境 4c16g 不急. 脚本 + 健康检查 + 备份可立即上线, 压测 Phase 4 之前再做. |
+| Healthcheck 频率 | cron 1min / 5min / 手动 | **手动** + 可挂 cron | 老板随时 `npm run healthcheck` 看 |
+| Backup 频率 | cron 每日 / cron 每周 / 手动 | **手动** + 可挂 cron | 当前 dev 数据可重 seed, 生产前再挂 cron |
+| 部署工具 | PM2 ecosystem / systemd / Docker | **systemd** + 一键 deploy.sh | 现有 cloudflared.service 已 systemd 范式,保持一致 |
+
+### 部署 v0.16+ 实际经验 (3.10 落地踩坑)
+
+1. **cloudflared QUIC 抖动**: 即使是 named tunnel 也会有 `failed to serve tunnel connection` (5-30s 间隔), HTTP 502 偶发. **解决**: healthcheck 重试 5 次 (避免误报), 生产前监控需关注持续失败 (3 次 +)
+2. **Node 24 + better-sqlite3 ESM**: `node -e "require('better-sqlite3')"` 解析失败. **解决**: 用 ESM (`--input-type=module`) + `import Database from 'better-sqlite3'` 或干脆不依赖外部 sqlite3 (用 file header grep)
+3. **SQLite 命令行未装**: 多数精简 Linux 镜像不带 `sqlite3` 二进制. **解决**: 用 `node -e` 走项目自带的 better-sqlite3
+4. **next-server 重启**: `kill PID` 后 5s 内 systemd 不会接管(因为 next dev 是 nohup 启动而非 systemd). **解决**: deploy.sh 显式 `kill` + `nohup ... &` 重启,生产用 PM2/systemd
