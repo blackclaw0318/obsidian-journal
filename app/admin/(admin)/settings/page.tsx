@@ -10,22 +10,42 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "站点设置 · Admin" };
 
 export default function SettingsPage() {
-  const config = siteConfigRepo.get() ?? {
-    id: "singleton",
-    site_name: "黑曜石日志",
-    site_tagline: "用代码与数据说话",
-    site_description: null,
-    site_keywords: null,
-    default_theme: "light" as const,
-    allow_custom_html: 0 as const,
-    baidu_push_enabled: 0 as const,
-    baidu_push_token: null,
-    og_image: null,
-    favicon: null,
-    analytics: null,
-    avatar_url: null,
-    updated_at: 0
-  };
+  const raw = siteConfigRepo.get();
+  // ⚠️ 关键: better-sqlite3 row 是 null-prototype 对象, Next.js RSC 禁止跨 server→client 边界传递.
+  // 必须先序列化为 plain object (Server Component 的返回值要可序列化).
+  const config = raw
+    ? {
+        id: raw.id,
+        site_name: raw.site_name,
+        site_tagline: raw.site_tagline,
+        site_description: raw.site_description,
+        site_keywords: raw.site_keywords,
+        default_theme: raw.default_theme,
+        allow_custom_html: raw.allow_custom_html,
+        baidu_push_enabled: raw.baidu_push_enabled,
+        baidu_push_token: raw.baidu_push_token,
+        og_image: raw.og_image,
+        favicon: raw.favicon,
+        analytics: raw.analytics,
+        avatar_url: raw.avatar_url,
+        updated_at: raw.updated_at
+      }
+    : {
+        id: "singleton",
+        site_name: "黑曜石日志",
+        site_tagline: "用代码与数据说话",
+        site_description: null,
+        site_keywords: null,
+        default_theme: "light" as const,
+        allow_custom_html: 0 as const,
+        baidu_push_enabled: 0 as const,
+        baidu_push_token: null,
+        og_image: null,
+        favicon: null,
+        analytics: null,
+        avatar_url: null,
+        updated_at: 0
+      };
 
   return (
     <div className="space-y-6">
