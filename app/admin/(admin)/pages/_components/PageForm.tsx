@@ -179,6 +179,15 @@ export function PageForm({
         >
           取消
         </button>
+        {mode === "edit" && initial?.id && (
+          <a
+            href={`/admin/pages/${initial.id}/builder`}
+            className="rounded border border-fg bg-fg/5 px-4 py-2 text-sm hover:bg-fg/10"
+            title="v0.6.1 §21 Page Builder (v0.14) — 三栏 + dnd-kit 拖拽"
+          >
+            🎨 打开 Page Builder
+          </a>
+        )}
       </div>
     </form>
   );
