@@ -23,6 +23,7 @@ export default function SettingsPage() {
     og_image: null,
     favicon: null,
     analytics: null,
+    avatar_url: null,
     updated_at: 0
   };
 

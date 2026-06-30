@@ -27,6 +27,7 @@ const baseSite: SiteConfig = {
   baidu_push_token: null,
   og_image: null,
   favicon: null,
+  avatar_url: null,
   analytics: null,
   updated_at: 1719120000
 };

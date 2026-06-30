@@ -7,6 +7,7 @@
 
 import { useState } from "react";
 import type { SiteConfig } from "@/lib/types";
+import { AvatarUpload } from "./AvatarUpload";
 
 const inputCls = "w-full rounded border border-border bg-bg px-3 py-2 text-sm focus:border-fg focus:outline-none disabled:opacity-50";
 const labelCls = "mb-1 block text-sm font-medium";
@@ -58,6 +59,9 @@ export function SettingsForm({ initial }: { initial: SiteConfig }) {
     <div className="space-y-6">
       {/* 基本信息 */}
       <Section title="📝 基本信息">
+        <Field label="头像 (公开首页显示, 圆形 96×96)">
+          <AvatarUpload currentUrl={initial.avatar_url} />
+        </Field>
         <Field label="站点名称">
           <input className={inputCls} value={data.site_name} onChange={(e) => update("site_name", e.target.value)} maxLength={100} />
         </Field>

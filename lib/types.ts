@@ -205,6 +205,7 @@ export interface SiteConfig {
   og_image: string | null;
   favicon: string | null;
   analytics: string | null;
+  avatar_url: string | null;
   updated_at: number;
 }
 

@@ -19,6 +19,7 @@ export default async function HomePage() {
 
   const siteName = siteConfig?.site_name ?? "黑曜石日志";
   const siteTagline = siteConfig?.site_tagline ?? "用代码与数据说话";
+  const avatarUrl = siteConfig?.avatar_url ?? "/uploads/avatars/avatar-default.png";
   const ldWebsite = siteConfig ? jsonLdWebSite(siteConfig) : null;
 
   return (
@@ -30,15 +31,25 @@ export default async function HomePage() {
         />
       )}
       {/* Hero */}
-      <section className="mb-16">
-        <h1 className="mb-3 text-4xl font-bold tracking-tight sm:text-5xl">
-          {siteName}
-        </h1>
-        <p className="text-lg text-fg-muted">{siteTagline}</p>
-        <div className="mt-6 flex items-center gap-6 text-sm text-fg-muted">
-          <span>📝 {publishedCount} 篇文章</span>
-          <span>📚 {novelCount} 部小说</span>
-          {socials.length > 0 && <span>🔗 {socials.length} 社交链接</span>}
+      <section className="mb-16 flex items-start gap-6">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={avatarUrl}
+          alt={`${siteName} 头像`}
+          width={96}
+          height={96}
+          className="h-24 w-24 flex-shrink-0 rounded-full border-2 border-border object-cover"
+        />
+        <div className="flex-1">
+          <h1 className="mb-2 text-4xl font-bold tracking-tight sm:text-5xl">
+            {siteName}
+          </h1>
+          <p className="text-lg text-fg-muted">{siteTagline}</p>
+          <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-fg-muted">
+            <span>📝 {publishedCount} 篇文章</span>
+            <span>📚 {novelCount} 部小说</span>
+            {socials.length > 0 && <span>🔗 {socials.length} 社交链接</span>}
+          </div>
         </div>
       </section>
 

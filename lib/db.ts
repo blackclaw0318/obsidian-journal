@@ -342,6 +342,12 @@ function migrateSchema(): void {
   } catch {
     // 已存在
   }
+  // v0.18: site_config 加 avatar_url (首页头像, 老板可上传覆盖)
+  try {
+    db.exec(`ALTER TABLE site_config ADD COLUMN avatar_url TEXT;`);
+  } catch {
+    // 已存在
+  }
 }
 
 // 自动初始化 (dev/prod 启动时建表)
