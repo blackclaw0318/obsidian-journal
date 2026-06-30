@@ -1,5 +1,64 @@
 # Changelog
 
+## v0.12.0 (2026-06-30) — Phase 3.7 起步: Block 渲染器 + 公开详情页 ⭐
+
+### 🎉 Phase 3 进度: 60% → 65% (3.7 起步)
+
+**v0.6.1 §6.1 Block 系统核心**: 13 种 Block 渲染器 (公开端 + Admin 预览共用)
+**v0.6.1 §8 公开详情页**: 5 个公开页 (novel/volume/chapter/page/video)
+
+### 🆕 v0.11 → v0.12 新增 (12 文件 +1197/-25 行)
+
+**Block 渲染器** (v0.6.1 §6.1 严守 13 种)
+- `lib/blocks/render.tsx` (291 行): 13 个 Block 渲染器
+  - markdown-it + DOMPurify (技术栈 §3 严守)
+  - "use client" (CSR)
+  - HeadingBlock 自动 anchor (中英文 slug)
+  - CalloutBlock 4 变体 (info/warn/success/danger) + lucide-react 图标
+- `tests/unit/blocks-render.test.tsx` (138 行): 8 单测覆盖渲染
+
+**公开详情页** (v0.6.1 §8)
+- `app/novels/[slug]/page.tsx` (113 行): 小说详情 (聚合卷+已发布章节)
+- `app/novels/[slug]/[volSlug]/page.tsx` (82 行): 卷详情
+- `app/chapters/[slug]/page.tsx` (94 行): 章节详情 (含 view_count++)
+- `app/pages/[slug]/page.tsx` (50 行): 单页详情
+- `app/videos/[slug]/page.tsx` (92 行): 视频详情
+- `tests/e2e/public-detail-pages.spec.ts` (84 行): 4 公开页 e2e
+
+**媒体库 UI 改进**
+- `app/media/page.tsx` (+97/-21 行): 详情/预览/引用追踪
+
+**repo 扩展** (lib/repo.ts +61 行, 公开端查询)
+- novelRepo: bySlugWithVolumes (聚合 novel→volumes→chapters)
+- volumeRepo: bySlug + byNovelWithPublishedChapters
+- chapterRepo: incrementView + bySlugPublished + bySlugWithContext
+- videoRepo: bySlugWithSeries
+- **全部严守 published/deleted_at 过滤**
+
+**新依赖**: markdown-it ^14.2.0 + @types/markdown-it ^14.1.2
+
+### 🧪 测试覆盖 (verify:fast)
+- typecheck: 0 错误
+- lint: 0 警告
+- unit: 70/70 (含 8 新 blocks-render)
+- integration: 132/132 (含 novel/video 公开查询关联)
+- **总计 202/202 通过**
+
+### 🛠 运营修复
+- Tunnel URL 失效: cloudflared-quick.service 重启 → 新 URL `arrivals-approve-shield-ladder.trycloudflare.com`
+- obsidian-tunnel-monitor.service 第一次重启后触发 failed (tunnel 握手期检测, 非 bug, 自愈)
+
+### ⏭ Phase 3.7 继续 (Page Builder v1 主体, v0.6.1 §21)
+- 左栏 Block 库 (13 种 + 状态)
+- 中栏 Canvas (dnd-kit 拖拽)
+- 右栏属性编辑器
+- /admin/pages/[key]/edit 三栏
+- Block 序列化 ↔ Page.content JSON
+
+Refs: docs/DESIGN.md §6.1 + §8 + §21
+
+---
+
 ## v0.11.0 (2026-06-29) — 批 1 收官 + 3.4/3.5/3.6 落地 ⭐
 
 ### 🎉 Phase 3 进度: 30% → 60% (3.1+3.2+3.3+3.4+3.5+3.6+批1)
