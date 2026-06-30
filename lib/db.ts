@@ -335,6 +335,13 @@ function migrateSchema(): void {
   } catch {
     // 已存在
   }
+  // v0.15: users 加 deleted_at (软删, 严禁丢失审计)
+  try {
+    db.exec(`ALTER TABLE users ADD COLUMN deleted_at INTEGER;`);
+    db.exec(`CREATE INDEX IF NOT EXISTS idx_users_deleted ON users(deleted_at);`);
+  } catch {
+    // 已存在
+  }
 }
 
 // 自动初始化 (dev/prod 启动时建表)

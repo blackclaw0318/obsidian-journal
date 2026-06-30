@@ -1130,13 +1130,78 @@ export const userRepo = {
     return row ?? null;
   },
 
-  create(data: Omit<User, "id" | "created_at" | "updated_at">): User {
+  create(data: Omit<User, "id" | "created_at" | "updated_at" | "deleted_at">): User {
     const id = uid("u");
     const now = Math.floor(Date.now() / 1000);
     db.prepare(`INSERT INTO users (id, email, password_hash, name, role, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)`).run(
       id, data.email, data.password_hash, data.name ?? null, data.role, now, now
     );
-    return { ...data, id, created_at: now, updated_at: now };
+    return { ...data, id, created_at: now, updated_at: now, deleted_at: null };
+  },
+
+  // ============ Phase 3.9: Admin CRUD ============
+  list({ limit = 20, offset = 0, includeDeleted = false }: { limit?: number; offset?: number; includeDeleted?: boolean } = {}): User[] {
+    const where = includeDeleted ? "" : "WHERE deleted_at IS NULL";
+    return db.prepare(`SELECT * FROM users ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`).all(limit, offset) as User[];
+  },
+
+  listWithStats({ limit = 20, offset = 0 }: { limit?: number; offset?: number } = {}): Array<User & { session_count: number }> {
+    return db.prepare(`
+      SELECT u.*, COUNT(s.id) as session_count
+      FROM users u
+      LEFT JOIN sessions s ON s.user_id = u.id AND s.expires_at > unixepoch()
+      WHERE u.deleted_at IS NULL
+      GROUP BY u.id
+      ORDER BY u.created_at DESC
+      LIMIT ? OFFSET ?
+    `).all(limit, offset) as Array<User & { session_count: number }>;
+  },
+
+  count({ includeDeleted = false }: { includeDeleted?: boolean } = {}): number {
+    const where = includeDeleted ? "" : "WHERE deleted_at IS NULL";
+    const row = db.prepare(`SELECT COUNT(*) as c FROM users ${where}`).get() as { c: number };
+    return row.c;
+  },
+
+  update(id: string, data: Partial<Pick<User, "email" | "name" | "role">>): User | null {
+    const sets: string[] = [];
+    const values: (string | number | null)[] = [];
+    for (const [k, v] of Object.entries(data)) {
+      if (v === undefined) continue;
+      sets.push(`${k} = ?`);
+      values.push(v);
+    }
+    if (sets.length === 0) return this.byId(id);
+    sets.push(`updated_at = ?`);
+    values.push(Math.floor(Date.now() / 1000));
+    values.push(id);
+    db.prepare(`UPDATE users SET ${sets.join(", ")} WHERE id = ?`).run(...values);
+    return this.byId(id);
+  },
+
+  updatePassword(id: string, passwordHash: string): boolean {
+    const result = db.prepare(`UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?`)
+      .run(passwordHash, Math.floor(Date.now() / 1000), id);
+    return result.changes > 0;
+  },
+
+  softDelete(id: string): boolean {
+    const result = db.prepare(`UPDATE users SET deleted_at = ?, updated_at = ? WHERE id = ? AND deleted_at IS NULL`)
+      .run(Math.floor(Date.now() / 1000), Math.floor(Date.now() / 1000), id);
+    return result.changes > 0;
+  },
+
+  restore(id: string): boolean {
+    const result = db.prepare(`UPDATE users SET deleted_at = NULL, updated_at = ? WHERE id = ? AND deleted_at IS NOT NULL`)
+      .run(Math.floor(Date.now() / 1000), id);
+    return result.changes > 0;
+  },
+
+  emailExists(email: string, excludeId?: string): boolean {
+    const row = excludeId
+      ? db.prepare(`SELECT 1 FROM users WHERE email = ? AND id != ?`).get(email, excludeId)
+      : db.prepare(`SELECT 1 FROM users WHERE email = ?`).get(email);
+    return row !== undefined;
   }
 };
 

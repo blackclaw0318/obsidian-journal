@@ -23,7 +23,10 @@ export interface User {
   role: string;
   created_at: number;
   updated_at: number;
+  deleted_at: number | null;
 }
+
+export type UserRole = "admin" | "user";
 
 export interface Session {
   id: string;

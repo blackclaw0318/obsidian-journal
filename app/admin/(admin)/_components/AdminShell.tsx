@@ -24,6 +24,7 @@ const NAV: NavItem[] = [
   { label: "页面", href: "/admin/pages", icon: "📄" },
   { label: "媒体库", href: "/admin/media", icon: "🖼" },
   { label: "友链", href: "/admin/socials", icon: "🔗" },
+  { label: "用户", href: "/admin/users", icon: "👥" },
   { label: "设置", href: "/admin/settings", icon: "⚙️" }
 ];
 
