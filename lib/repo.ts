@@ -488,6 +488,23 @@ export const novelRepo = {
     return row ?? null;
   },
 
+  // ============ Phase 3.x: 公开端 ============
+  bySlugWithVolumes(slug: string): (Novel & { volumes: (NovelVolume & { chapters: { id: string; slug: string; title: string; order: number; published: boolean; view_count: number }[] })[] }) | null {
+    const n = this.bySlug(slug);
+    if (!n) return null;
+    if (n.deleted_at) return null;
+    return {
+      ...n,
+      volumes: volumeRepo.byNovel(n.id).map((v) => ({
+        ...v,
+        chapters: chapterRepo.byVolume(v.id).map((c) => ({
+          id: c.id, slug: c.slug, title: c.title, order: c.order,
+          published: c.published, view_count: c.view_count
+        }))
+      }))
+    };
+  },
+
   // Admin 列表 (支持 status 筛选/搜索/分页, 默认排除 deleted)
   listAll({
     status,
@@ -598,6 +615,21 @@ export const volumeRepo = {
     return row ?? null;
   },
 
+  bySlug(slug: string): NovelVolume | null {
+    const row = db.prepare(`SELECT * FROM novel_volumes WHERE slug = ?`).get(slug) as NovelVolume | undefined;
+    return row ?? null;
+  },
+
+  // ============ Phase 3.x: 公开端 ============
+  byNovelWithPublishedChapters(novelId: string): (NovelVolume & { chapters: { id: string; slug: string; title: string; order: number; view_count: number }[] })[] {
+    return this.byNovel(novelId).map((v) => ({
+      ...v,
+      chapters: chapterRepo.byVolume(v.id)
+        .filter((c) => c.published)
+        .map((c) => ({ id: c.id, slug: c.slug, title: c.title, order: c.order, view_count: c.view_count }))
+    }));
+  },
+
   // 下一个 order (per-novel max+1, 排除 deleted)
   nextOrder(novelId: string): number {
     const row = db.prepare(`SELECT COALESCE(MAX("order"), 0) AS max_order FROM novel_volumes WHERE novel_id = ? AND deleted_at IS NULL`).get(novelId) as { max_order: number };
@@ -676,6 +708,27 @@ export const chapterRepo = {
   bySlug(slug: string): Chapter | null {
     const row = db.prepare(`SELECT * FROM chapters WHERE slug = ?`).get(slug) as any;
     return row ? toChapter(row) : null;
+  },
+
+  incrementView(id: string): void {
+    db.prepare(`UPDATE chapters SET view_count = view_count + 1 WHERE id = ?`).run(id);
+  },
+
+  // ============ Phase 3.x: 公开端 ============
+  bySlugPublished(slug: string): Chapter | null {
+    const row = db.prepare(`SELECT * FROM chapters WHERE slug = ? AND published = 1 AND deleted_at IS NULL`).get(slug) as any;
+    return row ? toChapter(row) : null;
+  },
+
+  // 公开端看 chapter 时, 跳 view + 拿关联 Volume + Novel
+  bySlugWithContext(slug: string): { chapter: Chapter; volume: NovelVolume; novel: Novel } | null {
+    const c = this.bySlugPublished(slug);
+    if (!c) return null;
+    const v = volumeRepo.byId(c.volume_id);
+    if (!v || v.deleted_at) return null;
+    const n = novelRepo.byId(v.novel_id);
+    if (!n || n.deleted_at) return null;
+    return { chapter: c, volume: v, novel: n };
   },
 
   // ============ Phase 3.3: Admin CRUD ============
@@ -813,6 +866,10 @@ export const videoRepo = {
   bySlug(slug: string): Video | null {
     const row = db.prepare(`SELECT * FROM videos WHERE slug = ?`).get(slug) as Video | undefined;
     return row ?? null;
+  },
+
+  incrementView(id: string): void {
+    db.prepare(`UPDATE videos SET view_count = view_count + 1 WHERE id = ?`).run(id);
   },
 
   // Admin 列表 (支持 status / series / 搜索 / 分页)
@@ -1098,6 +1155,10 @@ export const pageRepo = {
   byId(id: string): Page | null {
     const row = db.prepare(`SELECT * FROM pages WHERE id = ?`).get(id) as Page | undefined;
     return row ?? null;
+  },
+
+  incrementView(id: string): void {
+    db.prepare(`UPDATE pages SET view_count = view_count + 1 WHERE id = ?`).run(id);
   },
 
   // Admin 列表 (支持 status / 搜索 / 分页, 状态不限 published)
