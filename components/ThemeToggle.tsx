@@ -11,7 +11,7 @@ import { Sun, Moon, Monitor } from "lucide-react";
 
 type Theme = "light" | "dark" | "auto";
 
-const STORAGE_KEY = "***";
+const STORAGE_KEY = "obsidian-theme";
 
 function getSystemTheme(): "light" | "dark" {
   if (typeof window === "undefined") return "light";

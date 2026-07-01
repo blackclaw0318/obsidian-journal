@@ -63,7 +63,7 @@ export const metadata: Metadata = {
 const themeInitScript = `
 (function() {
   try {
-    var saved = localStorage.getItem('***');
+    var saved = localStorage.getItem('obsidian-theme');
     var mode = saved || '${process.env.NEXT_PUBLIC_DEFAULT_THEME || "light"}';
     var resolved = mode === 'auto'
       ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
