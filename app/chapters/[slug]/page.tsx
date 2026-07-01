@@ -9,6 +9,7 @@ import MarkdownIt from "markdown-it";
 import { chapterRepo, siteConfigRepo, volumeRepo, novelRepo, chapterRepo as chRepo } from "@/lib/repo";
 import { formatCount, formatDate } from "@/lib/utils";
 import { absoluteUrl, canonical } from "@/lib/seo";
+import { MarkdownReveal } from "@/components/MarkdownReveal";
 
 export const dynamic = "force-dynamic";
 
@@ -75,7 +76,11 @@ export default function ChapterDetailPage({ params }: Props) {
         </div>
       )}
 
-      <div className="prose prose-zinc max-w-none dark:prose-invert" dangerouslySetInnerHTML={{ __html: html }} />
+      {/* Markdown 渲染 + v0.21 P1-8 逐 block 视口渐入 (与 posts/[slug] 一致) */}
+      <MarkdownReveal
+        html={html}
+        className="prose prose-zinc max-w-none dark:prose-invert"
+      />
 
       <nav className="mt-12 flex items-center justify-between border-t border-border pt-6">
         {prev ? (

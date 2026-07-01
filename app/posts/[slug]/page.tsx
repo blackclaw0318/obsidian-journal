@@ -13,6 +13,7 @@ import { postRepo, siteConfigRepo } from "@/lib/repo";
 import { formatDate } from "@/lib/utils";
 import { absoluteUrl, canonical, jsonLdArticle } from "@/lib/seo";
 import { ViewCounter } from "@/components/ViewCounter";
+import { MarkdownReveal } from "@/components/MarkdownReveal";
 
 export const dynamic = "force-dynamic";
 
@@ -127,10 +128,11 @@ export default function PostDetailPage({ params }: { params: { slug: string } })
       </header>
 
       {/* Markdown 渲染: v0.20 D 升级, 与 chapters 风格一致
-          严守 globals.css 的 .prose 样式 (无 typography 插件, 自定义) */}
-      <div
+          严守 globals.css 的 .prose 样式 (无 typography 插件, 自定义)
+          v0.21 P1-8: MarkdownReveal 包裹, 逐 block 视口渐入 + stagger */}
+      <MarkdownReveal
+        html={safeHtml}
         className="prose prose-zinc max-w-none dark:prose-invert"
-        dangerouslySetInnerHTML={{ __html: safeHtml }}
       />
     </article>
   );
