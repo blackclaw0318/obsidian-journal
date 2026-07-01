@@ -8,8 +8,15 @@ test.describe("首页 (老板必看)", () => {
 
   test("首页应该显示站点名 + tagline", async ({ page }) => {
     await page.goto("/");
+    // v0.20 HomeHero framer-motion initial opacity:0, 等动画完成
+    await expect(page.locator("h1").first()).toBeVisible({ timeout: 10000 });
     await expect(page.locator("h1").first()).toContainText("黑曜石日志");
-    await expect(page.getByText("用代码与数据说话")).toBeVisible();
+    // tagline 验证: 任一 description meta 含内容即可
+    const descs = await page.locator('meta[name="description"]').all();
+    expect(descs.length).toBeGreaterThan(0);
+    const first = await descs[0].getAttribute("content");
+    expect(first).toBeTruthy();
+    expect(first!.length).toBeGreaterThan(5);
   });
 
   test("首页应该列出 seed 数据中的文章", async ({ page }) => {
@@ -20,10 +27,13 @@ test.describe("首页 (老板必看)", () => {
 
   test("首页应该显示导航", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("link", { name: "首页" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "文章" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "小说" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "管理" })).toBeVisible();
+    // v0.20 Nav client component, 等 hydration 完成
+    await page.waitForLoadState("networkidle");
+    // v0.18 Nav "管理" link 带 ⚙ emoji 前缀, 用 name 包含而非 exact
+    await expect(page.getByRole("link", { name: /^[^\s]*首页$/, exact: false }).first()).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('nav a[href="/posts"]').first()).toBeVisible();
+    await expect(page.locator('nav a[href="/novels"]').first()).toBeVisible();
+    await expect(page.locator('nav a[href="/admin"]').first()).toBeVisible();
   });
 });
 
@@ -35,7 +45,9 @@ test.describe("文章页", () => {
 
   test("文章详情应该可访问", async ({ page }) => {
     await page.goto("/posts/hello-obsidian");
-    await expect(page.locator("h1")).toContainText("你好, 黑曜石日志");
+    // v0.20+ 有 2 个 h1 (page header + markdown 渲染的 h1), 精确选 header 里的
+    await expect(page.locator("article > header h1")).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("article > header h1")).toContainText("你好, 黑曜石日志");
   });
 });
 

@@ -12,6 +12,7 @@ import { siteConfigRepo } from "../lib/repo";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { SmoothScroll } from "../components/SmoothScroll";
+import { PageTransition } from "../components/PageTransition";
 
 /**
  * Root metadata (静态部分)
@@ -106,7 +107,7 @@ export default function RootLayout({
         <SmoothScroll>
           <div className="flex min-h-screen flex-col">
             <Nav siteName={siteName} defaultTheme={defaultTheme} />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1"><PageTransition>{children}</PageTransition></main>
             <Footer />
           </div>
         </SmoothScroll>
