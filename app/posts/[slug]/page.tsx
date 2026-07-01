@@ -10,8 +10,9 @@ import type { Metadata } from "next";
 import MarkdownIt from "markdown-it";
 import DOMPurify from "isomorphic-dompurify";
 import { postRepo, siteConfigRepo } from "@/lib/repo";
-import { formatDate, formatCount } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { absoluteUrl, canonical, jsonLdArticle } from "@/lib/seo";
+import { ViewCounter } from "@/components/ViewCounter";
 
 export const dynamic = "force-dynamic";
 
@@ -80,10 +81,8 @@ export default function PostDetailPage({ params }: { params: { slug: string } })
     notFound();
   }
 
-  // view_count: P1-13 (无防刷) — 每次刷新 +1
-  // v0.20: 暂时维持原行为; v0.21 计划迁到 client useEffect + /api/posts/[slug]/view 防刷
-  // (RSC 中 cookies() 只读, setCookie 必须在 route handler / server action)
-  postRepo.incrementView(post.id);
+  // view_count: 已迁到 <ViewCounter /> 客户端组件 + POST /api/posts/[slug]/view 防刷
+  // (v0.21.1 P1-13 — RSC 里 setCookie 不方便, 改 client 调用)
 
   const ldJson = site ? jsonLdArticle({ post, site }) : null;
 
@@ -114,7 +113,7 @@ export default function PostDetailPage({ params }: { params: { slug: string } })
             </time>
           )}
           <span>·</span>
-          <span>{formatCount(post.view_count)} 阅读</span>
+          <ViewCounter type="posts" slug={post.slug} initialCount={post.view_count} />
           <span>·</span>
           <span>约 {readMin} 分钟</span>
         </div>
