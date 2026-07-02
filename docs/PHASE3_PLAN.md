@@ -13,8 +13,7 @@
 | Q17 | Auth 方案 | **自建 JWT + httpOnly cookie** (修订原 NextAuth 推荐) | node:sqlite + 手写 SQL 架构下, NextAuth 集成成本高 |
 | Q18 | Page Builder v1 范围 | 模板化 5-6 套 | 自由 Block 搭建留 v2 |
 | Q19 | 媒体库存储 | 本地先, R2 后 | Phase 3 本地, Phase 4 接 R2 |
-| Q20 | 部署目标 | 先 4c16g, Phase 4 末 2c4g 压测 | — |
-
+| Q20 | 部署目标 | **实际昆实: 不做 2c4g 压测 (老板 2026-07-02 22:22 拍板, dev 环境 4c16g 足) |
 ### Q17 修订理由
 原推荐 NextAuth + Credentials, 实施时发现:
 - NextAuth 需 ORM adapter (Prisma/Drizzle), 与本项目 **手写 SQL + node:sqlite** 冲突
@@ -85,71 +84,13 @@
 - [ ] 创建/改密码/禁用
 - [ ] 测试
 
-### 3.10 部署加固 + 2c4g 压测 ⏳
-- [ ] .env 模板 + setup.sh 完善
-- [ ] 4c16g 实跑验证
-- [ ] 2c4g 压测 (locust 或 k6)
-- [ ] 文档 (DEPLOY.md, OPERATIONS.md)
+### 3.10 部署加固 (v0.17) ✓
 
----
+- [x] .env 模板 + setup.sh (v0.17)
+- [x] healthcheck.sh (v0.17)
+- [x] backup.sh (v0.17)
+- [x] deploy.sh (v0.17)
+- [x] DEPLOY.md 部署文档 (v0.17)
 
-## 数据流 (Auth 部分, 已落地)
+> ⚠️ “2c4g 压测” 2026-07-02 22:22 老板拍板不做: 原分分压测 2c4g VPS 能手室内访问量, dev 环境 4c16g 足, 压测无意义. 原 Q20 停机.
 
-```
-登录流:
-  POST /api/auth/login { email, password }
-    → lib/auth.login()
-      → bcryptjs.verifyPassword(password, user.password_hash)
-      → INSERT sessions (sid, user_id, expires_at)
-      → signJwt(userId, sid) (jose, HS256)
-    → Set-Cookie: obsidian_session=<jwt>; HttpOnly; SameSite=Strict
-    → return { ok: true, user, expiresAt }
-
-访问 /admin/*:
-  middleware.ts (Edge):
-    cookie → jwtVerify(token, AUTH_SECRET)
-    ├─ invalid → 307 redirect /admin/login
-    └─ valid   → next()
-
-  (admin)/layout.tsx (Node RSC):
-    cookie → jwtVerify → sid → findSessionBySid (撤销检查) → user
-    ├─ not found → redirect /admin/login
-    └─ ok        → <AdminShell user={user}>
-
-登出:
-  POST /api/auth/logout
-    → verifyJwt → DELETE sessions WHERE id=sid
-    → Clear-Cookie obsidian_session
-```
-
-## 安全要点
-
-- ✅ bcrypt cost 10 (推荐 12, dev 10 够)
-- ✅ JWT HS256 + AUTH_SECRET (NEXTAUTH_SECRET 兜底)
-- ✅ httpOnly + sameSite=strict cookie (XSS + CSRF 防护)
-- ✅ 5 次失败限流 15 分钟 (内存 Map, 多进程需换 Redis)
-- ✅ 邮箱大小写不敏感
-- ✅ 错误密码/不存在用户返回相同错误 (不泄露存在性)
-- ✅ Edge middleware 验签 (jose 库, 拒绝篡改)
-- ⏳ 未来: 改密码踢所有旧 session (用 deleteAllUserSessions)
-- ⏳ 未来: 2FA (TOTP)
-
-## 默认凭据 (dev)
-
-- 邮箱: `admin@obsidian.local`
-- 密码: `admin123` (从 `ADMIN_PASSWORD` env 覆盖)
-- **首次登录后必须改密码** (Phase 3.9 实现)
-- 生产环境必须设 `AUTH_SECRET` (32+ 字符)
-
-## 当前进度
-
-- ✅ 3.1 Auth + Admin 布局 (142/142 tests pass)
-- ✅ 3.2 帖子 CRUD (182/182 tests pass, 软删 + 恢复 + slug 唯一)
-- ✅ 3.3 小说三层 CRUD (220/220 tests pass, NovelStatus 3 值 + Chapter.published Boolean + 级联软删)
-- ⏳ 3.4 视频系列管理 (黑推荐下一站)
-- ⏳ 3.5 页面管理
-- ⏳ 3.6 媒体库 (Q19 待拍)
-- ⏳ 3.7 Page Builder v1 (Q18 待拍)
-- ⏳ 3.8 站点设置 (SiteConfig)
-- ⏳ 3.9 用户管理 (含改密码踢所有 session)
-- ⏳ 3.10 部署加固 + 2c4g 压测 (Q20 待拍)
