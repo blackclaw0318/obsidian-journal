@@ -1,7 +1,7 @@
 // ============================================================
-// Block Palette 清单 (v0.14, v0.6.1 §21.2)
-// 严守 lib/blocks/index.ts 13 种基础 Block
-// v0.6.1 §21.2 列的 Hero/Stats/Skills/Timeline/Links/Posts/Videos 复合 Block 留 v0.15 实施
+// Block Palette 清单 (v0.14 + v0.26, v0.6.1 §21.2)
+// v0.14: 13 种基础 Block
+// v0.26: + 7 种复合 Block (Hero/Stats/Skills/Timeline/Links/Posts/Videos)
 // ============================================================
 
 import type { BlockPaletteItem } from "./types";
@@ -20,7 +20,16 @@ export const BLOCK_PALETTE: BlockPaletteItem[] = [
   { type: "list",        label: "列表",        description: "有序/无序列表",            category: "list" },
   { type: "table",       label: "表格",        description: "表头 + 数据行",             category: "list" },
   { type: "custom_html", label: "自定义 HTML", description: "⚠️ 默认禁用 (需 SiteConfig)", category: "advanced", advanced: true, locked: true },
-  { type: "music",       label: "音乐",        description: "音频嵌入 (高级)",          category: "advanced", advanced: true }
+  { type: "music",       label: "音乐",        description: "音频嵌入 (高级)",          category: "advanced", advanced: true },
+
+  // v0.26 复合 Block (v0.6.1 §21.2)
+  { type: "hero",        label: "Hero 招呼区",  description: "标题 + 副标题 + CTA 按钮",         category: "composite" },
+  { type: "stats",       label: "数据统计",     description: "数字网格 (2/3/4 列)",            category: "composite" },
+  { type: "skills",      label: "技能进度条",   description: "name + 水平进度条 (level 0-100)", category: "composite" },
+  { type: "timeline",    label: "时间线",       description: "按日期排列的事件列表",            category: "composite" },
+  { type: "links",       label: "链接卡片",     description: "外链卡片网格 (name/url/desc)",    category: "composite" },
+  { type: "posts",       label: "最新文章",     description: "自动拉取 published posts",         category: "composite" },
+  { type: "videos",      label: "最新视频",     description: "自动拉取 published videos",        category: "composite" }
 ];
 
 /** 简化版: 排除 advanced/locked (普通用户默认看到的 11 种) */
@@ -40,5 +49,6 @@ export const CATEGORY_LABELS: Record<string, string> = {
   basic: "基础",
   typography: "排版",
   list: "列表",
-  advanced: "高级 (默认折叠)"
+  advanced: "高级 (默认折叠)",
+  composite: "复合 (一键组合)"
 };

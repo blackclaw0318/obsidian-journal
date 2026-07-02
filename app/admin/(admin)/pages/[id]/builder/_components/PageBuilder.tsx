@@ -45,6 +45,14 @@ function createBlock(type: BlockType, theme: "light" | "dark" = "light"): Block 
     case "table":       return { id, type, theme, headers: ["列1", "列2"], rows: [["", ""]] };
     case "custom_html": return { id, type, theme, html: "" };
     case "music":       return { id, type, theme, src: "", advanced: true };
+    // v0.26 复合 Block (v0.6.1 §21.2)
+    case "hero":        return { id, type, theme, title: "你的大标题", subtitle: "一句话介绍", ctaText: "了解更多", ctaUrl: "/" };
+    case "stats":       return { id, type, theme, items: [{ label: "项目数", value: 12, suffix: "+" }, { label: "用户", value: 3500 }], columns: 4 };
+    case "skills":      return { id, type, theme, items: [{ name: "TypeScript", level: 90 }, { name: "React", level: 85 }, { name: "Node.js", level: 80 }] };
+    case "timeline":    return { id, type, theme, items: [{ date: "2026-01", title: "里程碑 1", content: "..." }, { date: "2026-03", title: "里程碑 2" }] };
+    case "links":       return { id, type, theme, links: [{ name: "示例站点", url: "https://example.com", desc: "一句话简介" }], columns: 2 };
+    case "posts":       return { id, type, theme, limit: 6, sortBy: "new" };
+    case "videos":      return { id, type, theme, limit: 6 };
   }
 }
 

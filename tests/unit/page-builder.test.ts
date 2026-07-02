@@ -59,9 +59,10 @@ describe("page-builder/serialize", () => {
 });
 
 describe("page-builder/palette", () => {
-  it("BLOCK_PALETTE 13 种 (严守 v0.6.1 §21.2)", () => {
-    expect(BLOCK_PALETTE).toHaveLength(13);
+  it("BLOCK_PALETTE 20 种 (13 基础 + 7 复合, v0.26)", () => {
+    expect(BLOCK_PALETTE).toHaveLength(20);
     const types = BLOCK_PALETTE.map((b) => b.type);
+    // 13 基础
     expect(types).toContain("text");
     expect(types).toContain("heading");
     expect(types).toContain("image");
@@ -75,12 +76,29 @@ describe("page-builder/palette", () => {
     expect(types).toContain("table");
     expect(types).toContain("custom_html");
     expect(types).toContain("music");
+    // 7 复合 (v0.26, v0.6.1 §21.2)
+    expect(types).toContain("hero");
+    expect(types).toContain("stats");
+    expect(types).toContain("skills");
+    expect(types).toContain("timeline");
+    expect(types).toContain("links");
+    expect(types).toContain("posts");
+    expect(types).toContain("videos");
   });
 
-  it("BASIC_PALETTE 排除 advanced (11 种)", () => {
-    expect(BASIC_PALETTE).toHaveLength(11);
+  it("BASIC_PALETTE 排除 advanced (18 种含复合)", () => {
+    expect(BASIC_PALETTE).toHaveLength(18);
     expect(BASIC_PALETTE.find((b) => b.type === "custom_html")).toBeUndefined();
     expect(BASIC_PALETTE.find((b) => b.type === "music")).toBeUndefined();
+    // 复合都包含在 BASIC_PALETTE 里 (默认可见)
+    expect(BASIC_PALETTE.find((b) => b.type === "hero")).toBeDefined();
+    expect(BASIC_PALETTE.find((b) => b.type === "posts")).toBeDefined();
+  });
+
+  it("7 复合 Block 都在 composite category", () => {
+    const composites = BLOCK_PALETTE.filter((b) => b.category === "composite");
+    expect(composites).toHaveLength(7);
+    expect(composites.map((b) => b.type).sort()).toEqual(["hero", "links", "posts", "skills", "stats", "timeline", "videos"]);
   });
 
   it("custom_html 标记 locked", () => {
@@ -89,16 +107,17 @@ describe("page-builder/palette", () => {
     expect(customHtml?.advanced).toBe(true);
   });
 
-  it("groupByCategory 4 个 category", () => {
+  it("groupByCategory 5 个 category (含 composite)", () => {
     const groups = groupByCategory();
-    expect(Object.keys(groups).sort()).toEqual(["advanced", "basic", "list", "typography"]);
+    expect(Object.keys(groups).sort()).toEqual(["advanced", "basic", "composite", "list", "typography"]);
   });
 
-  it("CATEGORY_LABELS 4 个 label (中文)", () => {
+  it("CATEGORY_LABELS 5 个 label (含 composite)", () => {
     expect(CATEGORY_LABELS.basic).toBe("基础");
     expect(CATEGORY_LABELS.typography).toBe("排版");
     expect(CATEGORY_LABELS.list).toBe("列表");
     expect(CATEGORY_LABELS.advanced).toBe("高级 (默认折叠)");
+    expect(CATEGORY_LABELS.composite).toBe("复合 (一键组合)");
   });
 });
 
@@ -107,11 +126,11 @@ describe("page-builder/palette", () => {
 // ============================================================
 
 describe("page-builder/templates", () => {
-  it("应提供 6 套预设模板 + 1 套空白 = 7 项", () => {
-    expect(TEMPLATES).toHaveLength(7);
+  it("应提供 7 套预设模板 + 1 套空白 = 8 项 (v0.26)", () => {
+    expect(TEMPLATES).toHaveLength(8);
   });
 
-  it("必须包含 blank + 5 个具体场景 (about/links/home/archive/project/reading)", () => {
+  it("必须包含 blank + 6 个具体场景 (about/links/home/archive/project/reading/showcase)", () => {
     const ids = TEMPLATES.map((t) => t.id);
     expect(ids).toContain("blank");
     expect(ids).toContain("about");
@@ -120,6 +139,18 @@ describe("page-builder/templates", () => {
     expect(ids).toContain("archive");
     expect(ids).toContain("project");
     expect(ids).toContain("reading");
+    expect(ids).toContain("showcase"); // v0.26 新增
+  });
+
+  it("showcase 模板使用复合 Block (Hero/Stats/Skills/Timeline/Posts)", () => {
+    const showcase = findTemplate("showcase");
+    expect(showcase).toBeTruthy();
+    const types = showcase!.blocks.map((b) => b.type);
+    expect(types).toContain("hero");
+    expect(types).toContain("stats");
+    expect(types).toContain("skills");
+    expect(types).toContain("timeline");
+    expect(types).toContain("posts");
   });
 
   it("每套模板都有 name + description + icon + blockCount", () => {
@@ -138,10 +169,13 @@ describe("page-builder/templates", () => {
     }
   });
 
-  it("每个 block 都有 id (tpl_ 前缀避免与 createBlock 的 b_ 冲突) + type (13 种之一)", () => {
+  it("每个 block 都有 id (tpl_ 前缀避免与 createBlock 的 b_ 冲突) + type (20 种之一)", () => {
     const validTypes = new Set([
+      // 13 基础
       "text", "heading", "image", "video", "gallery", "quote", "callout",
-      "code", "divider", "list", "table", "custom_html", "music"
+      "code", "divider", "list", "table", "custom_html", "music",
+      // 7 复合 (v0.26)
+      "hero", "stats", "skills", "timeline", "links", "posts", "videos"
     ]);
     for (const tpl of TEMPLATES) {
       for (const b of tpl.blocks) {

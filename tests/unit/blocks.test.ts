@@ -9,8 +9,8 @@ import {
 } from "@/lib/blocks";
 
 describe("Block 类型注册表", () => {
-  it("应该恰好 13 种 Block", () => {
-    expect(BLOCK_TYPES).toHaveLength(13);
+  it("应该恰好 20 种 Block (13 基础 + 7 复合, v0.26)", () => {
+    expect(BLOCK_TYPES).toHaveLength(20);
   });
 
   it("advanced Block 应该包含 music 和 custom_html", () => {

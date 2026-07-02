@@ -137,6 +137,22 @@ export const TEMPLATES: PageTemplate[] = [
       { id: tplId("reading", 6), type: "divider", theme: "light" },
       { id: tplId("reading", 7), type: "text", theme: "light", content: "结语 — 总结观点,引导行动。" }
     ]
+  },
+
+  // 8. v0.26 复合模板: 展示页 (Hero + Stats + Skills + Timeline + Posts)
+  {
+    id: "showcase",
+    name: "作品展示页",
+    description: "复合 Block 一键组合 — Hero + 数据 + 技能 + 时间线 + 最新文章",
+    icon: "⭐",
+    blockCount: 5,
+    blocks: [
+      { id: tplId("showcase", 1), type: "hero", theme: "light", title: "我的作品集", subtitle: "过去 5 年我做过的事", ctaText: "看项目", ctaUrl: "/posts" },
+      { id: tplId("showcase", 2), type: "stats", theme: "light", items: [{ label: "项目数", value: 12, suffix: "+" }, { label: "总访问", value: 3500 }, { label: "代码提交", value: 1500 }, { label: "客户满意度", value: 98, suffix: "%" }], columns: 4 },
+      { id: tplId("showcase", 3), type: "skills", theme: "light", items: [{ name: "TypeScript", level: 90 }, { name: "React/Next.js", level: 85 }, { name: "Node.js", level: 80 }, { name: "数据库设计", level: 75 }] },
+      { id: tplId("showcase", 4), type: "timeline", theme: "light", items: [{ date: "2026-01", title: "启动 obsidian-journal", content: "黑曜石日志 项目开始" }, { date: "2025-06", title: "上一个项目交付", content: "..." }, { date: "2024-12", title: "独立全栈" }] },
+      { id: tplId("showcase", 5), type: "posts", theme: "light", limit: 6, sortBy: "new" }
+    ]
   }
 ];
 

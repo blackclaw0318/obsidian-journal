@@ -7,7 +7,8 @@
 import { useMemo } from "react";
 import MarkdownIt from "markdown-it";
 import DOMPurify from "isomorphic-dompurify";
-import { Info, AlertTriangle, CheckCircle2, XCircle, Quote, Code2, Music } from "lucide-react";
+import { Info, AlertTriangle, CheckCircle2, XCircle, Quote, Code2, Music, ArrowRight, Calendar } from "lucide-react";
+import { useEffect, useState } from "react";
 import { clsx } from "clsx";
 import type {
   Block,
@@ -23,7 +24,15 @@ import type {
   ListBlock,
   TableBlock,
   CustomHtmlBlock,
-  MusicBlock
+  MusicBlock,
+  HeroBlock,
+  StatsBlock,
+  SkillsBlock,
+  TimelineBlock,
+  LinksBlock,
+  PostsBlock,
+  VideosBlock,
+  LinkItem
 } from "./index";
 
 // markdown-it 实例 (无 options 干扰, 输出纯净 HTML)
@@ -222,6 +231,214 @@ function MusicBlockView({ block }: { block: MusicBlock }) {
 }
 
 // ============================================================
+// 7 个复合 Block 渲染器 (v0.26, v0.6.1 §21.2)
+// ============================================================
+
+function HeroBlockView({ block }: { block: HeroBlock }) {
+  return (
+    <section
+      className="relative my-8 overflow-hidden rounded-xl border border-border bg-bg-muted/40 px-8 py-16 text-center"
+      style={block.bgImage ? { backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url(${block.bgImage})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
+    >
+      <h1 className={clsx("text-4xl font-bold tracking-tight md:text-5xl", block.bgImage && "text-white")}>
+        {block.title}
+      </h1>
+      {block.subtitle && (
+        <p className={clsx("mx-auto mt-4 max-w-2xl text-lg", block.bgImage ? "text-white/90" : "text-fg-muted")}>
+          {block.subtitle}
+        </p>
+      )}
+      {block.ctaText && block.ctaUrl && (
+        <a
+          href={block.ctaUrl}
+          className="mt-6 inline-flex items-center gap-2 rounded-full bg-accent px-6 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-accent/90"
+        >
+          {block.ctaText} <ArrowRight className="h-4 w-4" />
+        </a>
+      )}
+    </section>
+  );
+}
+
+function StatsBlockView({ block }: { block: StatsBlock }) {
+  const cols = block.columns ?? 4;
+  if (block.items.length === 0) {
+    return <div className="my-4 text-sm text-fg-muted">[Stats] 空 — 编辑器里添加 items</div>;
+  }
+  return (
+    <section className="my-8">
+      <div className={clsx("grid gap-6", {
+        "grid-cols-2": cols === 2,
+        "grid-cols-3": cols === 3,
+        "grid-cols-4": cols === 4
+      })}>
+        {block.items.map((item, i) => (
+          <div key={i} className="rounded-lg border border-border bg-bg-card p-6 text-center">
+            <div className="text-3xl font-bold text-accent md:text-4xl">
+              {item.value}
+              {item.suffix && <span className="text-xl">{item.suffix}</span>}
+            </div>
+            <div className="mt-2 text-sm text-fg-muted">{item.label}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function SkillsBlockView({ block }: { block: SkillsBlock }) {
+  if (block.items.length === 0) {
+    return <div className="my-4 text-sm text-fg-muted">[Skills] 空 — 编辑器里添加 items</div>;
+  }
+  return (
+    <section className="my-6 space-y-3">
+      {block.items.map((item, i) => (
+        <div key={i}>
+          <div className="mb-1 flex items-baseline justify-between">
+            <span className="text-sm font-medium">{item.name}</span>
+            <span className="font-mono text-xs text-fg-muted">{item.level}%</span>
+          </div>
+          <div className="h-2 overflow-hidden rounded-full bg-bg-muted">
+            <div
+              className="h-full rounded-full bg-accent transition-all"
+              style={{ width: `${Math.max(0, Math.min(100, item.level))}%` }}
+            />
+          </div>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+function TimelineBlockView({ block }: { block: TimelineBlock }) {
+  if (block.items.length === 0) {
+    return <div className="my-4 text-sm text-fg-muted">[Timeline] 空 — 编辑器里添加 items</div>;
+  }
+  return (
+    <section className="my-6 space-y-4">
+      {block.items.map((item, i) => (
+        <div key={i} className="flex gap-4 border-l-2 border-accent/40 pl-4">
+          <Calendar className="mt-0.5 h-4 w-4 shrink-0 text-fg-muted" />
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-wrap items-baseline gap-2">
+              <time className="font-mono text-xs text-fg-muted">{item.date}</time>
+              <h3 className="font-semibold">{item.title}</h3>
+            </div>
+            {item.content && <p className="mt-1 text-sm text-fg-muted">{item.content}</p>}
+          </div>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+function LinksBlockView({ block }: { block: LinksBlock }) {
+  const cols = block.columns ?? 2;
+  if (block.links.length === 0) {
+    return <div className="my-4 text-sm text-fg-muted">[Links] 空 — 编辑器里添加 links</div>;
+  }
+  return (
+    <section className={clsx("my-6 grid gap-3", {
+      "grid-cols-2": cols === 2,
+      "grid-cols-3": cols === 3
+    })}>
+      {block.links.map((link: LinkItem, i: number) => (
+        <a
+          key={i}
+          href={link.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group block rounded-lg border border-border bg-bg-card p-4 transition hover:border-accent hover:shadow-sm"
+        >
+          <div className="font-semibold group-hover:text-accent">{link.name}</div>
+          {link.desc && <div className="mt-1 text-sm text-fg-muted">{link.desc}</div>}
+          <div className="mt-2 truncate font-mono text-xs text-fg-muted">{link.url}</div>
+        </a>
+      ))}
+    </section>
+  );
+}
+
+// PostsBlock + VideosBlock: 客户端动态拉取 (useEffect + fetch)
+// 注: 这里走公开端 /api/public/*, 不依赖 admin auth
+function PostsBlockView({ block }: { block: PostsBlock }) {
+  const limit = block.limit ?? 6;
+  const [posts, setPosts] = useState<Array<{ slug: string; title: string; excerpt: string | null; category: string; published_at: number | null }> | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    const url = `/api/public/posts?limit=${limit}${block.category ? `&category=${block.category}` : ""}`;
+    fetch(url)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.ok) setPosts(data.items);
+        else setErr(data.error ?? "加载失败");
+      })
+      .catch((e) => setErr(e instanceof Error ? e.message : String(e)));
+  }, [limit, block.category]);
+
+  if (err) return <div className="my-4 text-sm text-fg-muted">[Posts] 加载失败: {err}</div>;
+  if (!posts) return <div className="my-4 text-sm text-fg-muted">[Posts] 加载中…</div>;
+  if (posts.length === 0) return <div className="my-4 text-sm text-fg-muted">[Posts] 暂无文章</div>;
+
+  return (
+    <section className="my-6 grid gap-4 md:grid-cols-2">
+      {posts.map((p) => (
+        <a key={p.slug} href={`/posts/${p.slug}`} className="group block rounded-lg border border-border bg-bg-card p-4 transition hover:border-accent hover:shadow-sm">
+          <div className="flex items-center gap-2 text-xs text-fg-muted">
+            <span className="rounded bg-bg-muted px-2 py-0.5 font-mono">{p.category}</span>
+            {p.published_at && <time>{new Date(p.published_at * 1000).toLocaleDateString("zh-CN")}</time>}
+          </div>
+          <h3 className="mt-2 font-semibold group-hover:text-accent">{p.title}</h3>
+          {p.excerpt && <p className="mt-1 line-clamp-2 text-sm text-fg-muted">{p.excerpt}</p>}
+        </a>
+      ))}
+    </section>
+  );
+}
+
+function VideosBlockView({ block }: { block: VideosBlock }) {
+  const limit = block.limit ?? 6;
+  const [videos, setVideos] = useState<Array<{ slug: string; title: string; description: string | null; cover_image: string | null; embed_url: string }> | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch(`/api/public/videos?limit=${limit}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.ok) setVideos(data.items);
+        else setErr(data.error ?? "加载失败");
+      })
+      .catch((e) => setErr(e instanceof Error ? e.message : String(e)));
+  }, [limit]);
+
+  if (err) return <div className="my-4 text-sm text-fg-muted">[Videos] 加载失败: {err}</div>;
+  if (!videos) return <div className="my-4 text-sm text-fg-muted">[Videos] 加载中…</div>;
+  if (videos.length === 0) return <div className="my-4 text-sm text-fg-muted">[Videos] 暂无视频</div>;
+
+  return (
+    <section className="my-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {videos.map((v) => (
+        <a key={v.slug} href={`/videos/${v.slug}`} className="group block overflow-hidden rounded-lg border border-border bg-bg-card transition hover:border-accent hover:shadow-sm">
+          {v.cover_image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={v.cover_image} alt={v.title} className="aspect-video w-full object-cover" loading="lazy" />
+          ) : (
+            <div className="flex aspect-video items-center justify-center bg-bg-muted text-fg-muted">
+              <span>▶ 视频</span>
+            </div>
+          )}
+          <div className="p-4">
+            <h3 className="font-semibold group-hover:text-accent">{v.title}</h3>
+            {v.description && <p className="mt-1 line-clamp-2 text-sm text-fg-muted">{v.description}</p>}
+          </div>
+        </a>
+      ))}
+    </section>
+  );
+}
+
+// ============================================================
 // BlockRenderer - 单个 Block 调度
 // ============================================================
 
@@ -245,6 +462,13 @@ export function BlockRenderer({ block, allowCustomHtml = false }: BlockRendererP
     case "table": return <TableBlockView block={block} />;
     case "custom_html": return <CustomHtmlBlockView block={block} allowCustomHtml={allowCustomHtml} />;
     case "music": return <MusicBlockView block={block} />;
+    case "hero": return <HeroBlockView block={block} />;
+    case "stats": return <StatsBlockView block={block} />;
+    case "skills": return <SkillsBlockView block={block} />;
+    case "timeline": return <TimelineBlockView block={block} />;
+    case "links": return <LinksBlockView block={block} />;
+    case "posts": return <PostsBlockView block={block} />;
+    case "videos": return <VideosBlockView block={block} />;
     default:
       // 未知类型 fallback
       return (

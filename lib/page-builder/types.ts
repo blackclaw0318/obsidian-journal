@@ -16,7 +16,7 @@ export interface BlockPaletteItem {
   type: BlockType;
   label: string;
   description: string;
-  category: "basic" | "typography" | "list" | "advanced";
+  category: "basic" | "typography" | "list" | "advanced" | "composite";
   advanced?: boolean;
   locked?: boolean; // 需 SiteConfig.allowCustomHtml 才解锁
 }

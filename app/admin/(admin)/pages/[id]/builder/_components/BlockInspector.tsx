@@ -305,6 +305,186 @@ function MusicInspector({ block }: { block: Block }) {
   );
 }
 
+// ============================================================
+// v0.26 复合 Block Inspector (v0.6.1 §21.2)
+// ============================================================
+
+function HeroInspector({ block }: { block: Block }) {
+  const { update } = usePageBuilder();
+  if (block.type !== "hero") return null;
+  return (
+    <div className="flex flex-col gap-3">
+      <Field label="主标题 *"><input value={block.title} onChange={(e) => update(block.id, { title: e.target.value })} className={inputCls} /></Field>
+      <Field label="副标题"><input value={block.subtitle ?? ""} onChange={(e) => update(block.id, { subtitle: e.target.value })} className={inputCls} /></Field>
+      <Field label="CTA 按钮文字"><input value={block.ctaText ?? ""} onChange={(e) => update(block.id, { ctaText: e.target.value })} className={inputCls} /></Field>
+      <Field label="CTA 跳转 URL"><input value={block.ctaUrl ?? ""} onChange={(e) => update(block.id, { ctaUrl: e.target.value })} className={inputCls} placeholder="/posts" /></Field>
+      <Field label="背景图 URL (可选)"><input value={block.bgImage ?? ""} onChange={(e) => update(block.id, { bgImage: e.target.value })} className={inputCls} placeholder="/media/xxx.jpg" /></Field>
+    </div>
+  );
+}
+
+function StatsInspector({ block }: { block: Block }) {
+  const { update } = usePageBuilder();
+  if (block.type !== "stats") return null;
+  const items = block.items;
+  const setItem = (i: number, patch: Partial<typeof items[number]>) => {
+    const next = items.map((it, idx) => (idx === i ? { ...it, ...patch } : it));
+    update(block.id, { items: next });
+  };
+  const addItem = () => update(block.id, { items: [...items, { label: "新项", value: 0 }] });
+  const removeItem = (i: number) => update(block.id, { items: items.filter((_, idx) => idx !== i) });
+  return (
+    <div className="flex flex-col gap-3">
+      <Field label="列数">
+        <select value={block.columns ?? 4} onChange={(e) => update(block.id, { columns: Number(e.target.value) as 2 | 3 | 4 })} className={inputCls}>
+          <option value={2}>2 列</option>
+<option value={3}>3 列</option>
+          <option value={4}>4 列</option>
+        </select>
+      </Field>
+      <div className="flex flex-col gap-2">
+        <div className="text-xs font-medium text-fg-muted">Items ({items.length})</div>
+        {items.map((it, i) => (
+          <div key={i} className="flex gap-1">
+            <input value={it.label} onChange={(e) => setItem(i, { label: e.target.value })} placeholder="标签" className={`${inputCls} flex-1`} />
+            <input type="number" value={it.value} onChange={(e) => setItem(i, { value: Number(e.target.value) })} placeholder="值" className={`${inputCls} w-16`} />
+            <input value={it.suffix ?? ""} onChange={(e) => setItem(i, { suffix: e.target.value })} placeholder="后缀" className={`${inputCls} w-12`} />
+            <button onClick={() => removeItem(i)} className="rounded border border-border px-1.5 text-xs text-fg-muted hover:text-fg">✕</button>
+          </div>
+        ))}
+        <button onClick={addItem} className="rounded border border-dashed border-border py-1 text-xs text-fg-muted hover:bg-bg-muted">+ 添加项</button>
+      </div>
+    </div>
+  );
+}
+
+function SkillsInspector({ block }: { block: Block }) {
+  const { update } = usePageBuilder();
+  if (block.type !== "skills") return null;
+  const items = block.items;
+  const setItem = (i: number, patch: Partial<typeof items[number]>) => {
+    update(block.id, { items: items.map((it, idx) => (idx === i ? { ...it, ...patch } : it)) });
+  };
+  const addItem = () => update(block.id, { items: [...items, { name: "新技能", level: 50 }] });
+  const removeItem = (i: number) => update(block.id, { items: items.filter((_, idx) => idx !== i) });
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="text-xs font-medium text-fg-muted">技能 ({items.length})</div>
+      {items.map((it, i) => (
+        <div key={i} className="flex gap-1">
+          <input value={it.name} onChange={(e) => setItem(i, { name: e.target.value })} placeholder="名称" className={`${inputCls} flex-1`} />
+          <input type="number" min={0} max={100} value={it.level} onChange={(e) => setItem(i, { level: Math.max(0, Math.min(100, Number(e.target.value))) })} placeholder="0-100" className={`${inputCls} w-16`} />
+          <button onClick={() => removeItem(i)} className="rounded border border-border px-1.5 text-xs text-fg-muted hover:text-fg">✕</button>
+        </div>
+      ))}
+      <button onClick={addItem} className="rounded border border-dashed border-border py-1 text-xs text-fg-muted hover:bg-bg-muted">+ 添加技能</button>
+    </div>
+  );
+}
+
+function TimelineInspector({ block }: { block: Block }) {
+  const { update } = usePageBuilder();
+  if (block.type !== "timeline") return null;
+  const items = block.items;
+  const setItem = (i: number, patch: Partial<typeof items[number]>) => {
+    update(block.id, { items: items.map((it, idx) => (idx === i ? { ...it, ...patch } : it)) });
+  };
+  const addItem = () => update(block.id, { items: [...items, { date: "2026-01", title: "新事件" }] });
+  const removeItem = (i: number) => update(block.id, { items: items.filter((_, idx) => idx !== i) });
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="text-xs font-medium text-fg-muted">事件 ({items.length})</div>
+      {items.map((it, i) => (
+        <div key={i} className="flex flex-col gap-1 rounded border border-border p-2">
+          <div className="flex gap-1">
+            <input value={it.date} onChange={(e) => setItem(i, { date: e.target.value })} placeholder="日期 (2026-01)" className={`${inputCls} w-28`} />
+            <input value={it.title} onChange={(e) => setItem(i, { title: e.target.value })} placeholder="标题" className={`${inputCls} flex-1`} />
+            <button onClick={() => removeItem(i)} className="rounded border border-border px-1.5 text-xs text-fg-muted hover:text-fg">✕</button>
+          </div>
+          <textarea value={it.content ?? ""} onChange={(e) => setItem(i, { content: e.target.value })} placeholder="内容 (可选)" className={`${inputCls} min-h-[40px] font-mono text-xs`} />
+        </div>
+      ))}
+      <button onClick={addItem} className="rounded border border-dashed border-border py-1 text-xs text-fg-muted hover:bg-bg-muted">+ 添加事件</button>
+    </div>
+  );
+}
+
+function LinksInspector({ block }: { block: Block }) {
+  const { update } = usePageBuilder();
+  if (block.type !== "links") return null;
+  const links = block.links;
+  const setLink = (i: number, patch: Partial<typeof links[number]>) => {
+    update(block.id, { links: links.map((l, idx) => (idx === i ? { ...l, ...patch } : l)) });
+  };
+  const addLink = () => update(block.id, { links: [...links, { name: "新链接", url: "https://" }] });
+  const removeLink = (i: number) => update(block.id, { links: links.filter((_, idx) => idx !== i) });
+  return (
+    <div className="flex flex-col gap-3">
+      <Field label="列数">
+        <select value={block.columns ?? 2} onChange={(e) => update(block.id, { columns: Number(e.target.value) as 2 | 3 })} className={inputCls}>
+          <option value={2}>2 列</option>
+<option value={3}>3 列</option>
+        </select>
+      </Field>
+      <div className="text-xs font-medium text-fg-muted">链接 ({links.length})</div>
+      {links.map((l, i) => (
+        <div key={i} className="flex flex-col gap-1 rounded border border-border p-2">
+          <div className="flex gap-1">
+            <input value={l.name} onChange={(e) => setLink(i, { name: e.target.value })} placeholder="名称" className={`${inputCls} flex-1`} />
+            <button onClick={() => removeLink(i)} className="rounded border border-border px-1.5 text-xs text-fg-muted hover:text-fg">✕</button>
+          </div>
+          <input value={l.url} onChange={(e) => setLink(i, { url: e.target.value })} placeholder="URL (https://...)" className={inputCls} />
+          <input value={l.desc ?? ""} onChange={(e) => setLink(i, { desc: e.target.value })} placeholder="简介 (可选)" className={inputCls} />
+        </div>
+      ))}
+      <button onClick={addLink} className="rounded border border-dashed border-border py-1 text-xs text-fg-muted hover:bg-bg-muted">+ 添加链接</button>
+    </div>
+  );
+}
+
+function PostsInspector({ block }: { block: Block }) {
+  const { update } = usePageBuilder();
+  if (block.type !== "posts") return null;
+  return (
+    <div className="flex flex-col gap-3">
+      <Field label="分类 (留空 = 全部)">
+        <select value={block.category ?? ""} onChange={(e) => update(block.id, { category: (e.target.value || undefined) as "tech" | "life" | undefined })} className={inputCls}>
+          <option value="">全部</option>
+          <option value="tech">技术</option>
+          <option value="life">生活</option>
+        </select>
+      </Field>
+      <Field label="数量限制">
+        <input type="number" min={1} max={50} value={block.limit ?? 6} onChange={(e) => update(block.id, { limit: Math.max(1, Math.min(50, Number(e.target.value))) })} className={inputCls} />
+      </Field>
+      <Field label="排序">
+        <select value={block.sortBy ?? "new"} onChange={(e) => update(block.id, { sortBy: e.target.value as "new" | "hot" })} className={inputCls}>
+          <option value="new">最新 (按发布时间)</option>
+          <option value="hot">最热 (按 view_count)</option>
+        </select>
+      </Field>
+      <div className="rounded border border-dashed border-border p-2 text-xs text-fg-muted">
+        💡 自动从数据库拉取 published 文章, 公开页面 + 后台预览均生效
+      </div>
+    </div>
+  );
+}
+
+function VideosInspector({ block }: { block: Block }) {
+  const { update } = usePageBuilder();
+  if (block.type !== "videos") return null;
+  return (
+    <div className="flex flex-col gap-3">
+      <Field label="数量限制">
+        <input type="number" min={1} max={50} value={block.limit ?? 6} onChange={(e) => update(block.id, { limit: Math.max(1, Math.min(50, Number(e.target.value))) })} className={inputCls} />
+      </Field>
+      <div className="rounded border border-dashed border-border p-2 text-xs text-fg-muted">
+        💡 自动从数据库拉取 published 视频
+      </div>
+    </div>
+  );
+}
+
 function DividerInspector() {
   return <div className="text-xs text-fg-muted">分割线无配置项</div>;
 }
@@ -322,7 +502,15 @@ const INSPECTORS: Record<string, React.ComponentType<{ block: Block }>> = {
   list: ListInspector,
   table: TableInspector,
   custom_html: CustomHtmlInspector,
-  music: MusicInspector
+  music: MusicInspector,
+  // v0.26 复合 Block
+  hero: HeroInspector,
+  stats: StatsInspector,
+  skills: SkillsInspector,
+  timeline: TimelineInspector,
+  links: LinksInspector,
+  posts: PostsInspector,
+  videos: VideosInspector
 };
 
 export function BlockInspector() {

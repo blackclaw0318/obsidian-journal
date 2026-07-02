@@ -16,10 +16,13 @@ import {
 import { BlockRenderer, PageRenderer } from "@/lib/blocks/render";
 
 describe("BlockRenderer 13 种类型", () => {
-  it("应支持 13 种 BlockType (v0.6.1 §6.1)", () => {
-    expect(BLOCK_TYPES).toHaveLength(13);
+  it("应支持 20 种 BlockType (13 基础 + 7 复合, v0.26)", () => {
+    expect(BLOCK_TYPES).toHaveLength(20);
     expect(BLOCK_TYPES).toEqual(
-      expect.arrayContaining(["text", "heading", "image", "video", "gallery", "quote", "callout", "code", "divider", "list", "table", "custom_html", "music"])
+      expect.arrayContaining([
+        "text", "heading", "image", "video", "gallery", "quote", "callout", "code", "divider", "list", "table", "custom_html", "music",
+        "hero", "stats", "skills", "timeline", "links", "posts", "videos"
+      ])
     );
   });
 
@@ -134,5 +137,90 @@ describe("PageRenderer", () => {
     const blocks = JSON.stringify([{ id: "1", type: "unknown_type" }]);
     const { container } = render(<PageRenderer blocks={blocks} />);
     expect(container.textContent).toContain("未知 Block 类型");
+  });
+});
+
+// ============================================================
+// v0.26 复合 Block 渲染测试 (v0.6.1 §21.2)
+// ============================================================
+
+describe("v0.26 复合 Block 渲染", () => {
+  it("HeroBlock 渲染 title + subtitle + CTA", () => {
+    const block: Block = { id: "h1", type: "hero", title: "黑曜石日志", subtitle: "用代码与数据说话", ctaText: "了解更多", ctaUrl: "/about" };
+    const { container } = render(<BlockRenderer block={block} />);
+    expect(container.querySelector("h1")?.textContent).toContain("黑曜石日志");
+    expect(container.textContent).toContain("用代码与数据说话");
+    expect(container.querySelector("a")?.textContent).toContain("了解更多");
+    expect(container.querySelector("a")?.getAttribute("href")).toBe("/about");
+  });
+
+  it("HeroBlock 无 ctaText 时不渲染按钮", () => {
+    const block: Block = { id: "h1", type: "hero", title: "标题" };
+    const { container } = render(<BlockRenderer block={block} />);
+    expect(container.querySelector("a")).toBeNull();
+    expect(container.querySelector("h1")?.textContent).toContain("标题");
+  });
+
+  it("StatsBlock 渲染数字网格 + suffix", () => {
+    const block: Block = { id: "s1", type: "stats", items: [{ label: "项目", value: 12, suffix: "+" }, { label: "用户", value: 3500 }], columns: 2 };
+    const { container } = render(<BlockRenderer block={block} />);
+    expect(container.textContent).toContain("项目");
+    expect(container.textContent).toContain("12+");
+    expect(container.textContent).toContain("3500");
+  });
+
+  it("StatsBlock 空 items fallback", () => {
+    const block: Block = { id: "s1", type: "stats", items: [] };
+    const { container } = render(<BlockRenderer block={block} />);
+    expect(container.textContent).toContain("空");
+  });
+
+  it("SkillsBlock 渲染进度条 (name + level)", () => {
+    const block: Block = { id: "sk1", type: "skills", items: [{ name: "TypeScript", level: 90 }, { name: "React", level: 85 }] };
+    const { container } = render(<BlockRenderer block={block} />);
+    expect(container.textContent).toContain("TypeScript");
+    expect(container.textContent).toContain("90%");
+    // 进度条
+    const bars = container.querySelectorAll('[style*="width"]');
+    expect(bars.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("SkillsBlock level 越界自动裁剪 (0-100)", () => {
+    const block: Block = { id: "sk1", type: "skills", items: [{ name: "X", level: 200 }] };
+    const { container } = render(<BlockRenderer block={block} />);
+    const bar = container.querySelector('[style*="width"]');
+    expect(bar?.getAttribute("style")).toContain("100%");
+  });
+
+  it("TimelineBlock 渲染日期 + 标题 + 内容", () => {
+    const block: Block = { id: "tl1", type: "timeline", items: [{ date: "2026-01", title: "项目启动", content: "启动 v0.26" }] };
+    const { container } = render(<BlockRenderer block={block} />);
+    expect(container.textContent).toContain("2026-01");
+    expect(container.textContent).toContain("项目启动");
+    expect(container.textContent).toContain("启动 v0.26");
+  });
+
+  it("LinksBlock 渲染卡片 (name + url + desc)", () => {
+    const block: Block = { id: "lk1", type: "links", links: [{ name: "示例", url: "https://example.com", desc: "简介" }] };
+    const { container } = render(<BlockRenderer block={block} />);
+    expect(container.textContent).toContain("示例");
+    expect(container.textContent).toContain("https://example.com");
+    expect(container.textContent).toContain("简介");
+    const link = container.querySelector("a");
+    expect(link?.getAttribute("href")).toBe("https://example.com");
+    expect(link?.getAttribute("target")).toBe("_blank");
+  });
+
+  it("PostsBlock 渲染加载提示 (动态拉取, 初始 loading)", () => {
+    const block: Block = { id: "p1", type: "posts", limit: 6 };
+    const { container } = render(<BlockRenderer block={block} />);
+    // useEffect 后会 setPosts, 初始是 loading
+    expect(container.textContent).toContain("加载");
+  });
+
+  it("VideosBlock 渲染加载提示", () => {
+    const block: Block = { id: "v1", type: "videos", limit: 6 };
+    const { container } = render(<BlockRenderer block={block} />);
+    expect(container.textContent).toContain("加载");
   });
 });
