@@ -3,35 +3,44 @@
 @tailwind utilities;
 
 /* ============================================================
-   obsidian-journal 全局样式 (v0.3 §12 默认亮色)
+   obsidian-journal 全局样式
+   v0.22 (P0 暗色修复): 颜色全部用 CSS 变量, 暗色随 .dark 切换
+   - 暗色决策 (Q1-Q4 拍板, 2026-07-02):
+     * Q1: 暗色修法 = CSS 变量映射 (改 1 文件 tailwind + 1 文件 globals, 组件 0 改)
+     * Q2: 滑动 = lerp 0.1 + touchMultiplier 2 + syncTouch false (见 SmoothScroll.tsx)
+     * Q3: 暗色 fg-muted 改 zinc-400 (#a1a1aa) — 与 --color-border: #27272a (zinc-800) 系一致
+     * Q4: 视觉 baseline 同步重生成 (4 张必更新)
    ============================================================ */
 
 :root {
+  --color-base: #ffffff;          /* v0.22 新增, 修复 106 处 bg-bg-base 无效问题 */
   --color-bg: #ffffff;
   --color-bg-muted: #f6f6f7;
   --color-bg-card: #fafafa;
   --color-fg: #0a0a0a;
   --color-fg-muted: #6b7280;
   --color-border: #e5e7eb;
+  --color-border-strong: #d1d5db;  /* v0.22 新增 */
   --color-accent: #0f172a;
+  --color-accent-hover: #1e293b;   /* v0.22 新增 */
+  --color-prose-a-hover: #1e293b;  /* v0.22 新增, 暗色下用 #fafafa */
 }
 
 /* ============================================================
-   暗色主题 (Q5 拍板, v0.6.1 实现)
+   暗色主题 (Q5 拍板, v0.6.1 实现; v0.22 全面铺开)
    ============================================================ */
 .dark {
+  --color-base: #111113;          /* 暗色 base = 卡片同色, 协调 */
   --color-bg: #0a0a0a;
   --color-bg-muted: #18181b;
   --color-bg-card: #111113;
   --color-fg: #fafafa;
-  --color-fg-muted: #9ca3af;
+  --color-fg-muted: #a1a1aa;       /* Q3 拍板: zinc-400 (原 gray-400 #9ca3af) */
   --color-border: #27272a;
+  --color-border-strong: #3f3f46;
   --color-accent: #fbbf24;
-}
-
-.dark body {
-  background-color: var(--color-bg);
-  color: var(--color-fg);
+  --color-accent-hover: #fcd34d;
+  --color-prose-a-hover: #fafafa;  /* 暗色下, 链接 hover 用高对比白 */
 }
 
 html {
@@ -88,7 +97,7 @@ body {
 }
 
 .prose a:hover {
-  color: #1e293b;
+  color: var(--color-prose-a-hover);  /* v0.22: 暗色失明修复 (原 hardcode #1e293b) */
 }
 
 .prose code {
@@ -147,7 +156,11 @@ body {
   margin: 1rem 0;
 }
 
-/* Callout 样式 (Block 库) */
+/* ============================================================
+   Callout 样式 (Block 库) — v0.22 暗色失明修复
+   亮色: 浅色背景 + 深色文字 (传统)
+   暗色: 深色背景 + 浅色文字 (反转, 高对比)
+   ============================================================ */
 .callout {
   padding: 1rem 1.25rem;
   border-radius: 0.5rem;
@@ -177,6 +190,31 @@ body {
   background-color: #fef2f2;
   border-color: #ef4444;
   color: #991b1b;
+}
+
+/* v0.22 暗色 callout: 反转配色, 用低饱和度深色底 + 高对比文字 */
+.dark .callout-info {
+  background-color: #172554;   /* blue-950 */
+  border-color: #60a5fa;       /* blue-400 */
+  color: #dbeafe;              /* blue-100 */
+}
+
+.dark .callout-warning {
+  background-color: #422006;   /* amber-950 */
+  border-color: #fbbf24;       /* amber-400 */
+  color: #fef3c7;              /* amber-100 */
+}
+
+.dark .callout-success {
+  background-color: #052e16;   /* green-950 */
+  border-color: #4ade80;       /* green-400 */
+  color: #dcfce7;              /* green-100 */
+}
+
+.dark .callout-danger {
+  background-color: #450a0a;   /* red-950 */
+  border-color: #f87171;       /* red-400 */
+  color: #fecaca;              /* red-200 */
 }
 
 /* 滚动条样式 */

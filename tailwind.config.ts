@@ -9,25 +9,20 @@ const config: Config = {
   darkMode: "class",
   theme: {
     extend: {
+      // v0.22 (P0-暗色修复): 全部用 CSS 变量映射, 组件代码 0 改动
+      // 亮色: :root 默认值; 暗色: .dark 覆盖
+      // 来源: app/globals.css § :root / .dark
       colors: {
-        // obsidian-journal 主题色 (v0.3 §12 默认亮色)
-        bg: {
-          DEFAULT: "#ffffff",
-          muted: "#f6f6f7",
-          card: "#fafafa"
-        },
-        fg: {
-          DEFAULT: "#0a0a0a",
-          muted: "#6b7280"
-        },
-        accent: {
-          DEFAULT: "#0f172a",
-          hover: "#1e293b"
-        },
-        border: {
-          DEFAULT: "#e5e7eb",
-          strong: "#d1d5db"
-        }
+        base: "var(--color-base)",
+        bg: "var(--color-bg)",
+        "bg-muted": "var(--color-bg-muted)",
+        "bg-card": "var(--color-bg-card)",
+        fg: "var(--color-fg)",
+        "fg-muted": "var(--color-fg-muted)",
+        accent: "var(--color-accent)",
+        "accent-hover": "var(--color-accent-hover)",
+        border: "var(--color-border)",
+        "border-strong": "var(--color-border-strong)"
       },
       fontFamily: {
         sans: ["ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "sans-serif"],
