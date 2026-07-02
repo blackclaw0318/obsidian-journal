@@ -270,12 +270,21 @@ export function initSchema(): void {
     );
     CREATE INDEX IF NOT EXISTS idx_daily_stats_date ON daily_stats(date);
 
-    -- 10. FTS5 全文搜索 (Phase 2.2) — posts_fts virtual table
+    -- 10. FTS5 全文搜索 (Phase 2.2 → v0.29 P2-19: trigram tokenizer 支持中文)
     -- content=posts 走外部内容表, 触发器同步 (AI/AD/AU)
+    -- P2-19 决策: 从 unicode61 切到 trigram, 原因:
+    --   unicode61 把中文每个汉字当独立 token, 搜 "黑曜石" 能命中但 "曜石" 命中不了
+    --   trigram 走 3 字滑窗, 中文 "黑曜石" "曜石日" "石日志" 都能命中 (3+ 字中文)
+    --   trigram 局限: 1-2 字中文不支持, 走 LIKE 兏底 (repo.search 双轨)
+    --   过渡: 重建表 (v0.29 migration),  dev 需 db:reset,  生产部署前需 manual migration
+    DROP TABLE IF EXISTS posts_fts;
+    DROP TRIGGER IF EXISTS posts_ai;
+    DROP TRIGGER IF EXISTS posts_ad;
+    DROP TRIGGER IF EXISTS posts_au;
     CREATE VIRTUAL TABLE IF NOT EXISTS posts_fts USING fts5(
       title, content, excerpt, tags,
       content='posts', content_rowid='rowid',
-      tokenize='unicode61 remove_diacritics 2'
+      tokenize='trigram'
     );
 
     -- 同步触发器: INSERT
@@ -297,6 +306,10 @@ export function initSchema(): void {
       INSERT INTO posts_fts(rowid, title, content, excerpt, tags)
       VALUES (new.rowid, new.title, new.content, IFNULL(new.excerpt, ''), IFNULL(new.tags, ''));
     END;
+
+    -- v0.29 P2-19: trigram + external content 需显式 rebuild (trigger 仅插入, 不生成 3-gram index)
+    -- rebuild 幂等: posts 为空时也是 noop
+    INSERT INTO posts_fts(posts_fts) VALUES('rebuild');
   `);
 }
 

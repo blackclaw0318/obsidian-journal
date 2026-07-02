@@ -125,18 +125,25 @@ export const postRepo = {
     return { ...data, id, created_at: now, updated_at: now, view_count: 0, fts: null };
   },
 
-  // Phase 2.2: FTS5 全文搜索 (降级容错 — 失败回退 LIKE)
+  // Phase 2.2 + v0.29 P2-19: FTS5 trigram 双轨搜索 (中文友好)
+  //  - trigram 主搜:  3+ 字中文 (黑曜石/石日志), 英文 phrase
+  //  - LIKE 兏底:      1-2 字中文 (曜石/咖啡) + FTS5 语法错误保护
+  //  - 结果: FTS5 ∪ LIKE dedup
   search({ q, status = "published", limit = 20 }: { q: string; status?: string; limit?: number } = { q: "" }): { items: PostWithAuthor[]; degraded: boolean; tookMs: number } {
     const t0 = Date.now();
     if (!q || !q.trim()) {
       return { items: [], degraded: false, tookMs: 0 };
     }
-    // 1) FTS5 优先
+    const qTrim = q.trim();
+
+    // ============ 轨 1: FTS5 trigram (3+ 字中文 / 英文 phrase) ============
+    let ftsRows: PostWithAuthor[] = [];
+    let ftsFailed = false;
     try {
-      // 转义: 把 q 拆词, 加双引号 + 通配符
-      const ftsQuery = q.trim().split(/\s+/).filter(Boolean)
-        .map((t) => `"${t.replace(/"/g, "")}"*`)
-        .join(" OR ");
+      // trigram: q 原样传, 带 * 后缀支持部分匹配 (仅对英文/数字有效, trigram 中文不需要)
+      // 去除 FTS5 保留字符以防 syntax error
+      const safeQ = qTrim.replace(/['"()]/g, " ");
+      const ftsQuery = safeQ.split(/\s+/).filter(Boolean).map(t => `${t}*`).join(" OR ") || safeQ;
       const stmt = db.prepare(`
         SELECT p.*, u.name AS author_name, u.email AS author_email
         FROM posts_fts f
@@ -147,21 +154,44 @@ export const postRepo = {
         LIMIT ?
       `);
       const rows = stmt.all(ftsQuery, status, limit);
-      return { items: rows.map(rowToPostWithAuthor), degraded: false, tookMs: Date.now() - t0 };
+      ftsRows = rows.map(rowToPostWithAuthor);
     } catch (e) {
-      // 2) 降级 LIKE (FTS5 query syntax error 等)
-      console.warn(`[search] FTS5 failed, fallback to LIKE: ${(e as Error).message}`);
-      const like = `%${q.replace(/[%_]/g, "")}%`;
+      ftsFailed = true;
+      console.warn(`[search] FTS5 trigram failed: ${(e as Error).message}`);
+    }
+
+    // ============ 轨 2: LIKE 兏底 (短中文 + FTS5 失败) ============
+    // 检测: q 主要为中文且长度 1-2 → trigram 不会命中, 走 LIKE
+    const cjkChars = qTrim.match(/[\u4e00-\u9fa5]/g) ?? [];
+    const isShortCn = cjkChars.length >= 1 && qTrim.length <= 4;
+    if (ftsFailed || isShortCn) {
+      const like = `%${qTrim.replace(/[%_]/g, "")}%`;
       const stmt = db.prepare(`
         SELECT p.*, u.name AS author_name, u.email AS author_email
         FROM posts p JOIN users u ON u.id = p.author_id
-        WHERE p.status = ? AND (p.title LIKE ? OR p.excerpt LIKE ? OR p.content LIKE ?)
+        WHERE p.status = ? AND (p.title LIKE ? OR p.excerpt LIKE ? OR p.content LIKE ? OR p.tags LIKE ?)
         ORDER BY COALESCE(p.published_at, p.created_at) DESC
         LIMIT ?
       `);
-      const rows = stmt.all(status, like, like, like, limit);
-      return { items: rows.map(rowToPostWithAuthor), degraded: true, tookMs: Date.now() - t0 };
+      const likeRows = stmt.all(status, like, like, like, like, limit).map(rowToPostWithAuthor);
+
+      // 合并去重 (按 id), FTS5 优先
+      const seen = new Set(ftsRows.map(r => r.id));
+      const merged = [...ftsRows];
+      for (const r of likeRows) {
+        if (!seen.has(r.id)) {
+          merged.push(r);
+          seen.add(r.id);
+        }
+      }
+      return {
+        items: merged.slice(0, limit),
+        degraded: ftsFailed, // FTS5 本身没失败 (仅走了 LIKE 补足) → degraded=false
+        tookMs: Date.now() - t0
+      };
     }
+
+    return { items: ftsRows, degraded: ftsFailed, tookMs: Date.now() - t0 };
   },
 
   // Phase 2.2: 重建 FTS 索引 (Admin /admin/reindex 用)

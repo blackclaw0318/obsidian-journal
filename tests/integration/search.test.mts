@@ -99,6 +99,19 @@ postRepo.create({
   author_id: u.id,
   published_at: Math.floor(Date.now() / 1000) - 200
 });
+// P2-19 中文分词测试数据 (trigram + LIKE 双轨)
+postRepo.create({
+  slug: "cn-fengjing",
+  title: "黑曜石项目升级",
+  excerpt: "黑曜石项目 6.0 升级至 6.1",
+  content: "项目涉及多个方面, 包含黑曜石、中国人、项目管理等",
+  cover_image: null,
+  status: "published",
+  category: "tech",
+  tags: "黑曜石,中文,中文分词",
+  author_id: u.id,
+  published_at: Math.floor(Date.now() / 1000) - 300
+});
 
 // ============================================================
 // postRepo.search
@@ -164,6 +177,35 @@ await suite("postRepo.search (Phase 2.2 FTS5)", async () => {
     });
     const r = postRepo.search({ q: "草稿" });
     assert.equal(r.items.length, 0);
+  });
+
+  // ===== P2-19 中文分词 (v0.29) =====
+  await test("P2-19 中文 3 字 trigram 命中 (黑曜石)", () => {
+    const r = postRepo.search({ q: "黑曜石" });
+    assert.ok(r.items.length >= 1, `expected >= 1, got ${r.items.length}`);
+    assert.equal(r.degraded, false);
+  });
+
+  await test("P2-19 中文 2 字 LIKE 兏底 (曜石)", () => {
+    const r = postRepo.search({ q: "曜石" });
+    assert.ok(r.items.length >= 1, `2字应走 LIKE 命中, got ${r.items.length}`);
+  });
+
+  await test("P2-19 中文 4 字 (黑曜石项目)", () => {
+    const r = postRepo.search({ q: "黑曜石项目" });
+    assert.ok(r.items.length >= 1, `expected >= 1, got ${r.items.length}`);
+  });
+
+  await test("P2-19 中文 1 字 LIKE (黑)", () => {
+    const r = postRepo.search({ q: "黑" });
+    assert.ok(r.items.length >= 1, `单字走 LIKE, got ${r.items.length}`);
+  });
+
+  await test("P2-19 中文不应返回草稿", () => {
+    const r = postRepo.search({ q: "黑曜石" });
+    for (const item of r.items) {
+      assert.equal(item.status, "published", "黑曜石 搜索不应返回草稿");
+    }
   });
 });
 
