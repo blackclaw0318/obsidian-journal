@@ -121,6 +121,15 @@ test.describe("Q5 主题切换 (v0.6.1 schema)", () => {
     await expect(toggle.getByRole("button", { name: "跟随系统" })).toBeVisible();
   });
 
+  test("ThemeToggle SSR HTML 直接含 3 个按钮 (v0.23 加速)", async ({ page }) => {
+    // v0.23 (P1-9): 不再用 mounted 占位, SSR HTML 立即渲染 3 按钮
+    // 验证: domcontentloaded 后 (不需等 hydration) 即可在 DOM 找到 3 个 button
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+    const buttons = page.locator("button[aria-label='亮色'], button[aria-label='暗色'], button[aria-label='跟随系统']");
+    // 注意: 响应式 .hidden md:block 在 mobile viewport 会 hidden, 这里用 attached 而非 visible
+    await expect(buttons).toHaveCount(3, { timeout: 5000 });
+  });
+
   test("点击暗色按钮后 html.dark 生效", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: "暗色" }).click();

@@ -15,6 +15,9 @@ import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { cn } from "@/lib/utils";
 
+// ThemeToggle 保留直接 import, v0.23 优化在组件内部完成
+// (SSR 实按钮 + 删 mounted 占位 → 首屏 HTML 立即可见, 不依赖 hydration)
+
 interface NavProps {
   siteName: string;
   defaultTheme: "light" | "dark" | "auto";

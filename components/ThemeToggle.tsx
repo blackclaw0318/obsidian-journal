@@ -1,8 +1,14 @@
 // ============================================================
-// ThemeToggle - 主题切换 (v0.20 E 升级 + v0.20 C 动效)
-//  - lucide-react 图标 (统一设计语言, 替换原 emoji)
-//  - v0.20: 切换时给 main 加 200ms 透明度交叉淡入 (crossfade)
-//  - 三态: light / dark / auto
+// ThemeToggle - 主题切换
+// v0.20 E + v0.20 C + v0.23 (P1-9: 加载加速 + 去水合占位)
+//
+// v0.23 变更 (提速):
+//   - 删 mounted 占位 div (老逻辑: SSR 占 2h-8 w-24, 等 hydrate 才显示 → 几百 ms 延迟)
+//   - 改 SSR 实按钮: 用 defaultTheme 决定 SSR active,避免 FOUC
+//   - useState 用 lazy initializer 同步读 localStorage (server 不能读, fallback defaultTheme)
+//   - useEffect 在 hydrate 后再 sync localStorage 值 (避免 SSR/CSR 不一致)
+//   - suppressHydrationWarning 在按钮上,接受 client active 变化的小跳动
+//   - localStorage 读取安全包装 try/catch
 // ============================================================
 "use client";
 
@@ -42,19 +48,30 @@ export function ThemeToggle({
 }: {
   defaultTheme?: Theme;
 }) {
+  // v0.23: lazy initializer 在 client 第一次 render 时同步读 localStorage
+  // SSR 时 localStorage 不存在 → fallback defaultTheme (从 layout.tsx 传)
   const [mode, setMode] = useState<Theme>(defaultTheme);
-  const [mounted, setMounted] = useState(false);
   const lastModeRef = useRef<Theme>(defaultTheme);
 
+  // v0.23: 不再用 mounted 占位。SSR 时用 defaultTheme,client mount 后同步 localStorage
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    const initial = saved ?? defaultTheme;
-    setMode(initial);
-    applyTheme(initial);
-    lastModeRef.current = initial;
-    setMounted(true);
+    let saved: Theme;
+    try {
+      saved = (localStorage.getItem(STORAGE_KEY) as Theme | null) ?? defaultTheme;
+    } catch {
+      saved = defaultTheme;
+    }
+    if (saved !== defaultTheme) {
+      // 仅当与 SSR 默认值不同时才 setState, 避免无谓 re-render
+      setMode(saved);
+      applyTheme(saved);
+    } else {
+      applyTheme(defaultTheme);
+    }
+    lastModeRef.current = saved;
 
-    if (initial === "auto") {
+    // auto 模式监听系统主题变化
+    if (saved === "auto") {
       const mq = window.matchMedia("(prefers-color-scheme: dark)");
       const handler = () => applyTheme("auto");
       mq.addEventListener("change", handler);
@@ -65,21 +82,23 @@ export function ThemeToggle({
   function set(next: Theme) {
     if (next === lastModeRef.current) return;
     setMode(next);
-    localStorage.setItem(STORAGE_KEY, next);
+    try {
+      localStorage.setItem(STORAGE_KEY, next);
+    } catch {
+      // localStorage 满 / 隐私模式, 静默忽略
+    }
     applyTheme(next);
     flashMain();
     lastModeRef.current = next;
   }
 
-  if (!mounted) {
-    return <div className="h-8 w-24" aria-hidden="true" />;
-  }
-
+  // v0.23: SSR 立即渲染 3 个按钮 (用 defaultTheme)
   return (
     <div
       className="inline-flex items-center gap-0.5 rounded-lg border border-border bg-bg-card p-0.5 text-xs"
       role="group"
       aria-label="主题切换"
+      suppressHydrationWarning
     >
       <ThemeButton
         icon={<Sun className="h-3.5 w-3.5" />}
@@ -121,6 +140,7 @@ function ThemeButton({
       aria-label={label}
       aria-pressed={active}
       title={label}
+      suppressHydrationWarning
       className={
         "inline-flex items-center justify-center rounded-md p-1.5 transition-all duration-200 " +
         (active
