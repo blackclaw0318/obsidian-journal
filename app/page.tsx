@@ -107,7 +107,7 @@ export default async function HomePage() {
               进入阅读 →
             </Link>
           </div>
-          <div className="group rounded-lg border border-border bg-bg-card p-6 transition-all hover:-translate-y-0.5 hover:border-strong hover:shadow-lg">
+          <div className="group rounded-lg border border-border bg-bg-card p-6 transition-all hover:-translate-y-0.5 hover:border-strong hover:shadow-lg active:scale-[0.99] active:transition-none">
             <h3 className="mb-2 text-xl font-semibold transition-colors group-hover:text-accent">
               <Link href={`/novels/${latestNovel.slug}`}>
                 {latestNovel.title}
@@ -164,7 +164,7 @@ export default async function HomePage() {
                   href={s.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block rounded-lg border border-border bg-bg-card px-4 py-2 text-sm transition-all hover:-translate-y-0.5 hover:border-strong hover:shadow-md"
+                  className="inline-block rounded-lg border border-border bg-bg-card px-4 py-2 text-sm transition-all hover:-translate-y-0.5 hover:border-strong hover:shadow-md active:scale-[0.97] active:transition-none"
                 >
                   {s.label}
                 </a>
@@ -180,7 +180,7 @@ export default async function HomePage() {
 /** 文章卡片 — Tailwind hover 已能提供微动 (transition + shadow + y -2) */
 function PostCard({ post }: { post: any }) {
   return (
-    <article className="group rounded-lg border border-border bg-bg-card p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-strong hover:shadow-lg">
+    <article className="group rounded-lg border border-border bg-bg-card p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-strong hover:shadow-lg active:scale-[0.99] active:transition-none">
       <div className="mb-2 flex items-center gap-2 text-xs text-fg-muted">
         <span className="rounded bg-bg-muted px-2 py-0.5 uppercase">
           {post.category}

@@ -49,6 +49,33 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ============================================================
+   P2-18 Mobile 安全区 (iOS notch / home indicator)
+   依赖 meta viewport viewport-fit=cover (见 layout.tsx)
+   - 顶部 nav: padding-top: env(safe-area-inset-top) 防刘海压字
+   - 底部 footer: padding-bottom: env(safe-area-inset-bottom) 防 home indicator 遮挡
+   - 抽屉面板 (admin mobile): padding-left: env(safe-area-inset-left) (横屏时)
+   ============================================================ */
+.safe-top {
+  padding-top: max(env(safe-area-inset-top), 0px);
+}
+.safe-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom), 0px);
+}
+.safe-left {
+  padding-left: max(env(safe-area-inset-left), 0px);
+}
+
+/* Nav 在 iOS 顶刘海设备加额外 padding, 避免 logo 被压 */
+.nav-safe-top {
+  padding-top: max(env(safe-area-inset-top), 0px);
+}
+
+/* 移动端 admin 抽屉底部 home indicator 占位 */
+.drawer-safe-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom), 8px);
+}
+
 body {
   background-color: var(--color-bg);
   color: var(--color-fg);
@@ -107,6 +134,14 @@ body {
   font-family:
     ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.9em;
+  word-break: break-word;       /* P2-18: 长 token 在 mobile 不溢出 */
+  overflow-wrap: anywhere;     /* P2-18: 任意长字符串也 break */
+}
+
+/* P2-18 D3: 暗色 prose 行内 code 微调对比度 (原 bg-muted #18181b vs 文字 #fafafa 对比度 14.5:1 OK,
+   但 fg-muted 模式不够明显, 加 1px border 视觉强化) */
+.dark .prose code:not(pre code) {
+  border: 1px solid var(--color-border);
 }
 
 .prose pre {
@@ -116,6 +151,22 @@ body {
   border-radius: 0.5rem;
   overflow-x: auto;
   margin: 1rem 0;
+}
+
+/* P2-18 D1: 亮色 prose pre 主题统一 (原本固定 slate-800, 变量化以便未来主题切换)
+   亮色 = ink (深灰), 暗色 = ink (仍深色 + 微调, 代码块本身倾向深色是行业惯例) */
+:root {
+  --color-prose-pre-bg: #1e293b;   /* ink-800 — 代码块永远深色, 高对比阅读 */
+  --color-prose-pre-fg: #f1f5f9;
+}
+.dark {
+  --color-prose-pre-bg: #0b0f1a;   /* 深一级, 区分卡片背景 #111113 */
+  --color-prose-pre-fg: #e2e8f0;
+}
+
+.dark .prose pre {
+  background-color: var(--color-prose-pre-bg);
+  color: var(--color-prose-pre-fg);
 }
 
 .prose pre code {

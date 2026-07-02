@@ -94,6 +94,18 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <head>
+        {/* P2-18: viewport-fit=cover 让 CSS env(safe-area-inset-*) 生效 (iOS notch + home indicator)
+            theme-color 让 Safari 地址栏 / Chrome 顶部栏跟随主题 (沉浸感) */}
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover"
+        />
+        <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+        {/* iOS: 把 Web App 状态栏样式设为 default (亮色) / black-translucent (暗色) */}
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" media="(prefers-color-scheme: light)" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" media="(prefers-color-scheme: dark)" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         {/* 动态 title (覆盖 metadata API 默认 title) */}
         <title>{siteName}</title>

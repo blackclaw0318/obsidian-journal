@@ -104,7 +104,7 @@ export default function PostDetailPage({ params }: { params: { slug: string } })
         />
       )}
       <header className="mb-8">
-        <div className="mb-4 flex items-center gap-2 text-xs text-fg-muted">
+        <div className="mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-fg-muted">
           <span className="rounded bg-bg-muted px-2 py-0.5 uppercase">
             {post.category}
           </span>
@@ -113,14 +113,14 @@ export default function PostDetailPage({ params }: { params: { slug: string } })
               {formatDate(new Date(post.published_at * 1000))}
             </time>
           )}
-          <span>·</span>
+          <span aria-hidden>·</span>
           <ViewCounter type="posts" slug={post.slug} initialCount={post.view_count} />
-          <span>·</span>
+          <span aria-hidden>·</span>
           <span>约 {readMin} 分钟</span>
         </div>
-        <h1 className="mb-3 text-4xl font-bold tracking-tight">{post.title}</h1>
+        <h1 className="mb-3 text-3xl font-bold tracking-tight sm:text-4xl">{post.title}</h1>
         {post.excerpt && (
-          <p className="text-lg text-fg-muted">{post.excerpt}</p>
+          <p className="text-base text-fg-muted sm:text-lg">{post.excerpt}</p>
         )}
         <div className="mt-4 text-sm text-fg-muted">
           作者: {post.author.name ?? post.author.email}

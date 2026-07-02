@@ -28,7 +28,7 @@ export function HomeHero({
   stats
 }: HomeHeroProps) {
   return (
-    <section className="mb-16 flex items-start gap-6">
+    <section className="mb-12 flex items-start gap-4 sm:mb-16 sm:gap-6">
       {/* 头像: 旋转光晕 + hover 微交互 */}
       <motion.div
         initial={{ opacity: 0, scale: 0.7, rotate: -8 }}
@@ -43,7 +43,7 @@ export function HomeHero({
           alt={`${siteName} 头像`}
           width={96}
           height={96}
-          className="relative h-24 w-24 rounded-full border-2 border-border object-cover shadow-lg"
+          className="relative h-16 w-16 rounded-full border-2 border-border object-cover shadow-lg sm:h-24 sm:w-24"
         />
         {/* 光晕 */}
         <div
@@ -52,12 +52,12 @@ export function HomeHero({
         />
       </motion.div>
 
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         <motion.h1
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1, ease: EASE }}
-          className="mb-2 text-4xl font-bold tracking-tight sm:text-5xl"
+          className="mb-2 text-3xl font-bold tracking-tight sm:text-5xl"
         >
           {siteName}
         </motion.h1>
@@ -65,7 +65,7 @@ export function HomeHero({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.22, ease: EASE }}
-          className="text-lg text-fg-muted"
+          className="text-base text-fg-muted sm:text-lg"
         >
           {tagline}
         </motion.p>

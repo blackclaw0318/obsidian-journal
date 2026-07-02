@@ -66,8 +66,8 @@ export function Nav({ siteName, defaultTheme }: NavProps) {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-bg/80 backdrop-blur-md">
-      <nav className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+    <header className="sticky top-0 z-40 border-b border-border bg-bg/80 backdrop-blur-md nav-safe-top">
+      <nav className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
         {/* Logo */}
         <Link
           href="/"
