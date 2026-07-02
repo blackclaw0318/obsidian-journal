@@ -48,7 +48,7 @@
 - [ ] 3.4 视频系列管理 (黑推荐下一站)
 - [ ] 3.5 页面管理
 - [ ] 3.6 媒体库 (上传/多尺寸/blurhash/MediaUsage 引用追踪 + 删除警告) — Q19 待拍
-- [ ] 3.7 Page Builder v1 (CustomHtml 受 SiteConfig.allowCustomHtml 开关控制 + DOMPurify 清洗) — Q18 待拍
+- [x] 3.7 Page Builder v1 (CustomHtml 受 SiteConfig.allowCustomHtml 开关控制 + DOMPurify 清洗) — Q18 待拍
 - [ ] 3.8 站点设置 (SiteConfig 全字段编辑)
 - [ ] 3.9 用户管理 (含改密码踢所有 session)
 - [ ] 3.10 部署加固 + 2c4g 压测 — Q20 待拍
