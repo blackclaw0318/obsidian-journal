@@ -1,11 +1,15 @@
 // ============================================================
 // admin-novels.spec.ts - Phase 3.3 Novel 三层 CRUD e2e (Playwright)
 // 覆盖: novel 列表/创建/编辑/软删, volume 创建, chapter 创建/编辑
+// P1-11 v0.24: 加 afterAll cleanup, 清理 e2e 测试创建的 novel/volume/chapter
 // ============================================================
-import { test, expect } from "@playwright/test";
+import { test, expect, request } from "@playwright/test";
 
 const ADMIN_EMAIL = "admin@obsidian.local";
 const ADMIN_PASSWORD = "admin123";
+
+// seed novel 的 slug (cleanup 时排除)
+const SEED_NOVEL_SLUGS = new Set(["meta-realm"]);
 
 async function login(page: import("@playwright/test").Page) {
   await page.request.post("/api/auth/test-reset");
@@ -19,6 +23,37 @@ async function login(page: import("@playwright/test").Page) {
 test.describe.serial("Admin Novels CRUD (Phase 3.3)", () => {
   test.beforeEach(async ({ page }) => {
     await page.context().clearCookies();
+  });
+
+  // P1-11 v0.24: e2e 结束后清理所有非 seed novel (级联清 volumes/chapters)
+  // 软删后不再出现在默认 list, 不影响后续测试; global-setup 会在下次 suite 开始时 reset
+  test.afterAll(async () => {
+    const ctx = await request.newContext({ baseURL: "http://localhost:3000" });
+    try {
+      await ctx.post("/api/auth/test-reset");
+      const loginRes = await ctx.post("/api/auth/login", {
+        data: { email: ADMIN_EMAIL, password: ADMIN_PASSWORD }
+      });
+      if (!loginRes.ok()) return;
+
+      // 拉所有 novel (含 archived)
+      const listRes = await ctx.get("/api/admin/novels?limit=1000");
+      if (!listRes.ok()) return;
+      const body = await listRes.json();
+      const novels: Array<{ id: string; slug: string }> = body.items ?? [];
+
+      // 软删除所有非 seed novel (级联清 volumes + chapters via softDeleteWithChapters)
+      // 注: novel API 是软删 (deleted_at), 但不会重复跑出错, global-setup reset 会清干净
+      for (const n of novels) {
+        if (!SEED_NOVEL_SLUGS.has(n.slug)) {
+          await ctx.delete(`/api/admin/novels/${n.id}`);
+        }
+      }
+    } catch {
+      // cleanup 失败不影响测试结果
+    } finally {
+      await ctx.dispose();
+    }
   });
 
   test("列表页应展示 seed 数据 + 新建按钮", async ({ page }) => {

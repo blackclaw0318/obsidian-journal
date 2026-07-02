@@ -1,11 +1,15 @@
 // ============================================================
 // admin-posts.spec.ts - Phase 3.2 帖子 CRUD e2e (Playwright)
 // 覆盖: 列表 / 新建 / 编辑 / 删除 / 筛选 / 搜索
+// P1-11 v0.24: 加 afterAll cleanup, 清理 e2e 测试创建的帖子
 // ============================================================
-import { test, expect } from "@playwright/test";
+import { test, expect, request } from "@playwright/test";
 
 const ADMIN_EMAIL = "admin@obsidian.local";
 const ADMIN_PASSWORD = "admin123";
+
+// seed 帖子的 slug (cleanup 时排除)
+const SEED_POST_SLUGS = new Set(["hello-obsidian", "deploy-mode-3-tiers", "testing-strategy"]);
 
 async function login(page: import("@playwright/test").Page) {
   await page.request.post("/api/auth/test-reset");
@@ -19,6 +23,37 @@ async function login(page: import("@playwright/test").Page) {
 test.describe.serial("Admin Posts CRUD (Phase 3.2)", () => {
   test.beforeEach(async ({ page }) => {
     await page.context().clearCookies();
+  });
+
+  // P1-11 v0.24: e2e 结束后清理所有非 seed 帖子 (包括 draft/published/archived)
+  // 防止重复跑 e2e 时数据库积累垃圾; 不影响 global-setup 的 reset (那是在 suite 开始时)
+  test.afterAll(async () => {
+    const ctx = await request.newContext({ baseURL: "http://localhost:3000" });
+    try {
+      // 登录
+      await ctx.post("/api/auth/test-reset");
+      const loginRes = await ctx.post("/api/auth/login", {
+        data: { email: ADMIN_EMAIL, password: ADMIN_PASSWORD }
+      });
+      if (!loginRes.ok()) return; // 登录失败就不清理 (dev server 异常)
+
+      // 拉所有帖子 (含 archived)
+      const listRes = await ctx.get("/api/admin/posts?limit=1000");
+      if (!listRes.ok()) return;
+      const body = await listRes.json();
+      const posts: Array<{ id: string; slug: string }> = body.items ?? [];
+
+      // 硬删除所有非 seed 帖子
+      for (const p of posts) {
+        if (!SEED_POST_SLUGS.has(p.slug)) {
+          await ctx.delete(`/api/admin/posts/${p.id}`);
+        }
+      }
+    } catch {
+      // cleanup 失败不影响测试结果 (test.afterAll 错误仅警告)
+    } finally {
+      await ctx.dispose();
+    }
   });
 
   test("列表页应展示 seed 数据 + 新建按钮", async ({ page }) => {

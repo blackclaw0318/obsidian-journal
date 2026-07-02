@@ -1,6 +1,6 @@
 {
   "name": "obsidian-journal",
-  "version": "0.23.0",
+  "version": "0.24.0",
   "private": true,
   "description": "黑曜石日志 - 个人博客平台 (Block 编辑器 + 14 model 数据模型)",
   "scripts": {
@@ -15,7 +15,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:unit": "vitest run tests/unit",
-    "test:integration": "tsx tests/integration/repo.test.mts && tsx tests/integration/search.test.mts && tsx tests/integration/auth.test.mts && tsx tests/integration/posts.test.mts && tsx tests/integration/novels.test.mts && tsx tests/integration/videos.test.mts && tsx tests/integration/pages.test.mts && tsx tests/integration/media.test.mts && tsx tests/integration/series.test.mts && tsx tests/integration/socials.test.mts && tsx tests/integration/daily-stats.test.mts && tsx tests/integration/settings.test.mts && tsx tests/integration/users.test.mts",
+    "test:integration": "tsx tests/integration/repo.test.mts && tsx tests/integration/search.test.mts && tsx tests/integration/auth.test.mts && tsx tests/integration/posts.test.mts && tsx tests/integration/novels.test.mts && tsx tests/integration/videos.test.mts && tsx tests/integration/pages.test.mts && tsx tests/integration/media.test.mts && tsx tests/integration/series.test.mts && tsx tests/integration/socials.test.mts && tsx tests/integration/daily-stats.test.mts && tsx tests/integration/settings.test.mts && tsx tests/integration/users.test.mts && tsx tests/integration/health.test.mts",
     "coverage:check": "c8 --reporter=text --include='lib/**' --exclude='node_modules/**' --check-coverage --lines=75 --functions=75 --branches=70 --statements=75 npm run test:unit && c8 --reporter=text --include='lib/**' --exclude='node_modules/**' --check-coverage --lines=75 --functions=75 --branches=70 --statements=75 npm run test:integration",
     "test:component": "vitest run tests/component",
     "test:e2e": "playwright test",
