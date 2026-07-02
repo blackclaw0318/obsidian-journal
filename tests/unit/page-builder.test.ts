@@ -6,6 +6,7 @@
 import { describe, it, expect } from "vitest";
 import { deserializePageContent, serializePageContent, cloneBlocks } from "@/lib/page-builder/serialize";
 import { BLOCK_PALETTE, BASIC_PALETTE, groupByCategory, CATEGORY_LABELS } from "@/lib/page-builder/palette";
+import { TEMPLATES, getTemplate, findTemplate } from "@/lib/page-builder/templates";
 import type { Block, TextBlock, HeadingBlock } from "@/lib/blocks";
 
 describe("page-builder/serialize", () => {
@@ -98,5 +99,90 @@ describe("page-builder/palette", () => {
     expect(CATEGORY_LABELS.typography).toBe("排版");
     expect(CATEGORY_LABELS.list).toBe("列表");
     expect(CATEGORY_LABELS.advanced).toBe("高级 (默认折叠)");
+  });
+});
+
+// ============================================================
+// templates (v0.25, v0.6.1 §21.4 模板化 v1)
+// ============================================================
+
+describe("page-builder/templates", () => {
+  it("应提供 6 套预设模板 + 1 套空白 = 7 项", () => {
+    expect(TEMPLATES).toHaveLength(7);
+  });
+
+  it("必须包含 blank + 5 个具体场景 (about/links/home/archive/project/reading)", () => {
+    const ids = TEMPLATES.map((t) => t.id);
+    expect(ids).toContain("blank");
+    expect(ids).toContain("about");
+    expect(ids).toContain("links");
+    expect(ids).toContain("home");
+    expect(ids).toContain("archive");
+    expect(ids).toContain("project");
+    expect(ids).toContain("reading");
+  });
+
+  it("每套模板都有 name + description + icon + blockCount", () => {
+    for (const tpl of TEMPLATES) {
+      expect(tpl.name.length).toBeGreaterThan(0);
+      expect(tpl.description.length).toBeGreaterThan(0);
+      expect(tpl.icon.length).toBeGreaterThan(0);
+      expect(tpl.blockCount).toBe(tpl.blocks.length);
+    }
+  });
+
+  it("block 数量应在 0-7 区间 (可控复杂度)", () => {
+    for (const tpl of TEMPLATES) {
+      expect(tpl.blockCount).toBeGreaterThanOrEqual(0);
+      expect(tpl.blockCount).toBeLessThanOrEqual(7);
+    }
+  });
+
+  it("每个 block 都有 id (tpl_ 前缀避免与 createBlock 的 b_ 冲突) + type (13 种之一)", () => {
+    const validTypes = new Set([
+      "text", "heading", "image", "video", "gallery", "quote", "callout",
+      "code", "divider", "list", "table", "custom_html", "music"
+    ]);
+    for (const tpl of TEMPLATES) {
+      for (const b of tpl.blocks) {
+        expect(b.id).toMatch(/^tpl_[a-z]+_\d+$/);
+        expect(validTypes.has(b.type)).toBe(true);
+      }
+    }
+  });
+
+  it("blank 模板 blocks 为空", () => {
+    const blank = findTemplate("blank");
+    expect(blank?.blocks).toHaveLength(0);
+  });
+
+  it("getTemplate 返回深拷贝 (避免引用共享)", () => {
+    const a = getTemplate("about");
+    const b = getTemplate("about");
+    expect(a).not.toBe(b);
+    expect(a!.blocks).not.toBe(b!.blocks);
+    // 改 a 不影响 b
+    if (a!.blocks[0] && b!.blocks[0]) {
+      (a!.blocks[0] as any).text = "改改改";
+      expect((b!.blocks[0] as any).text).not.toBe("改改改");
+    }
+  });
+
+  it("getTemplate 查不到时返回 null", () => {
+    expect(getTemplate("nonexistent")).toBeNull();
+    expect(findTemplate("nonexistent")).toBeNull();
+  });
+
+  it("所有模板 blocks 能通过 serialize 往返 (结构合法)", () => {
+    for (const tpl of TEMPLATES) {
+      const json = serializePageContent(tpl.blocks);
+      const roundtrip = deserializePageContent(json);
+      expect(roundtrip).toHaveLength(tpl.blocks.length);
+      // 内部 id/type 保持
+      for (let i = 0; i < tpl.blocks.length; i++) {
+        expect(roundtrip[i].id).toBe(tpl.blocks[i].id);
+        expect(roundtrip[i].type).toBe(tpl.blocks[i].type);
+      }
+    }
   });
 });

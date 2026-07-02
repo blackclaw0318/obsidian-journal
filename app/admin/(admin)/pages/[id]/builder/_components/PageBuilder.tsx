@@ -19,9 +19,11 @@ import type { Block, BlockType } from "@/lib/blocks";
 import { PageBuilderProvider, usePageBuilder } from "@/lib/page-builder/store";
 import { deserializePageContent, serializePageContent, cloneBlocks } from "@/lib/page-builder/serialize";
 import { BLOCK_PALETTE } from "@/lib/page-builder/palette";
+import { getTemplate, type PageTemplate } from "@/lib/page-builder/templates";
 import { BlockPalette } from "./BlockPalette";
 import { PageCanvas } from "./PageCanvas";
 import { BlockInspector } from "./BlockInspector";
+import { TemplateGallery } from "./TemplateGallery";
 
 function genId(): string {
   return `b_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
@@ -58,15 +60,36 @@ function PageBuilderInner({ pageId, pageSlug, pageTitle, initialBlocksJson, allo
   const { state, load, add, reorder, markClean } = usePageBuilder();
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
+  // v0.25: 模板选择 UI 状态 — 初始 blocks 为空时显示 gallery
+  const [showGallery, setShowGallery] = useState<boolean>(false);
+  const [initialized, setInitialized] = useState<boolean>(false);
 
   useEffect(() => {
     try {
-      load(deserializePageContent(initialBlocksJson));
+      const blocks = deserializePageContent(initialBlocksJson);
+      load(blocks);
+      // 初始 blocks 为空 → 显示模板选择 (v0.25)
+      if (blocks.length === 0) {
+        setShowGallery(true);
+      }
+      setInitialized(true);
     } catch (e) {
       console.error("解析 page.blocks 失败:", e);
       load([]);
+      setShowGallery(true);
+      setInitialized(true);
     }
   }, [initialBlocksJson, load]);
+
+  // 应用模板 → 加载 blocks + 退出 gallery
+  const handleSelectTemplate = (tpl: PageTemplate) => {
+    const fresh = getTemplate(tpl.id);
+    if (!fresh) return;
+    load(fresh.blocks);
+    setShowGallery(false);
+    setSaveMsg(`✅ 已应用「${fresh.name}」模板,记得点保存`);
+    setTimeout(() => setSaveMsg(null), 4000);
+  };
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
@@ -148,6 +171,13 @@ function PageBuilderInner({ pageId, pageSlug, pageTitle, initialBlocksJson, allo
           </div>
           <div className="flex items-center gap-2">
             {saveMsg && <span className="text-sm">{saveMsg}</span>}
+            <button
+              onClick={() => setShowGallery(true)}
+              className="rounded border border-border px-3 py-1 text-sm text-fg-muted hover:text-fg"
+              title="重选模板 (会清空当前 blocks)"
+            >
+              🎨 模板
+            </button>
             <a
               href={`/admin/pages/${pageId}/edit`}
               className="rounded border border-border px-3 py-1 text-sm text-fg-muted hover:text-fg"
@@ -163,6 +193,23 @@ function PageBuilderInner({ pageId, pageSlug, pageTitle, initialBlocksJson, allo
             </button>
           </div>
         </div>
+
+        {/* 模板选择 (空页 + 用户主动重选) (v0.25) */}
+        {initialized && showGallery && (
+          <TemplateGallery
+            pageTitle={pageTitle}
+            hasExistingBlocks={state.blocks.length > 0}
+            onSelect={handleSelectTemplate}
+            onClose={() => {
+              // 允许空白页时直接关闭 (不选模板)
+              if (state.blocks.length === 0) {
+                setShowGallery(false);
+              } else {
+                setShowGallery(false);
+              }
+            }}
+          />
+        )}
 
         {/* 三栏 */}
         <div className="grid flex-1 grid-cols-[220px_1fr_320px] gap-3 overflow-hidden">
