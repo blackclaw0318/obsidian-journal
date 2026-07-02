@@ -7,6 +7,7 @@ import { describe, it, expect } from "vitest";
 import { deserializePageContent, serializePageContent, cloneBlocks } from "@/lib/page-builder/serialize";
 import { BLOCK_PALETTE, BASIC_PALETTE, groupByCategory, CATEGORY_LABELS } from "@/lib/page-builder/palette";
 import { TEMPLATES, getTemplate, findTemplate } from "@/lib/page-builder/templates";
+import { createHistory, pushHistory, undoStep, redoStep, resetHistory, MAX_HISTORY } from "@/lib/page-builder/history";
 import type { Block, TextBlock, HeadingBlock } from "@/lib/blocks";
 
 describe("page-builder/serialize", () => {
@@ -218,5 +219,128 @@ describe("page-builder/templates", () => {
         expect(roundtrip[i].type).toBe(tpl.blocks[i].type);
       }
     }
+  });
+});
+
+// ============================================================
+// history (v0.27, P2-15 撤销/重做)
+// ============================================================
+
+describe("page-builder/history", () => {
+  // 工具: 创建 N 个测试 block
+  function mkBlock(i: number): Block {
+    return { id: `b${i}`, type: "text", theme: "light", content: `block ${i}` };
+  }
+
+  it("createHistory 初始 past/future 都为空", () => {
+    const h = createHistory();
+    expect(h.past).toEqual([]);
+    expect(h.future).toEqual([]);
+  });
+
+  it("pushHistory 把当前 blocks 推入 past, 清空 future", () => {
+    let h = createHistory();
+    const blocks1 = [mkBlock(1)];
+    h = pushHistory(h, blocks1);
+    expect(h.past).toHaveLength(1);
+    expect(h.past[0]).toBe(blocks1);
+    expect(h.future).toEqual([]);
+  });
+
+  it("pushHistory 多次累积 past", () => {
+    let h = createHistory();
+    for (let i = 1; i <= 5; i++) {
+      h = pushHistory(h, [mkBlock(i)]);
+    }
+    expect(h.past).toHaveLength(5);
+    // 最后 push 的是 i=5
+    expect((h.past[4][0] as TextBlock).content).toBe("block 5");
+  });
+
+  it("pushHistory 清空 future (新操作后不能重做)", () => {
+    let h = createHistory();
+    h = pushHistory(h, [mkBlock(1)]);
+    // 模拟 undo
+    let r = undoStep(h, [mkBlock(2)]);
+    h = r.history;
+    expect(h.future).toHaveLength(1);
+    // 新操作
+    h = pushHistory(h, [mkBlock(3)]);
+    expect(h.future).toEqual([]);
+  });
+
+  it("undoStep 从 past 取出上一个, 当前进 future", () => {
+    let h = createHistory();
+    h = pushHistory(h, [mkBlock(1)]);
+    h = pushHistory(h, [mkBlock(2)]);
+    // 模拟当前 blocks 是 block 3
+    const r = undoStep(h, [mkBlock(3)]);
+    expect(r.blocks).not.toBeNull();
+    expect((r.blocks![0] as TextBlock).content).toBe("block 2");
+    expect(r.history.past).toHaveLength(1);
+    expect(r.history.future).toHaveLength(1);
+  });
+
+  it("undoStep 无历史时返回 null", () => {
+    const h = createHistory();
+    const r = undoStep(h, [mkBlock(1)]);
+    expect(r.blocks).toBeNull();
+    expect(r.history).toBe(h); // 无变化
+  });
+
+  it("redoStep 从 future 取出下一个, 当前进 past", () => {
+    let h = createHistory();
+    h = pushHistory(h, [mkBlock(1)]);
+    h = pushHistory(h, [mkBlock(2)]);
+    // 先 undo
+    let r = undoStep(h, [mkBlock(3)]);
+    h = r.history;
+    expect(h.future).toHaveLength(1);
+    expect(h.past).toHaveLength(1);
+    // 再 redo (当前 blocks 是 undo 返回的 b2)
+    r = redoStep(h, [mkBlock(2)]);
+    expect(r.blocks).not.toBeNull();
+    expect((r.blocks![0] as TextBlock).content).toBe("block 3");
+    expect(r.history.past).toHaveLength(2); // 1(b1) + 1(undo 返回的 b2)
+    expect(r.history.future).toEqual([]);
+  });
+
+  it("redoStep 无重做时返回 null", () => {
+    const h = createHistory();
+    const r = redoStep(h, [mkBlock(1)]);
+    expect(r.blocks).toBeNull();
+    expect(r.history).toBe(h);
+  });
+
+  it("undo + redo 往返后状态应恢复", () => {
+    let h = createHistory();
+    h = pushHistory(h, [mkBlock(1)]);
+    h = pushHistory(h, [mkBlock(2)]);
+    const original = [mkBlock(3)];
+    let r = undoStep(h, original); // undo: 返回 block 2
+    expect((r.blocks![0] as TextBlock).content).toBe("block 2");
+    r = redoStep(r.history, r.blocks!); // redo: 返回 original (block 3)
+    expect((r.blocks![0] as TextBlock).content).toBe("block 3");
+  });
+
+  it("MAX_HISTORY 限制 50 步 (超出后丢弃最老的)", () => {
+    let h = createHistory();
+    for (let i = 1; i <= MAX_HISTORY + 5; i++) {
+      h = pushHistory(h, [mkBlock(i)]);
+    }
+    expect(h.past).toHaveLength(MAX_HISTORY);
+    // 最早的几个被丢弃, 第一项应是 block 6 (i=1~5 被丢)
+    expect((h.past[0][0] as TextBlock).content).toBe("block 6");
+    // 最后一项应是 block (MAX_HISTORY + 5)
+    expect((h.past[MAX_HISTORY - 1][0] as TextBlock).content).toBe(`block ${MAX_HISTORY + 5}`);
+  });
+
+  it("resetHistory 清空所有历史", () => {
+    let h = createHistory();
+    h = pushHistory(h, [mkBlock(1)]);
+    h = pushHistory(h, [mkBlock(2)]);
+    h = resetHistory();
+    expect(h.past).toEqual([]);
+    expect(h.future).toEqual([]);
   });
 });

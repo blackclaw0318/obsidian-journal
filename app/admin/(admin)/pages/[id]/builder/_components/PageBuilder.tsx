@@ -65,7 +65,7 @@ interface PageBuilderProps {
 }
 
 function PageBuilderInner({ pageId, pageSlug, pageTitle, initialBlocksJson, allowCustomHtml }: PageBuilderProps) {
-  const { state, load, add, reorder, markClean } = usePageBuilder();
+  const { state, load, add, reorder, markClean, undo, redo, canUndo, canRedo } = usePageBuilder();
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
   // v0.25: 模板选择 UI 状态 — 初始 blocks 为空时显示 gallery
@@ -98,6 +98,37 @@ function PageBuilderInner({ pageId, pageSlug, pageTitle, initialBlocksJson, allo
     setSaveMsg(`✅ 已应用「${fresh.name}」模板,记得点保存`);
     setTimeout(() => setSaveMsg(null), 4000);
   };
+
+  // v0.27 P2-15: 键盘快捷键 Cmd/Ctrl+Z (undo) + Cmd/Ctrl+Shift+Z / Ctrl+Y (redo)
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      const mod = e.metaKey || e.ctrlKey;
+      if (!mod) return;
+      const key = e.key.toLowerCase();
+      // 跳过在输入框/textarea 里 (用户编辑文本不应 undo)
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) {
+        return;
+      }
+      if (key === "z" && !e.shiftKey) {
+        e.preventDefault();
+        if (canUndo) {
+          undo();
+          setSaveMsg("↶ 撤销");
+          setTimeout(() => setSaveMsg(null), 1500);
+        }
+      } else if ((key === "z" && e.shiftKey) || key === "y") {
+        e.preventDefault();
+        if (canRedo) {
+          redo();
+          setSaveMsg("↷ 重做");
+          setTimeout(() => setSaveMsg(null), 1500);
+        }
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [undo, redo, canUndo, canRedo]);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
@@ -179,6 +210,27 @@ function PageBuilderInner({ pageId, pageSlug, pageTitle, initialBlocksJson, allo
           </div>
           <div className="flex items-center gap-2">
             {saveMsg && <span className="text-sm">{saveMsg}</span>}
+            {/* v0.27 P2-15: 撤销/重做按钮 + Cmd+Z 提示 */}
+            <div className="flex items-center gap-1 rounded border border-border">
+              <button
+                onClick={() => { if (canUndo) undo(); }}
+                disabled={!canUndo}
+                title="撤销 (Cmd/Ctrl+Z)"
+                aria-label="撤销"
+                className="rounded-l px-2 py-1 text-sm hover:bg-bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                ↶
+              </button>
+              <button
+                onClick={() => { if (canRedo) redo(); }}
+                disabled={!canRedo}
+                title="重做 (Cmd/Ctrl+Shift+Z)"
+                aria-label="重做"
+                className="rounded-r border-l border-border px-2 py-1 text-sm hover:bg-bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                ↷
+              </button>
+            </div>
             <button
               onClick={() => setShowGallery(true)}
               className="rounded border border-border px-3 py-1 text-sm text-fg-muted hover:text-fg"
