@@ -25,6 +25,22 @@ export function canonical(path: string): string {
 }
 
 /**
+ * OG Image fallback 链 (v0.31 P2-21 兑现)
+ * 优先: 本页面的 cover_image (article/video/novel 各自有)
+ * 次选: SiteConfig.og_image (管理员上传的站点默认 OG 图)
+ * 末选: SiteConfig.avatar_url (P2-21 默认行为, 头像当 OG 图用)
+ * 返回: undefined 表示不设 og:image (交由 Next.js 平台默认值)
+ */
+export function getOgImage(
+  cover: string | null | undefined,
+  site: SiteConfig | null
+): string[] | undefined {
+  const fallback = site?.og_image ?? site?.avatar_url ?? null;
+  const url = cover || fallback;
+  return url ? [absoluteUrl(url)] : undefined;
+}
+
+/**
  * JSON-LD: Article (schema.org)
  * 严守: PostCategory ∈ {tech, life}, 不写 novel/video/media
  */
@@ -44,7 +60,7 @@ export function jsonLdArticle(opts: {
     "@id": url,
     headline: post.title,
     description: post.excerpt ?? undefined,
-    image: post.cover_image ? [absoluteUrl(post.cover_image)] : undefined,
+    image: getOgImage(post.cover_image, site),
     datePublished: post.published_at ? new Date(post.published_at * 1000).toISOString() : undefined,
     dateModified: post.updated_at ? new Date(post.updated_at * 1000).toISOString() : undefined,
     inLanguage: "zh-CN",
@@ -81,7 +97,7 @@ export function jsonLdBook(novel: Novel, volumeCount: number, chapterCount: numb
     "@id": url,
     name: novel.title,
     description: novel.description ?? undefined,
-    image: novel.cover_image ? [absoluteUrl(novel.cover_image)] : undefined,
+    image: getOgImage(novel.cover_image, null),
     inLanguage: "zh-CN",
     url,
     bookFormat: "EBook",
@@ -105,7 +121,7 @@ export function jsonLdVideo(video: Video, site: SiteConfig): string {
     "@id": url,
     name: video.title,
     description: video.description ?? undefined,
-    thumbnailUrl: video.cover_image ? [absoluteUrl(video.cover_image)] : undefined,
+    thumbnailUrl: getOgImage(video.cover_image, site),
     uploadDate: video.published_at ? new Date(video.published_at * 1000).toISOString() : undefined,
     duration: video.duration ? `PT${video.duration}S` : undefined,
     embedUrl: video.embed_url,

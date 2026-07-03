@@ -11,7 +11,7 @@ import MarkdownIt from "markdown-it";
 import DOMPurify from "isomorphic-dompurify";
 import { postRepo, siteConfigRepo } from "@/lib/repo";
 import { formatDate } from "@/lib/utils";
-import { absoluteUrl, canonical, jsonLdArticle } from "@/lib/seo";
+import { absoluteUrl, canonical, jsonLdArticle, getOgImage } from "@/lib/seo";
 import { ViewCounter } from "@/components/ViewCounter";
 import { MarkdownReveal } from "@/components/MarkdownReveal";
 
@@ -44,7 +44,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   }
   const site = siteConfigRepo.get();
   const url = absoluteUrl(`/posts/${post.slug}`);
-  const ogImage = post.cover_image ? [absoluteUrl(post.cover_image)] : undefined;
+  const ogImage = getOgImage(post.cover_image, site);
   const tags = post.tags ? post.tags.split(",").map((t) => t.trim()).filter(Boolean) : [];
 
   return {

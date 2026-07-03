@@ -13,6 +13,7 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { SmoothScroll } from "../components/SmoothScroll";
 import { PageTransition } from "../components/PageTransition";
+import { absoluteUrl } from "../lib/seo";
 
 /**
  * Root metadata (静态部分)
@@ -39,13 +40,29 @@ export const metadata: Metadata = {
     }
   },
   // OG 静态部分 (子页面会覆盖 type 和 title)
+  // v0.31 P2-21: og_image 走 SiteConfig.og_image ?? SiteConfig.avatar_url (默认 fallback 到头像)
   openGraph: {
     siteName: "黑曜石日志",
-    locale: "zh_CN"
+    locale: "zh_CN",
+    images: (() => {
+      const cfg = siteConfigRepo.get();
+      const ogUrl = cfg?.og_image ?? cfg?.avatar_url ?? null;
+      return ogUrl ? [absoluteUrl(ogUrl)] : undefined;
+    })()
     // 注意: 不设 type, 让子页面 metadata 提供 (article / website / book)
   },
   twitter: {
     card: "summary_large_image"
+  },
+  // v0.31 P2-20: 站点 favicon 走 SiteConfig.favicon ?? /icon.png (Next.js 自动生成)
+  // 注意: Next.js 会自动生成 <link rel="icon" href="/icon.png" />, 当 SiteConfig.favicon 设置时,
+  // 我们在 <head> 中动态覆盖, 让 custom favicon 生效
+  icons: {
+    icon: (() => {
+      const cfg = siteConfigRepo.get();
+      return cfg?.favicon ?? "/icon.png";
+    })(),
+    apple: "/apple-icon.png" // apple-touch-icon 保持 Next.js 自动生成
   },
   alternates: {
     canonical: "/",

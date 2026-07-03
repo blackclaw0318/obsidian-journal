@@ -195,3 +195,59 @@ describe("jsonLdWebSite (首页 + SearchAction)", () => {
     expect(ld.potentialAction.target).toContain("/posts?q=");
   });
 });
+
+// ============================================================
+// P2-20/21: getOgImage fallback 链 (v0.31)
+// 优先 cover → 次选 og_image → 末选 avatar → undefined
+// ============================================================
+import { getOgImage } from "@/lib/seo";
+
+describe("getOgImage (P2-21 fallback 链)", () => {
+  // 注意: 上一 describe block 的 afterEach 已还原 env, 保险起见 beforeEach 重置
+  beforeEach(() => {
+    delete process.env.NEXT_PUBLIC_SITE_URL;
+  });
+
+  it("有 cover 时优先用 cover", () => {
+    const result = getOgImage("/posts/cover.jpg", baseSite);
+    expect(result).toEqual(["http://localhost:3000/posts/cover.jpg"]);
+  });
+
+  it("无 cover + 有 og_image 时用 og_image", () => {
+    const site = { ...baseSite, og_image: "/uploads/og.png" };
+    const result = getOgImage(null, site);
+    expect(result).toEqual(["http://localhost:3000/uploads/og.png"]);
+  });
+
+  it("无 cover + 无 og_image + 有 avatar 时 fallback 到 avatar (P2-21)", () => {
+    const site = { ...baseSite, avatar_url: "/uploads/avatars/me.webp" };
+    const result = getOgImage(null, site);
+    expect(result).toEqual(["http://localhost:3000/uploads/avatars/me.webp"]);
+  });
+
+  it("无 cover + og_image 优先于 avatar (P2-21 顺序)", () => {
+    const site = {
+      ...baseSite,
+      og_image: "/uploads/og.png",
+      avatar_url: "/uploads/avatars/me.webp"
+    };
+    const result = getOgImage(null, site);
+    expect(result).toEqual(["http://localhost:3000/uploads/og.png"]);
+  });
+
+  it("cover 优先于 og_image + avatar", () => {
+    const site = {
+      ...baseSite,
+      og_image: "/uploads/og.png",
+      avatar_url: "/uploads/avatars/me.webp"
+    };
+    const result = getOgImage("/posts/cover.jpg", site);
+    expect(result).toEqual(["http://localhost:3000/posts/cover.jpg"]);
+  });
+
+  it("全空时返回 undefined", () => {
+    expect(getOgImage(null, baseSite)).toBeUndefined();
+    expect(getOgImage(undefined, baseSite)).toBeUndefined();
+    expect(getOgImage(null, null)).toBeUndefined();
+  });
+});

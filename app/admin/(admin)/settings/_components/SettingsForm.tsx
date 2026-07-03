@@ -1,6 +1,7 @@
 // ============================================================
-// SettingsForm - 站点设置表单 (Phase 3.8, v0.15)
+// SettingsForm - 站点设置表单 (Phase 3.8, v0.15 + v0.31 P2-20/21)
 // Client Component: 4 分组 (基本 / 外观 / 功能 / SEO + 分析)
+// v0.31 改造: favicon + og_image 改用专用上传组件 (P2-20/21)
 // ============================================================
 
 "use client";
@@ -8,6 +9,8 @@
 import { useState } from "react";
 import type { SiteConfig } from "@/lib/types";
 import { AvatarUpload } from "./AvatarUpload";
+import { FaviconUpload } from "./FaviconUpload";
+import { OgImageUpload } from "./OgImageUpload";
 
 const inputCls = "w-full rounded border border-border bg-bg px-3 py-2 text-sm focus:border-fg focus:outline-none disabled:opacity-50";
 const labelCls = "mb-1 block text-sm font-medium";
@@ -35,9 +38,8 @@ export function SettingsForm({ initial }: { initial: SiteConfig }) {
           allow_custom_html: data.allow_custom_html,
           baidu_push_enabled: data.baidu_push_enabled,
           baidu_push_token: data.baidu_push_token,
-          og_image: data.og_image,
-          favicon: data.favicon,
           analytics: data.analytics
+          // 注意: avatar_url / favicon / og_image 由专用上传端点处理, 不在此处保存
         })
       });
       const j = await res.json();
@@ -111,20 +113,19 @@ export function SettingsForm({ initial }: { initial: SiteConfig }) {
         )}
       </Section>
 
-      {/* SEO + 媒体 */}
+      {/* SEO + 媒体 (v0.31 改造: favicon/og_image 用专用上传组件) */}
       <Section title="🔍 SEO & 媒体">
-        <Field label="OG Image (社交分享卡片图)">
-          <input className={inputCls} value={data.og_image ?? ""} onChange={(e) => update("og_image", e.target.value || null)} placeholder="/media/og-default.png" />
-          {data.og_image && (
-            <div className="mt-2 text-xs text-fg-muted">
-              预览: {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={data.og_image} alt="og preview" className="mt-1 h-20 rounded border border-border" />
-            </div>
-          )}
+        <Field label="Favicon (浏览器 tab 图标, 64×64 webp)">
+          <FaviconUpload currentUrl={initial.favicon} />
         </Field>
-        <Field label="Favicon URL">
-          <input className={inputCls} value={data.favicon ?? ""} onChange={(e) => update("favicon", e.target.value || null)} placeholder="/media/favicon.ico" />
+        <Field label="OG Image (社交分享卡片图, 1200×630)">
+          <OgImageUpload currentUrl={initial.og_image} avatarUrl={initial.avatar_url} />
         </Field>
+        <div className="rounded border border-border bg-bg-base px-3 py-2 text-xs text-fg-muted">
+          💡 <strong>og_image fallback 规则</strong>: 文章有 <code>cover_image</code> 时优先用文章封面;
+          否则用 <code>SiteConfig.og_image</code>;
+          再否则用 <code>SiteConfig.avatar_url</code> (P2-21 默认行为)。
+        </div>
       </Section>
 
       {/* 分析 */}
