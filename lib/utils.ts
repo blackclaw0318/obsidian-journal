@@ -87,3 +87,13 @@ export function hashIp(ip: string, salt = "obsidian-v0.34"): string {
   // 转 16 字符 hex (32-bit hash → 8 字符, pad 16 字符)
   return (hash >>> 0).toString(16).padStart(8, "0").repeat(2).slice(0, 16);
 }
+
+/**
+ * 通用序列化: Server → Client props 必须剥 null prototype
+ * (better-sqlite3 行 = Object.create(null), Next.js #428396957 拒绝)
+ *
+ * 用法: <ClientComp data={serializeForClient(serverData)} />
+ */
+export function serializeForClient<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value));
+}
