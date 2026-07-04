@@ -12,7 +12,7 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 
-const ALLOWED_PREFIXES = ["image/", "video/", "audio/", "application/pdf"];
+const ALLOWED_PREFIXES = ["image/", "audio/", "application/pdf"]; // v0.34: 砍 video (老板 15:14 决策)
 const MAX_SIZE = 20 * 1024 * 1024; // 20MB (API 硬限制)
 const WARN_SIZE = 50 * 1024 * 1024; // 50MB 警告
 
@@ -35,7 +35,6 @@ function formatSize(bytes: number): string {
 
 function mimeIcon(mime: string): string {
   if (mime.startsWith("image/")) return "🖼";
-  if (mime.startsWith("video/")) return "🎬";
   if (mime.startsWith("audio/")) return "🎵";
   if (mime === "application/pdf") return "📕";
   return "📄";
@@ -99,7 +98,7 @@ export function ResourceUploader() {
           queueMicrotask(() => router.refresh());
         } else {
           const errMsg = xhr.status === 524
-            ? "524 超时 (视频过大/网络慢, 建议 < 10MB 视频)"
+            ? "524 超时 (文件过大/网络慢, 建议 < 10MB)"
             : (data.error ?? `HTTP ${xhr.status}`);
           updateEntry(entry.id, { status: "error", error: errMsg });
         }
@@ -181,12 +180,12 @@ export function ResourceUploader() {
       >
         <div className="text-4xl">📤</div>
         <div className="mt-2 text-sm font-medium">点击或拖拽文件到此处上传</div>
-        <div className="mt-1 text-xs text-fg-muted">支持: 图片 / 视频 / 音频 / PDF · 最大 20MB</div>
+        <div className="mt-1 text-xs text-fg-muted">支持: 图片 / 文档 / 音频 / PDF · 最大 20MB</div>
         <input
           ref={fileInputRef}
           type="file"
           multiple
-          accept="image/*,video/*,audio/*,application/pdf"
+          accept="image/*,audio/*,application/pdf"
           onChange={(e) => handleSelected(e.target.files)}
           className="hidden"
           data-testid="resource-uploader-input"

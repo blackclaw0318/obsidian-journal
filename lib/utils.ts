@@ -97,3 +97,14 @@ export function hashIp(ip: string, salt = "obsidian-v0.34"): string {
 export function serializeForClient<T>(value: T): T {
   return JSON.parse(JSON.stringify(value));
 }
+
+/**
+ * 字节数转人类可读 (1024 B → 1 KB → 1 MB → 1 GB)
+ * 用于 admin 总大小、卡片显示等
+ */
+export function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+  return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GB`;
+}

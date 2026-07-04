@@ -19,7 +19,7 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
-const ALLOWED_MIME_PREFIXES = ["image/", "video/", "audio/", "application/pdf"];
+const ALLOWED_MIME_PREFIXES = ["image/", "audio/", "application/pdf"]; // v0.34: 砍 video (老板 15:14 决策)
 const MAX_SIZE = 20 * 1024 * 1024; // 20MB
 
 const UPLOAD_DIR = resolve(process.cwd(), "public/uploads");

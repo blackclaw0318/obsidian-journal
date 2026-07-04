@@ -7,6 +7,7 @@ import { mediaRepo, mediaCounterRepo } from "@/lib/repo";
 import { ResourceUploader } from "./_components/ResourceUploader";
 import { ResourceAdminGrid } from "./_components/ResourceAdminGrid";
 import { displayView, displayDownload } from "@/lib/counter";
+import { formatBytes } from "@/lib/utils";
 import type { MediaCategory } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -55,7 +56,7 @@ export default function ResourcesListPage({ searchParams }: { searchParams: Sear
         <div>
           <h1 className="text-2xl font-bold">📦 资源库</h1>
           <p className="mt-1 text-sm text-fg-muted">
-            共 <strong>{total}</strong> 个文件 · 总大小 <strong>{(totalSize / 1024 / 1024).toFixed(1)}MB</strong>
+            共 <strong>{total}</strong> 个文件 · 总大小 <strong>{formatBytes(totalSize)}</strong>
             {q && ` · 搜索: "${q}"`}
           </p>
         </div>
