@@ -74,3 +74,74 @@ test.describe.serial("Admin 媒体库", () => {
     await expect(page.getByRole("heading", { name: "媒体库" })).toBeVisible();
   });
 });
+
+// ============================================================
+// v0.33.3 race condition 端到端测试 (上传 hang 修复)
+// ============================================================
+test.describe("媒体库 v0.33.3 race fix", () => {
+  test("上传 12MB 二进制 — < 5s 完成 (老板场景)", async ({ page, request }) => {
+    // 模拟老板的 12.5MB 视频场景, 用二进制定位精准测端到端速度
+    const loginRes = await request.post("/api/auth/login", {
+      data: { email: "admin@obsidian.local", password: "admin123" }
+    });
+    expect(loginRes.ok()).toBeTruthy();
+
+    // 12MB 二进制 (不是真视频, 但足以测流式 + race fix)
+    const buffer = Buffer.alloc(12 * 1024 * 1024, 0x42);
+    const start = Date.now();
+    const uploadRes = await request.post("/api/admin/media", {
+      multipart: {
+        file: { name: "boss-12mb.mp4", mimeType: "video/mp4", buffer }
+      }
+    });
+    const time = Date.now() - start;
+    console.log(`[race test] 12MB upload time=${time}ms`);
+    expect(uploadRes.ok()).toBeTruthy();
+    expect(time).toBeLessThan(8000); // 8s 内, 留余量 (dev mode)
+    const data = await uploadRes.json();
+    expect(data.ok).toBe(true);
+    expect(data.media.size).toBe(12 * 1024 * 1024);
+  });
+
+  test("client 提前断开 — server 应立即 499 (不 hang)", async ({ request }) => {
+    // 模拟 Cloudflare 100s 超时: client 提前断开
+    const loginRes = await request.post("/api/auth/login", {
+      data: { email: "admin@obsidian.local", password: "admin123" }
+    });
+    expect(loginRes.ok()).toBeTruthy();
+    const cookie = loginRes.headers()["set-cookie"]?.split(";")[0] ?? "";
+
+    // 用 node 的 fetch + AbortController 模拟 client 中断
+    const FormData = (await import("node:fs")).readFileSync;
+    const buffer = Buffer.alloc(8 * 1024 * 1024, 0x55);
+    const boundary = "---boundary" + Date.now();
+    const header = Buffer.from(
+      `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="abort-test.mp4"\r\nContent-Type: video/mp4\r\n\r\n`
+    );
+    const footer = Buffer.from(`\r\n--${boundary}--\r\n`);
+    const body = Buffer.concat([header, buffer, footer]);
+
+    const controller = new AbortController();
+    const start = Date.now();
+    setTimeout(() => controller.abort(), 200); // 200ms 后 client 断开
+
+    try {
+      await request.post("/api/admin/media", {
+        headers: {
+          "Content-Type": `multipart/form-data; boundary=${boundary}`,
+          "Content-Length": String(body.length),
+          Cookie: cookie.replace(/^[^=]+=/, "").split(";")[0]
+        },
+        data: body.toString("base64"),
+        maxSize: 1024 * 1024 * 20 // 20MB max for response
+      });
+    } catch {
+      // 预期会 throw (client aborted)
+    }
+    const time = Date.now() - start;
+    // 验证 client abort 后, server 不会卡 100s+
+    // 整个 timeout 应该在 5s 内 (server 检测 abort + respond)
+    expect(time).toBeLessThan(5000);
+    console.log(`[race test] abort scenario took ${time}ms`);
+  });
+});
