@@ -1,6 +1,9 @@
 // ============================================================
 // GET /api/resources/[id]/download — 真实文件下载 + 计数 +1
 // 老板 Q3: 真实累计, 不做来源限制 (公开资源浏览即可下载)
+// 老板 21:54 反馈: 下载后跳转 localhost:3000/... (错)
+//   根因: Next.js `request.url` 在 cloudflared tunnel 后返回内部 URL
+//   修复: 用 x-forwarded-host + x-forwarded-proto 构造 public URL
 // ============================================================
 import { NextResponse } from "next/server";
 import { mediaRepo, mediaCounterRepo, mediaAccessLogRepo } from "@/lib/repo";
@@ -34,8 +37,14 @@ export async function GET(
     country: null
   });
 
-  // 302 重定向到静态 URL (本地: /uploads/{filename})
-  // 真实部署 CDN/OSS 时, 这里改成 signed URL
-  const downloadUrl = item.url;
-  return NextResponse.redirect(new URL(downloadUrl, request.url), { status: 302 });
+  // 构造 public download URL (兼容 CDN/tunnel 反代)
+  // 优先 x-forwarded-host (cloudflared/CFNginx 设), 然后 host header
+  const xfHost = request.headers.get("x-forwarded-host");
+  const xfProto = request.headers.get("x-forwarded-proto");
+  const host = xfHost ?? request.headers.get("host") ?? new URL(request.url).host;
+  const proto = xfProto ?? (host.startsWith("localhost") ? "http" : "https");
+  const downloadUrl = item.url.startsWith("/") ? item.url : `/${item.url}`;
+  const publicUrl = `${proto}://${host}${downloadUrl}`;
+
+  return NextResponse.redirect(publicUrl, { status: 302 });
 }

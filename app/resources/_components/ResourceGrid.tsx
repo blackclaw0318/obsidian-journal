@@ -8,7 +8,7 @@
 //    → 修复: 用 useState 维护 live counters, 点卡片时先 POST /view
 //      再开 modal, server 返 display 后乐观更新本地
 // ============================================================
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import type { MediaItem, MediaCounter } from "@/lib/types";
 import { displayView, displayDownload } from "@/lib/counter";
 import { ResourcePreviewModal } from "./ResourcePreviewModal";
@@ -41,13 +41,15 @@ export function ResourceGrid({
 
   // 老板 20:20: 用 local state 跟踪最新 counter (server 触发的 +1 反映到 UI)
   const [liveCounters, setLiveCounters] = useState<Record<string, MediaCounter>>({});
+  // 21:54 反饯: 点击后要有可见反馈 (不论是否 dedup)
+  const [clickFeedback, setClickFeedback] = useState<Record<string, { ts: number; dedup: boolean }>>({});
 
   // 点击卡片 → fire POST /view (24h 同 ip 去重) → 收到 display 后乐观更新本地
   const handleCardClick = useCallback(async (item: MediaItem) => {
-    // 立即打开 modal (UX 不阻塞)
+    // 立即打开 modal + 展示加载反馈
     setActive(item);
+    setClickFeedback((prev) => ({ ...prev, [item.id]: { ts: Date.now(), dedup: false }}));
 
-    // 触发 view +1 (fire-and-forget, 失败也不影响 UX)
     try {
       const res = await fetch(`/api/resources/${item.id}/view`, {
         method: "POST",
@@ -55,26 +57,47 @@ export function ResourceGrid({
       });
       const data = await res.json();
       if (data?.ok) {
-        // 24h 内同 ip 重复请求 → data.deduplicated=true, 但 display 仍是当前真实数
-        // 把 display 反算回 base_value + view_count
+        // 后端 dedup (24h 同 ip) → 反馈 "已计入"
+        const isDedup = !!data.deduplicated;
+        setClickFeedback((prev) => ({ ...prev, [item.id]: { ts: Date.now(), dedup: isDedup }}));
+
+        // 以 server 实际汇报的 display 为准, 与 server props 交错: view_count = display - base_value
+        // (适用种子可变的场景: base 改了 view_count 也跟着变)
         const existing = counters[item.id];
         if (existing) {
-          const delta = data.display - displayView(existing);
-          if (delta > 0) {
+          const newViewCount = data.display - (existing.base_value ?? 0);
+          if (newViewCount !== existing.view_count) {
             setLiveCounters((prev) => ({
               ...prev,
               [item.id]: {
                 ...existing,
-                view_count: existing.view_count + delta
+                view_count: newViewCount
               }
             }));
           }
         }
       }
     } catch {
-      // 静默吞错 (浏览计数非关键路径)
+      // 静默吞错
     }
   }, [counters]);
+
+  // 1.8s 后清除反馈 (避免永久 hover 状态)
+  useEffect(() => {
+    const t = setInterval(() => {
+      const now = Date.now();
+      setClickFeedback((prev) => {
+        const next: typeof prev = {};
+        let changed = false;
+        for (const [id, fb] of Object.entries(prev)) {
+          if (now - fb.ts < 1800) next[id] = fb;
+          else changed = true;
+        }
+        return changed ? next : prev;
+      });
+    }, 500);
+    return () => clearInterval(t);
+  }, []);
 
   return (
     <>
@@ -90,6 +113,7 @@ export function ResourceGrid({
           // 老板 Q3 决策: 真实数 (无区间, 无上限)
           const viewNum = counter ? displayView(counter) : 0;
           const downloadNum = counter ? displayDownload(counter) : 0;
+          const feedback = clickFeedback[m.id];
           return (
             <button
               type="button"
@@ -127,7 +151,17 @@ export function ResourceGrid({
                   {m.width && m.height && <span>{m.width}×{m.height}</span>}
                 </div>
                 <div className="mt-1 flex items-center justify-between text-xs text-fg-muted">
-                  <span title={`浏览 ${counter?.view_count ?? 0} + 种子 ${counter?.base_value ?? 0}${counter?.seed_enabled === 0 ? ' (装饰已关)' : ''}`}>👁 {viewNum}</span>
+                  <span title={`浏览 ${counter?.view_count ?? 0} + 种子 ${counter?.base_value ?? 0}${counter?.seed_enabled === 0 ? ' (装饰已关)' : ''}`}>
+                    👁 {viewNum}
+                    {feedback && (
+                      <span
+                        className={`ml-1 inline-block rounded px-1 text-[10px] font-semibold ${feedback.dedup ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'} animate-pulse`}
+                        data-testid={`view-feedback-${m.id}`}
+                      >
+                        {feedback.dedup ? '已计入' : '+1'}
+                      </span>
+                    )}
+                  </span>
                   <span title={`下载 ${counter?.download_count ?? 0} + 种子 ${counter?.seed_download_count ?? counter?.base_value ?? 0}${counter?.seed_enabled === 0 ? ' (装饰已关)' : ''}`}>⬇ {downloadNum}</span>
                   <span>{formatDate(m.uploaded_at)}</span>
                 </div>

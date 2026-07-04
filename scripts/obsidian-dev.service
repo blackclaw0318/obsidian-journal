@@ -1,5 +1,5 @@
 [Unit]
-Description=Obsidian-Journal Next.js Dev Server (dev.shangkun.uk origin)
+Description=Obsidian-Journal Next.js Server (dev.shangkun.uk origin, production mode)
 Documentation=https://github.com/blackclaw0318/obsidian-journal
 After=network.target
 # Wait for cloudflared named tunnel to be up before serving (avoid 502 during boot)
@@ -9,7 +9,9 @@ After=cloudflared.service
 Type=simple
 User=root
 WorkingDirectory=/root/.openclaw/workspace/projects/obsidian-journal
-ExecStart=/usr/bin/npm run dev
+# v0.35: 用 production server (next start) 而非 dev mode
+# 优势: 启动后 hydration < 100ms (无 RSC 按需编译), 资源页点击响应立即可用
+ExecStart=/usr/bin/npm run start
 Restart=always
 RestartSec=5
 # Graceful shutdown on stop
@@ -18,8 +20,8 @@ TimeoutStopSec=15
 # Log
 StandardOutput=append:/var/log/obsidian-dev.log
 StandardError=append:/var/log/obsidian-dev.log
-# Env (NODE_ENV=development is npm run dev default; we set NODE_OPTIONS for sqlite compat)
-Environment=NODE_ENV=development
+# Env (NODE_ENV=production + sqlite compat flag)
+Environment=NODE_ENV=production
 Environment=NODE_OPTIONS=--experimental-sqlite
 # Open file limit
 LimitNOFILE=65536
