@@ -16,6 +16,8 @@ import type {
   Video,
   MediaItem,
   MediaUsage,
+  MediaCounter,
+  MediaAccessLog,
   RefType,
   SiteConfig,
   Social,
@@ -1386,13 +1388,19 @@ export const mediaRepo = {
     const id = uid("med");
     const now = Math.floor(Date.now() / 1000);
     db.prepare(`
-      INSERT INTO media_items (id, filename, mime_type, size, width, height, alt, url, storage_type, uploaded_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO media_items (id, filename, mime_type, size, width, height, alt, url, storage_type, category, is_paid, uploaded_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       id, data.filename, data.mime_type, data.size,
       data.width ?? null, data.height ?? null, data.alt ?? null,
-      data.url, data.storage_type, now
+      data.url, data.storage_type, data.category, data.is_paid ? 1 : 0, now
     );
+    // v0.34: 同步写入 counter (base_value 随机 100-999, 一次性)
+    const { genBaseValue } = require("./counter");
+    db.prepare(`
+      INSERT INTO media_counters (media_id, base_value, created_at)
+      VALUES (?, ?, ?)
+    `).run(id, genBaseValue(), now);
     return { ...data, id, uploaded_at: now };
   },
 
@@ -1403,14 +1411,34 @@ export const mediaRepo = {
     db.prepare(`
       UPDATE media_items SET
         filename = ?, mime_type = ?, size = ?, width = ?, height = ?,
-        alt = ?, url = ?, storage_type = ?
+        alt = ?, url = ?, storage_type = ?, category = ?, is_paid = ?
       WHERE id = ?
     `).run(
       merged.filename, merged.mime_type, merged.size,
       merged.width ?? null, merged.height ?? null,
-      merged.alt ?? null, merged.url, merged.storage_type, id
+      merged.alt ?? null, merged.url, merged.storage_type,
+      merged.category, merged.is_paid ? 1 : 0, id
     );
     return merged;
+  },
+
+  // v0.34: 按 category 列表 (公开页 tabs 用)
+  listByCategory({
+    category,
+    limit = 100,
+    offset = 0
+  }: {
+    category: "image" | "document" | "audio";
+    limit?: number;
+    offset?: number;
+  }): { items: MediaItem[]; total: number } {
+    const countRow = db.prepare(`SELECT COUNT(*) AS c FROM media_items WHERE category = ?`).get(category) as { c: number };
+    const rows = db.prepare(`
+      SELECT * FROM media_items WHERE category = ?
+      ORDER BY uploaded_at DESC
+      LIMIT ? OFFSET ?
+    `).all(category, limit, offset);
+    return { items: rows as MediaItem[], total: countRow.c };
   },
 
   // 物理删除 + 级联清 media_usages
@@ -1451,11 +1479,78 @@ export const mediaRepo = {
   }
 };
 
+// ============ v0.34 Phase 4: 资源计数 + 访问流水 ============
+
+export const mediaCounterRepo = {
+  byId(mediaId: string): MediaCounter | null {
+    const row = db.prepare(`SELECT * FROM media_counters WHERE media_id = ?`).get(mediaId) as MediaCounter | undefined;
+    return row ?? null;
+  },
+
+  listByMediaIds(mediaIds: string[]): Map<string, MediaCounter> {
+    if (mediaIds.length === 0) return new Map();
+    const placeholders = mediaIds.map(() => "?").join(",");
+    const rows = db.prepare(`
+      SELECT * FROM media_counters WHERE media_id IN (${placeholders})
+    `).all(...mediaIds) as MediaCounter[];
+    return new Map(rows.map((r) => [r.media_id, r]));
+  },
+
+  // 业务逻辑在路由层做去重判定, 这里仅递增
+  incView(mediaId: string): MediaCounter | null {
+    const now = Math.floor(Date.now() / 1000);
+    const result = db.prepare(`
+      UPDATE media_counters SET view_count = view_count + 1, last_viewed_at = ?
+      WHERE media_id = ?
+    `).run(now, mediaId);
+    if (result.changes === 0) return null;
+    return this.byId(mediaId);
+  },
+
+  incDownload(mediaId: string): MediaCounter | null {
+    const now = Math.floor(Date.now() / 1000);
+    const result = db.prepare(`
+      UPDATE media_counters SET download_count = download_count + 1, last_downloaded_at = ?
+      WHERE media_id = ?
+    `).run(now, mediaId);
+    if (result.changes === 0) return null;
+    return this.byId(mediaId);
+  }
+};
+
+export const mediaAccessLogRepo = {
+  insert(data: Omit<MediaAccessLog, "id" | "created_at">): MediaAccessLog {
+    const id = uid("mal");
+    const now = Math.floor(Date.now() / 1000);
+    db.prepare(`
+      INSERT INTO media_access_logs (id, media_id, access_type, ip_hash, user_agent_hash, country, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      id, data.media_id, data.access_type,
+      data.ip_hash ?? null, data.user_agent_hash ?? null, data.country ?? null, now
+    );
+    return { id, created_at: now, ...data };
+  },
+
+  // 24h 同 ip_hash + access_type 去重检查
+  hasRecent(mediaId: string, accessType: "view" | "download", ipHash: string, windowSec: number): boolean {
+    const since = Math.floor(Date.now() / 1000) - windowSec;
+    const row = db.prepare(`
+      SELECT 1 AS x FROM media_access_logs
+      WHERE media_id = ? AND access_type = ? AND ip_hash = ? AND created_at >= ?
+      LIMIT 1
+    `).get(mediaId, accessType, ipHash, since);
+    return !!row;
+  }
+};
+
 // ============ Reset (dev only) ============
 export function resetAllData(): void {
   db.exec(`
     DELETE FROM daily_stats;
     DELETE FROM media_usages;
+    DELETE FROM media_access_logs;
+    DELETE FROM media_counters;
     DELETE FROM media_items;
     DELETE FROM pages;
     DELETE FROM chapters;

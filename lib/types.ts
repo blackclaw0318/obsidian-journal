@@ -155,6 +155,8 @@ export interface Video {
   view_count: number;
 }
 
+export type MediaCategory = "image" | "document" | "audio";
+
 export interface MediaItem {
   id: string;
   filename: string;
@@ -165,7 +167,29 @@ export interface MediaItem {
   alt: string | null;
   url: string;
   storage_type: MediaStorage;
+  category: MediaCategory;       // v0.34: image | document | audio
+  is_paid: boolean;              // v0.34: 默认 false, v0.35 付费预留
   uploaded_at: number;
+}
+
+export interface MediaCounter {
+  media_id: string;
+  base_value: number;            // v0.34: 100-999 随机种子 (一次性)
+  view_count: number;
+  download_count: number;
+  last_viewed_at: number | null;
+  last_downloaded_at: number | null;
+  created_at: number;
+}
+
+export interface MediaAccessLog {
+  id: string;
+  media_id: string;
+  access_type: "view" | "download";
+  ip_hash: string | null;
+  user_agent_hash: string | null;
+  country: string | null;
+  created_at: number;
 }
 
 export interface MediaUsage {

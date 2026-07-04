@@ -184,7 +184,8 @@ export function initSchema(): void {
     CREATE INDEX IF NOT EXISTS idx_videos_status ON videos(status, published_at);
     CREATE INDEX IF NOT EXISTS idx_videos_series ON videos(series_id);
 
-    -- 6. MediaItem + MediaUsage
+    -- 6. MediaItem + MediaUsage + Resource 计数 (v0.34 Phase 4)
+    -- v0.34: 砍 video, 新增 category (image/document/audio) + is_paid (默认 0, v0.35 付费预留)
     CREATE TABLE IF NOT EXISTS media_items (
       id TEXT PRIMARY KEY,
       filename TEXT UNIQUE NOT NULL,
@@ -195,9 +196,12 @@ export function initSchema(): void {
       alt TEXT,
       url TEXT NOT NULL,
       storage_type TEXT NOT NULL DEFAULT 'local',
+      category TEXT NOT NULL DEFAULT 'image' CHECK (category IN ('image','document','audio')),
+      is_paid INTEGER NOT NULL DEFAULT 0,
       uploaded_at INTEGER NOT NULL DEFAULT (unixepoch())
     );
     CREATE INDEX IF NOT EXISTS idx_media_mime ON media_items(mime_type);
+    CREATE INDEX IF NOT EXISTS idx_media_category ON media_items(category);
 
     CREATE TABLE IF NOT EXISTS media_usages (
       id TEXT PRIMARY KEY,
@@ -209,6 +213,32 @@ export function initSchema(): void {
       UNIQUE(media_id, ref_type, ref_id, field)
     );
     CREATE INDEX IF NOT EXISTS idx_usages_ref ON media_usages(ref_type, ref_id);
+
+    -- v0.34 Phase 4: 资源真实浏览/下载计数 (老板 17:26 Q3 决策)
+    -- base_value = 100-999 随机种子 (一次性, 创建时写入, 不重复)
+    -- 显示 = base_value + view_count (真实数, 无区间, 无上限)
+    CREATE TABLE IF NOT EXISTS media_counters (
+      media_id TEXT PRIMARY KEY REFERENCES media_items(id) ON DELETE CASCADE,
+      base_value INTEGER NOT NULL CHECK (base_value BETWEEN 100 AND 999),
+      view_count INTEGER NOT NULL DEFAULT 0,
+      download_count INTEGER NOT NULL DEFAULT 0,
+      last_viewed_at INTEGER,
+      last_downloaded_at INTEGER,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch())
+    );
+
+    -- 访问流水 (审计 + 24h ip_hash 去重依据)
+    CREATE TABLE IF NOT EXISTS media_access_logs (
+      id TEXT PRIMARY KEY,
+      media_id TEXT NOT NULL REFERENCES media_items(id) ON DELETE CASCADE,
+      access_type TEXT NOT NULL CHECK (access_type IN ('view','download')),
+      ip_hash TEXT,
+      user_agent_hash TEXT,
+      country TEXT,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch())
+    );
+    CREATE INDEX IF NOT EXISTS idx_media_access_logs_media ON media_access_logs(media_id);
+    CREATE INDEX IF NOT EXISTS idx_media_access_logs_dedupe ON media_access_logs(media_id, access_type, ip_hash, created_at);
 
     -- 7. Page (Block 组合)
     CREATE TABLE IF NOT EXISTS pages (
@@ -360,6 +390,95 @@ function migrateSchema(): void {
     db.exec(`ALTER TABLE site_config ADD COLUMN avatar_url TEXT;`);
   } catch {
     // 已存在
+  }
+  // v0.34 Phase 4: media_items 加 category + is_paid + media_counters + media_access_logs
+  try {
+    db.exec(`ALTER TABLE media_items ADD COLUMN category TEXT NOT NULL DEFAULT 'image';`);
+    db.exec(`CREATE INDEX IF NOT EXISTS idx_media_category ON media_items(category);`);
+  } catch {
+    // 已存在
+  }
+  try {
+    db.exec(`ALTER TABLE media_items ADD COLUMN is_paid INTEGER NOT NULL DEFAULT 0;`);
+  } catch {
+    // 已存在
+  }
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS media_counters (
+        media_id TEXT PRIMARY KEY REFERENCES media_items(id) ON DELETE CASCADE,
+        base_value INTEGER NOT NULL CHECK (base_value BETWEEN 100 AND 999),
+        view_count INTEGER NOT NULL DEFAULT 0,
+        download_count INTEGER NOT NULL DEFAULT 0,
+        last_viewed_at INTEGER,
+        last_downloaded_at INTEGER,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch())
+      );
+    `);
+    // 历史数据补 base_value (幂等: NOT IN 过滤已存在的)
+    db.exec(`
+      INSERT INTO media_counters (media_id, base_value, created_at)
+      SELECT id, 100 + ABS(RANDOM() % 900), strftime('%s','now') * 1000
+      FROM media_items
+      WHERE id NOT IN (SELECT media_id FROM media_counters);
+    `);
+    // 历史数据补 category (基于 mime_type)
+    db.exec(`
+      UPDATE media_items SET category = CASE
+        WHEN mime_type LIKE 'image/%' THEN 'image'
+        WHEN mime_type LIKE 'audio/%' THEN 'audio'
+        WHEN mime_type LIKE 'application/pdf'
+          OR mime_type LIKE 'application/%word%'
+          OR mime_type LIKE 'application/%sheet%'
+          OR mime_type LIKE 'application/%zip%'
+          OR mime_type LIKE 'text/%' THEN 'document'
+        ELSE 'image'
+      END
+      WHERE category = 'image' AND mime_type NOT LIKE 'image/%';
+    `);
+  } catch (err) {
+    // 已存在
+    console.error("[db] v0.34 media_counters migration:", err);
+  }
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS media_access_logs (
+        id TEXT PRIMARY KEY,
+        media_id TEXT NOT NULL REFERENCES media_items(id) ON DELETE CASCADE,
+        access_type TEXT NOT NULL CHECK (access_type IN ('view','download')),
+        ip_hash TEXT,
+        user_agent_hash TEXT,
+        country TEXT,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch())
+      );
+      CREATE INDEX IF NOT EXISTS idx_media_access_logs_media ON media_access_logs(media_id);
+      CREATE INDEX IF NOT EXISTS idx_media_access_logs_dedupe ON media_access_logs(media_id, access_type, ip_hash, created_at);
+    `);
+  } catch {
+    // 已存在
+  }
+  // v0.34 Phase 4: 清理所有 video 物理文件 + DB 记录 (老板 15:14 决策: 砍 video)
+  try {
+    const videoRows = db
+      .prepare(`SELECT id, url FROM media_items WHERE mime_type LIKE 'video/%'`)
+      .all() as Array<{ id: string; url: string }>;
+    for (const row of videoRows) {
+      try {
+        // 物理文件清理 (best-effort, 失败不阻塞)
+        const fs = require("node:fs");
+        const path = require("node:path");
+        const filename = row.url.split("/").pop();
+        if (filename) {
+          const localPath = path.join(process.cwd(), "public", "uploads", filename);
+          if (fs.existsSync(localPath)) fs.unlinkSync(localPath);
+        }
+      } catch {
+        // ignore fs errors
+      }
+    }
+    db.exec(`DELETE FROM media_items WHERE mime_type LIKE 'video/%';`);
+  } catch (err) {
+    console.error("[db] v0.34 video cleanup:", err);
   }
 }
 

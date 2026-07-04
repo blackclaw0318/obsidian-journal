@@ -13,6 +13,7 @@ process.env.SKIP_DB_INIT = "0";
 const TEST_DB = "data/test-media.db";
 
 const { mediaRepo, resetAllData } = await import("../../lib/repo.ts");
+const { categoryFromMime } = await import("../../lib/counter.ts");
 
 before(() => {
   for (const f of [TEST_DB, `${TEST_DB}-wal`, `${TEST_DB}-shm`]) {
@@ -39,7 +40,9 @@ function makeMediaItem(opts: Partial<{ mime: string; size: number; alt: string; 
     height: null,
     alt: opts.alt ?? null,
     url: `/uploads/${opts.filename ?? "x.png"}`,
-    storage_type: "local"
+    storage_type: "local",
+    category: categoryFromMime(opts.mime ?? "image/png"),
+    is_paid: false
   });
 }
 
