@@ -36,14 +36,18 @@ export default function ResourcesListPage({ searchParams }: { searchParams: Sear
   const counters = mediaCounterRepo.listByMediaIds(items.map((m) => m.id));
 
   // 序列化: better-sqlite3 行有 null prototype, 不能直接传给 Client Component
+  // ⚠️ "Only plain objects can be passed to Client Components" #428396957
+  // safeItems + safeCounters 都走 JSON 双跳, 必剥 prototype
   const safeItems = JSON.parse(JSON.stringify(items));
-  // 把 counter 转成 { media_id: { view, download } } 简化客户端
-  const safeCounters = Object.fromEntries(
-    Array.from(counters.entries()).map(([id, c]) => [id, {
-      view: displayView(c),
-      download: displayDownload(c)
-    }])
-  );
+  // 把 counter 转成 { media_id: { view, download } } 简化客户端, 再 JSON 序列化
+  const safeCounters = JSON.parse(JSON.stringify(
+    Object.fromEntries(
+      Array.from(counters.entries()).map(([id, c]) => [id, {
+        view: displayView(c),
+        download: displayDownload(c)
+      }])
+    )
+  ));
 
   return (
     <div className="space-y-6">

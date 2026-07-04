@@ -49,11 +49,15 @@ export default function ResourcesPage({ searchParams }: { searchParams: SearchPa
   const allCount = mediaRepo.count();
 
   // 批量取 counter (老板 Q3: 显示真实浏览/下载数)
-  const counters = mediaCounterRepo.listByMediaIds(items.map((m) => m.id));
+  const countersMap = mediaCounterRepo.listByMediaIds(items.map((m) => m.id));
 
-  // 序列化 (better-sqlite3 行不能直接传 client component)
+  // 序列化 (better-sqlite3 行不能直接传 client component — null prototype 会触发
+  // "Only plain objects can be passed to Client Components" #428396957)
+  // 双重策略: safeItems 走 JSON 剥离 prototype, safeCounters 转换 Map → object 后再 JSON
   const safeItems = JSON.parse(JSON.stringify(items));
-  const safeCounters = Object.fromEntries(counters);
+  const safeCounters = JSON.parse(
+    JSON.stringify(Object.fromEntries(countersMap))
+  );
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-12">
