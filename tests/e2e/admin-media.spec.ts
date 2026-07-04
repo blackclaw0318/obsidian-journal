@@ -132,8 +132,7 @@ test.describe("媒体库 v0.33.3 race fix", () => {
           "Content-Length": String(body.length),
           Cookie: cookie.replace(/^[^=]+=/, "").split(";")[0]
         },
-        data: body.toString("base64"),
-        maxSize: 1024 * 1024 * 20 // 20MB max for response
+        data: body.toString("base64")
       });
     } catch {
       // 预期会 throw (client aborted)
