@@ -1,25 +1,30 @@
 "use client";
 
 // ============================================================
-// MediaUploader (Phase 3.6 → v0.33 P0-2)
-// 真上传进度条 + 逐文件状态 + 重试 + 汇总
+// MediaUploader (Phase 3.6 → v0.33 P0-2, v0.33.1 P0-修)
+// 真上传进度 + 服务器处理状态 + 串行 + 自动刷新
 //  - XHR (fetch 不支持 upload progress)
-//  - 状态机: idle | uploading | success | error
+//  - 3 阶段状态: uploading → processing → success/error
+//  - 串行上传 (一个完成再下一个), 避免 server 被打爆导致 Cloudflare 524
+//  - 任一成功 → 自动 router.refresh()
+//  - 大文件 (>50MB) 警告提示 (避免 CF 100s timeout)
 // ============================================================
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 const ALLOWED_PREFIXES = ["image/", "video/", "audio/", "application/pdf"];
-const MAX_SIZE = 20 * 1024 * 1024; // 20MB
+const MAX_SIZE = 20 * 1024 * 1024; // 20MB (API 硬限制)
+const WARN_SIZE = 50 * 1024 * 1024; // 50MB 警告
 
-type Status = "uploading" | "success" | "error";
+type Status = "uploading" | "processing" | "success" | "error";
 
 interface FileEntry {
   id: number;
   file: File;
   status: Status;
-  progress: number; // 0-100
+  progress: number; // 0-100 (含 processing 占位 95)
   error?: string;
+  xhr?: XMLHttpRequest | null;
 }
 
 function formatSize(bytes: number): string {
@@ -42,12 +47,16 @@ export function MediaUploader() {
   const [files, setFiles] = useState<FileEntry[]>([]);
   const [dragging, setDragging] = useState(false);
   const idRef = useRef(0);
-  const xhrRef = useRef<Map<number, XMLHttpRequest>>(new Map());
+  const nextUploadRef = useRef<Promise<void>>(Promise.resolve()); // 串行 chain
 
   const okCount = files.filter((f) => f.status === "success").length;
   const errCount = files.filter((f) => f.status === "error").length;
   const uploadingCount = files.filter((f) => f.status === "uploading").length;
-  const allDone = files.length > 0 && uploadingCount === 0;
+  const processingCount = files.filter((f) => f.status === "processing").length;
+
+  function updateEntry(id: number, patch: Partial<FileEntry>) {
+    setFiles((prev) => prev.map((f) => f.id === id ? { ...f, ...patch } : f));
+  }
 
   function validate(file: File): string | null {
     if (file.size === 0) return "文件为空";
@@ -58,59 +67,67 @@ export function MediaUploader() {
     return null;
   }
 
-  function upload(entry: FileEntry) {
-    const err = validate(entry.file);
-    if (err) {
-      setFiles((prev) => prev.map((f) => f.id === entry.id ? { ...f, status: "error", error: err } : f));
-      return;
-    }
-
-    const xhr = new XMLHttpRequest();
-    xhrRef.current.set(entry.id, xhr);
-
-    xhr.upload.onprogress = (e) => {
-      if (!e.lengthComputable) return;
-      const pct = Math.round((e.loaded / e.total) * 100);
-      setFiles((prev) => prev.map((f) => f.id === entry.id ? { ...f, progress: pct } : f));
-    };
-
-    xhr.onload = () => {
-      xhrRef.current.delete(entry.id);
-      let data: any = {};
-      try { data = JSON.parse(xhr.responseText); } catch { /* not JSON */ }
-      if (xhr.status >= 200 && xhr.status < 300 && data.ok) {
-        setFiles((prev) => prev.map((f) => f.id === entry.id ? { ...f, status: "success", progress: 100 } : f));
-      } else {
-        setFiles((prev) => prev.map((f) => f.id === entry.id ? {
-          ...f,
-          status: "error",
-          error: data.error ?? `HTTP ${xhr.status}`
-        } : f));
+  function uploadOne(entry: FileEntry): Promise<void> {
+    return new Promise((resolve) => {
+      const err = validate(entry.file);
+      if (err) {
+        updateEntry(entry.id, { status: "error", error: err });
+        resolve();
+        return;
       }
-    };
 
-    xhr.onerror = () => {
-      xhrRef.current.delete(entry.id);
-      setFiles((prev) => prev.map((f) => f.id === entry.id ? {
-        ...f,
-        status: "error",
-        error: "网络错误"
-      } : f));
-    };
+      const xhr = new XMLHttpRequest();
+      updateEntry(entry.id, { xhr });
 
-    xhr.onabort = () => {
-      xhrRef.current.delete(entry.id);
-      setFiles((prev) => prev.map((f) => f.id === entry.id ? {
-        ...f,
-        status: "error",
-        error: "已取消"
-      } : f));
-    };
+      xhr.upload.onprogress = (e) => {
+        if (!e.lengthComputable) return;
+        const pct = Math.min(92, Math.round((e.loaded / e.total) * 100));
+        updateEntry(entry.id, { progress: pct });
+      };
 
-    const form = new FormData();
-    form.append("file", entry.file);
-    xhr.open("POST", "/api/admin/media");
-    xhr.send(form);
+      // byte 上传完成 → server 处理阶段 (524 通常发生在这一段)
+      xhr.upload.onload = () => {
+        updateEntry(entry.id, { status: "processing", progress: 95 });
+      };
+
+      xhr.onload = () => {
+        let data: any = {};
+        try { data = JSON.parse(xhr.responseText); } catch { /* not JSON */ }
+        if (xhr.status >= 200 && xhr.status < 300 && data.ok) {
+          updateEntry(entry.id, { status: "success", progress: 100 });
+          // 任一文件成功 → 自动刷新列表
+          queueMicrotask(() => router.refresh());
+        } else {
+          const errMsg = xhr.status === 524
+            ? "524 超时 (视频过大/网络慢, 建议 < 10MB 视频)"
+            : (data.error ?? `HTTP ${xhr.status}`);
+          updateEntry(entry.id, { status: "error", error: errMsg });
+        }
+        resolve();
+      };
+
+      xhr.onerror = () => {
+        updateEntry(entry.id, { status: "error", error: "网络错误" });
+        resolve();
+      };
+
+      xhr.onabort = () => {
+        updateEntry(entry.id, { status: "error", error: "已取消" });
+        resolve();
+      };
+
+      const form = new FormData();
+      form.append("file", entry.file);
+      xhr.open("POST", "/api/admin/media");
+      xhr.send(form);
+    });
+  }
+
+  // 串行 chain: 每次 enqueue 都拼接到 nextUploadRef, 旧的等新的一起完成
+  function enqueue(entry: FileEntry) {
+    nextUploadRef.current = nextUploadRef.current.then(() => uploadOne(entry));
+    // catch 防止 chain 中断 (但每个 uploadOne 自己 resolve 不 reject)
+    nextUploadRef.current = nextUploadRef.current.catch(() => undefined);
   }
 
   function handleSelected(selected: FileList | null) {
@@ -119,32 +136,35 @@ export function MediaUploader() {
       id: ++idRef.current,
       file,
       status: "uploading",
-      progress: 0
+      progress: 0,
+      xhr: null
     }));
     setFiles((prev) => [...prev, ...newEntries]);
-    newEntries.forEach((entry) => upload(entry));
+
+    // 大文件警告
+    const big = newEntries.filter((e) => e.file.size > WARN_SIZE);
+    if (big.length > 0) {
+      console.warn(`[MediaUploader] ${big.length} 个文件超过 50MB, 可能超时`);
+    }
+
+    // 串行上传 (concurrency=1)
+    newEntries.forEach(enqueue);
   }
 
   function retry(entry: FileEntry) {
-    // abort 现有请求
-    xhrRef.current.get(entry.id)?.abort();
-    setFiles((prev) => prev.map((f) => f.id === entry.id ? { ...f, status: "uploading", progress: 0, error: undefined } : f));
-    upload({ ...entry, status: "uploading", progress: 0 });
+    entry.xhr?.abort();
+    updateEntry(entry.id, { status: "uploading", progress: 0, error: undefined });
+    // 复用 entry 但 state 重置
+    enqueue({ ...entry, status: "uploading", progress: 0, error: undefined, xhr: null });
   }
 
   function remove(entry: FileEntry) {
-    xhrRef.current.get(entry.id)?.abort();
-    xhrRef.current.delete(entry.id);
+    entry.xhr?.abort();
     setFiles((prev) => prev.filter((f) => f.id !== entry.id));
   }
 
   function clearCompleted() {
-    setFiles((prev) => prev.filter((f) => f.status === "uploading"));
-  }
-
-  function onAllDone() {
-    // 任一上传成功 → refresh admin media list
-    if (okCount > 0) router.refresh();
+    setFiles((prev) => prev.filter((f) => f.status === "uploading" || f.status === "processing"));
   }
 
   return (
@@ -179,22 +199,15 @@ export function MediaUploader() {
           <div className="flex items-center gap-3">
             <span>共 <strong>{files.length}</strong> 个文件</span>
             {okCount > 0 && <span className="text-green-600">✓ {okCount} 成功</span>}
-            {uploadingCount > 0 && <span className="text-accent">⏳ {uploadingCount} 上传中</span>}
+            {processingCount > 0 && <span className="text-accent">⏳ {processingCount} 处理中</span>}
+            {uploadingCount > 0 && <span className="text-accent">⬆ {uploadingCount} 上传中</span>}
             {errCount > 0 && <span className="text-red-600">✗ {errCount} 失败</span>}
           </div>
           <div className="flex gap-2">
-            {allDone && okCount > 0 && (
-              <button
-                onClick={onAllDone}
-                className="rounded bg-accent px-2 py-1 text-xs text-white hover:bg-accent/90"
-              >
-                刷新列表
-              </button>
-            )}
             <button
               onClick={clearCompleted}
               className="rounded border border-border px-2 py-1 text-xs hover:bg-bg-base"
-              disabled={uploadingCount > 0}
+              disabled={uploadingCount + processingCount > 0}
             >
               清空已完成
             </button>
@@ -205,57 +218,69 @@ export function MediaUploader() {
       {/* 逐文件状态 */}
       {files.length > 0 && (
         <ul className="space-y-1.5" data-testid="media-uploader-list">
-          {files.map((entry) => (
-            <li
-              key={entry.id}
-              data-testid="media-uploader-entry"
-              data-status={entry.status}
-              className="flex items-center gap-3 rounded-lg border border-border bg-bg-card p-2"
-            >
-              <div className="text-2xl">{mimeIcon(entry.file.type)}</div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between gap-2 text-xs">
-                  <span className="truncate font-medium" title={entry.file.name}>{entry.file.name}</span>
-                  <span className="shrink-0 text-fg-muted">{formatSize(entry.file.size)}</span>
-                </div>
-                {entry.status === "uploading" && (
-                  <div className="mt-1 flex items-center gap-2">
-                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-bg-base">
-                      <div
-                        className="h-full bg-accent transition-all duration-200"
-                        style={{ width: `${entry.progress}%` }}
-                      />
-                    </div>
-                    <span className="w-10 text-right text-xs text-fg-muted">{entry.progress}%</span>
+          {files.map((entry) => {
+            const isLarge = entry.file.size > WARN_SIZE;
+            return (
+              <li
+                key={entry.id}
+                data-testid="media-uploader-entry"
+                data-status={entry.status}
+                className="flex items-center gap-3 rounded-lg border border-border bg-bg-card p-2"
+              >
+                <div className="text-2xl">{mimeIcon(entry.file.type)}</div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2 text-xs">
+                    <span className="truncate font-medium" title={entry.file.name}>{entry.file.name}</span>
+                    <span className="shrink-0 text-fg-muted">
+                      {formatSize(entry.file.size)}
+                      {isLarge && <span className="ml-1 rounded bg-yellow-500/20 px-1 text-yellow-700 dark:text-yellow-400">大</span>}
+                    </span>
                   </div>
-                )}
-                {entry.status === "success" && (
-                  <div className="mt-1 text-xs text-green-600">✓ 上传成功</div>
-                )}
-                {entry.status === "error" && (
-                  <div className="mt-1 text-xs text-red-600">✗ {entry.error}</div>
-                )}
-              </div>
-              <div className="flex shrink-0 gap-1">
-                {entry.status === "error" && (
+                  {(entry.status === "uploading" || entry.status === "processing") && (
+                    <div className="mt-1 flex items-center gap-2">
+                      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-bg-base">
+                        {entry.status === "processing" ? (
+                          <div className="h-full w-full animate-pulse bg-accent/70" />
+                        ) : (
+                          <div
+                            className="h-full bg-accent transition-all duration-200"
+                            style={{ width: `${entry.progress}%` }}
+                          />
+                        )}
+                      </div>
+                      <span className="w-20 shrink-0 text-right text-xs text-fg-muted">
+                        {entry.status === "processing" ? "⏳ 处理中" : `${entry.progress}%`}
+                      </span>
+                    </div>
+                  )}
+                  {entry.status === "success" && (
+                    <div className="mt-1 text-xs text-green-600">✓ 上传成功</div>
+                  )}
+                  {entry.status === "error" && (
+                    <div className="mt-1 text-xs text-red-600">✗ {entry.error}</div>
+                  )}
+                </div>
+                <div className="flex shrink-0 gap-1">
+                  {entry.status === "error" && (
+                    <button
+                      onClick={() => retry(entry)}
+                      className="rounded border border-border px-2 py-1 text-xs hover:bg-bg-base"
+                      data-testid="media-uploader-retry"
+                    >
+                      重试
+                    </button>
+                  )}
                   <button
-                    onClick={() => retry(entry)}
-                    className="rounded border border-border px-2 py-1 text-xs hover:bg-bg-base"
-                    data-testid="media-uploader-retry"
+                    onClick={() => remove(entry)}
+                    className="rounded px-2 py-1 text-xs text-fg-muted hover:bg-bg-base hover:text-fg"
+                    aria-label="移除"
                   >
-                    重试
+                    ✕
                   </button>
-                )}
-                <button
-                  onClick={() => remove(entry)}
-                  className="rounded px-2 py-1 text-xs text-fg-muted hover:bg-bg-base hover:text-fg"
-                  aria-label="移除"
-                >
-                  ✕
-                </button>
-              </div>
-            </li>
-          ))}
+                </div>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
