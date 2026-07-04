@@ -16,8 +16,6 @@ import type {
   Video,
   MediaItem,
   MediaUsage,
-  MediaCounter,
-  MediaAccessLog,
   RefType,
   SiteConfig,
   Social,
@@ -1395,12 +1393,7 @@ export const mediaRepo = {
       data.width ?? null, data.height ?? null, data.alt ?? null,
       data.url, data.storage_type, data.category, data.is_paid ? 1 : 0, now
     );
-    // v0.34: 同步写入 counter (base_value 随机 100-999, 一次性)
-    const { genBaseValue } = require("./counter");
-    db.prepare(`
-      INSERT INTO media_counters (media_id, base_value, created_at)
-      VALUES (?, ?, ?)
-    `).run(id, genBaseValue(), now);
+    // v0.35 00:59 老板决策: 删计数 — 不再写 media_counters
     return { ...data, id, uploaded_at: now };
   },
 
@@ -1479,162 +1472,11 @@ export const mediaRepo = {
   }
 };
 
-// ============ v0.34 Phase 4: 资源计数 + 访问流水 ============
-
-export const mediaCounterRepo = {
-  byId(mediaId: string): MediaCounter | null {
-    const row = db.prepare(`SELECT * FROM media_counters WHERE media_id = ?`).get(mediaId) as MediaCounter | undefined;
-    return row ?? null;
-  },
-
-  listByMediaIds(mediaIds: string[]): Map<string, MediaCounter> {
-    if (mediaIds.length === 0) return new Map();
-    const placeholders = mediaIds.map(() => "?").join(",");
-    const rows = db.prepare(`
-      SELECT * FROM media_counters WHERE media_id IN (${placeholders})
-    `).all(...mediaIds) as MediaCounter[];
-    return new Map(rows.map((r) => [r.media_id, r]));
-  },
-
-  // 业务逻辑在路由层做去重判定, 这里仅递增
-  incView(mediaId: string): MediaCounter | null {
-    const now = Math.floor(Date.now() / 1000);
-    const result = db.prepare(`
-      UPDATE media_counters SET view_count = view_count + 1, last_viewed_at = ?
-      WHERE media_id = ?
-    `).run(now, mediaId);
-    if (result.changes === 0) return null;
-    return this.byId(mediaId);
-  },
-
-  incDownload(mediaId: string): MediaCounter | null {
-    const now = Math.floor(Date.now() / 1000);
-    const result = db.prepare(`
-      UPDATE media_counters SET download_count = download_count + 1, last_downloaded_at = ?
-      WHERE media_id = ?
-    `).run(now, mediaId);
-    if (result.changes === 0) return null;
-    return this.byId(mediaId);
-  },
-
-  // v0.35 Phase 4: 改单条种子 (admin 装门面场景)
-  patchSeed(mediaId: string, patch: { base_value?: number; seed_download_count?: number; seed_enabled?: number }): MediaCounter | null {
-    const sets: string[] = [];
-    const vals: Array<string | number> = [];
-    if (patch.base_value !== undefined) {
-      sets.push("base_value = ?");
-      vals.push(patch.base_value);
-    }
-    if (patch.seed_download_count !== undefined) {
-      sets.push("seed_download_count = ?");
-      vals.push(patch.seed_download_count);
-    }
-    if (patch.seed_enabled !== undefined) {
-      sets.push("seed_enabled = ?");
-      vals.push(patch.seed_enabled);
-    }
-    if (sets.length === 0) return this.byId(mediaId);
-    vals.push(mediaId);
-    const result = db.prepare(`UPDATE media_counters SET ${sets.join(", ")} WHERE media_id = ?`).run(...vals);
-    if (result.changes === 0) return null;
-    return this.byId(mediaId);
-  },
-
-  // v0.35 Phase 4: 批量调整种子 (老板装门面一键提升人气)
-  // delta: 可正可负 (例: +200 全站装热门)
-  // category 过滤: 'image' | 'document' | 'audio' | undefined (全站)
-  bulkAdjustSeed(delta: number, opts: { category?: "image" | "document" | "audio" } = {}): { affected: number } {
-    if (!Number.isFinite(delta)) return { affected: 0 };
-    // 防误锁: 限定 view_seed 范围 0-99999, download_seed 0-99999
-    let where = "1=1";
-    const params: Array<string | number> = [];
-    if (opts.category) {
-      where = "m.category = ?";
-      params.push(opts.category);
-    }
-    const result = db.prepare(`
-      UPDATE media_counters
-      SET base_value = MAX(100, MIN(999, base_value + ?))
-      FROM media_items m
-      WHERE media_counters.media_id = m.id AND ${where}
-    `).run(delta, ...params);
-    return { affected: Number(result.changes) };
-  },
-
-  // v0.35 Phase 4: 重置所有种子为默认随机 100-999 (一键返回原状)
-  randomizeAllSeeds(opts: { category?: "image" | "document" | "audio" } = {}): { affected: number } {
-    let where = "1=1";
-    const params: Array<string | number> = [];
-    if (opts.category) {
-      where = "m.category = ?";
-      params.push(opts.category);
-    }
-    const result = db.prepare(`
-      UPDATE media_counters
-      SET base_value = 100 + ABS(RANDOM() % 900)
-      FROM media_items m
-      WHERE media_counters.media_id = m.id AND ${where}
-    `).run(...params);
-    return { affected: Number(result.changes) };
-  }
-};
-
-export const mediaAccessLogRepo = {
-  insert(data: Omit<MediaAccessLog, "id" | "created_at">): MediaAccessLog {
-    const id = uid("mal");
-    const now = Math.floor(Date.now() / 1000);
-    db.prepare(`
-      INSERT INTO media_access_logs (id, media_id, access_type, ip_hash, user_agent_hash, country, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      id, data.media_id, data.access_type,
-      data.ip_hash ?? null, data.user_agent_hash ?? null, data.country ?? null, now
-    );
-    return { id, created_at: now, ...data };
-  },
-
-  // 24h 同 ip_hash + access_type 去重检查
-  hasRecent(mediaId: string, accessType: "view" | "download", ipHash: string, windowSec: number): boolean {
-    const since = Math.floor(Date.now() / 1000) - windowSec;
-    const row = db.prepare(`
-      SELECT 1 AS x FROM media_access_logs
-      WHERE media_id = ? AND access_type = ? AND ip_hash = ? AND created_at >= ?
-      LIMIT 1
-    `).get(mediaId, accessType, ipHash, since);
-    return !!row;
-  },
-
-  // v0.35 (老板 22:20): 统计近 24h 不同 IP 的访问人次 (透明化展示, 老板可以看到累计)
-  // 个人博客场景: 个人查看也算一个访客, 透明计数
-  countRecentVisitors(mediaId: string, windowSec: number = 86400): number {
-    const since = Math.floor(Date.now() / 1000) - windowSec;
-    const row = db.prepare(`
-      SELECT COUNT(DISTINCT ip_hash) AS visitors
-      FROM media_access_logs
-      WHERE media_id = ? AND access_type = 'view' AND created_at >= ?
-    `).get(mediaId, since) as { visitors: number } | undefined;
-    return row?.visitors ?? 0;
-  },
-
-  // v0.35: 统计近 24h 浏览总次数 (含 dedup)
-  countRecentViews(mediaId: string, windowSec: number = 86400): number {
-    const since = Math.floor(Date.now() / 1000) - windowSec;
-    const row = db.prepare(`
-      SELECT COUNT(*) AS total
-      FROM media_access_logs
-      WHERE media_id = ? AND access_type = 'view' AND created_at >= ?
-    `).get(mediaId, since) as { total: number } | undefined;
-    return row?.total ?? 0;
-  }
-};
-
 // ============ Reset (dev only) ============
 export function resetAllData(): void {
   db.exec(`
     DELETE FROM daily_stats;
     DELETE FROM media_usages;
-    DELETE FROM media_access_logs;
-    DELETE FROM media_counters;
     DELETE FROM media_items;
     DELETE FROM pages;
     DELETE FROM chapters;

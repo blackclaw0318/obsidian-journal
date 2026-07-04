@@ -214,31 +214,8 @@ export function initSchema(): void {
     );
     CREATE INDEX IF NOT EXISTS idx_usages_ref ON media_usages(ref_type, ref_id);
 
-    -- v0.34 Phase 4: 资源真实浏览/下载计数 (老板 17:26 Q3 决策)
-    -- base_value = 100-999 随机种子 (一次性, 创建时写入, 不重复)
-    -- 显示 = base_value + view_count (真实数, 无区间, 无上限)
-    CREATE TABLE IF NOT EXISTS media_counters (
-      media_id TEXT PRIMARY KEY REFERENCES media_items(id) ON DELETE CASCADE,
-      base_value INTEGER NOT NULL CHECK (base_value BETWEEN 100 AND 999),
-      view_count INTEGER NOT NULL DEFAULT 0,
-      download_count INTEGER NOT NULL DEFAULT 0,
-      last_viewed_at INTEGER,
-      last_downloaded_at INTEGER,
-      created_at INTEGER NOT NULL DEFAULT (unixepoch())
-    );
-
-    -- 访问流水 (审计 + 24h ip_hash 去重依据)
-    CREATE TABLE IF NOT EXISTS media_access_logs (
-      id TEXT PRIMARY KEY,
-      media_id TEXT NOT NULL REFERENCES media_items(id) ON DELETE CASCADE,
-      access_type TEXT NOT NULL CHECK (access_type IN ('view','download')),
-      ip_hash TEXT,
-      user_agent_hash TEXT,
-      country TEXT,
-      created_at INTEGER NOT NULL DEFAULT (unixepoch())
-    );
-    CREATE INDEX IF NOT EXISTS idx_media_access_logs_media ON media_access_logs(media_id);
-    CREATE INDEX IF NOT EXISTS idx_media_access_logs_dedupe ON media_access_logs(media_id, access_type, ip_hash, created_at);
+    -- v0.35 砍计数后: media_counters / media_access_logs 表已删
+    -- (v0.34 计数功能, 2026-07-05 00:59 老板决策)
 
     -- 7. Page (Block 组合)
     CREATE TABLE IF NOT EXISTS pages (
@@ -391,33 +368,10 @@ function migrateSchema(): void {
   } catch {
     // 已存在
   }
-  // v0.35 Phase 4: media_counters 加 seed_enabled (老板 2026-07-04 20:37 决策)
-  // 1 = 显示种子 + 真实, 0 = 只显示真实数 (老板装门面用)
-  try {
-    db.exec(`ALTER TABLE media_counters ADD COLUMN seed_enabled INTEGER NOT NULL DEFAULT 1;`);
-  } catch {
-    // 已存在
-  }
-  // v0.35 Phase 4: media_counters 加 seed_download_count (与 base_value 区分)
-  // 原 base_value 仅用于 view 种子, 下载种子独立可调 (老板装门面场景)
-  try {
-    db.exec(`ALTER TABLE media_counters ADD COLUMN seed_download_count INTEGER NOT NULL DEFAULT 50;`);
-    // 老数据用 base_value 一半填入 (默认 50% 概率被下载)
-    db.exec(`
-      UPDATE media_counters
-      SET seed_download_count = MAX(50, base_value / 2)
-      WHERE seed_download_count = 50;
-    `);
-  } catch {
-    // 已存在
-  }
-  // v0.35 Phase 4: media_counters.base_value 范围放宽 1-99999 (老板可手动调高到几万)
-  // 注意: 仅放宽上限, 不破坏 CHECK (SQLite 不支持 ALTER CHECK, 需重建表)
-  // 为避免数据迁移, 简单方案: 创新表 + 数据迁移 + 改名的代码留 v0.35+ 真正需要时再做
-  // 当前: admin API 端放宽校验即可 (DB 层仍 100-999)
-  // === v0.35 end ===
+  // v0.35 00:59 老板决策: 删所有计数功能
+  // media_counters / media_access_logs 表 / 字段 / 迁移全部砍
 
-  // v0.34 Phase 4: media_items 加 category + is_paid + media_counters + media_access_logs
+  // v0.34 Phase 4: media_items 加 category + is_paid (计数表已删)
   try {
     db.exec(`ALTER TABLE media_items ADD COLUMN category TEXT NOT NULL DEFAULT 'image';`);
     db.exec(`CREATE INDEX IF NOT EXISTS idx_media_category ON media_items(category);`);
@@ -429,26 +383,8 @@ function migrateSchema(): void {
   } catch {
     // 已存在
   }
+  // 历史数据补 category (基于 mime_type)
   try {
-    db.exec(`
-      CREATE TABLE IF NOT EXISTS media_counters (
-        media_id TEXT PRIMARY KEY REFERENCES media_items(id) ON DELETE CASCADE,
-        base_value INTEGER NOT NULL CHECK (base_value BETWEEN 100 AND 999),
-        view_count INTEGER NOT NULL DEFAULT 0,
-        download_count INTEGER NOT NULL DEFAULT 0,
-        last_viewed_at INTEGER,
-        last_downloaded_at INTEGER,
-        created_at INTEGER NOT NULL DEFAULT (unixepoch())
-      );
-    `);
-    // 历史数据补 base_value (幂等: NOT IN 过滤已存在的)
-    db.exec(`
-      INSERT INTO media_counters (media_id, base_value, created_at)
-      SELECT id, 100 + ABS(RANDOM() % 900), strftime('%s','now') * 1000
-      FROM media_items
-      WHERE id NOT IN (SELECT media_id FROM media_counters);
-    `);
-    // 历史数据补 category (基于 mime_type)
     db.exec(`
       UPDATE media_items SET category = CASE
         WHEN mime_type LIKE 'image/%' THEN 'image'
@@ -461,24 +397,6 @@ function migrateSchema(): void {
         ELSE 'image'
       END
       WHERE category = 'image' AND mime_type NOT LIKE 'image/%';
-    `);
-  } catch (err) {
-    // 已存在
-    console.error("[db] v0.34 media_counters migration:", err);
-  }
-  try {
-    db.exec(`
-      CREATE TABLE IF NOT EXISTS media_access_logs (
-        id TEXT PRIMARY KEY,
-        media_id TEXT NOT NULL REFERENCES media_items(id) ON DELETE CASCADE,
-        access_type TEXT NOT NULL CHECK (access_type IN ('view','download')),
-        ip_hash TEXT,
-        user_agent_hash TEXT,
-        country TEXT,
-        created_at INTEGER NOT NULL DEFAULT (unixepoch())
-      );
-      CREATE INDEX IF NOT EXISTS idx_media_access_logs_media ON media_access_logs(media_id);
-      CREATE INDEX IF NOT EXISTS idx_media_access_logs_dedupe ON media_access_logs(media_id, access_type, ip_hash, created_at);
     `);
   } catch {
     // 已存在

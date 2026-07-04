@@ -1,14 +1,13 @@
 "use client";
 
 // ============================================================
-// ResourceAdminGrid - 资源管理网格 (v0.34 Phase 4, 旧 MediaGrid 升级)
-// 显示真实浏览/下载数 (老板 Q3 决策)
-// 砍 video 渲染分支
+// ResourceAdminGrid - 资源管理网格 (v0.35 砍计数版)
+// 老板 2026-07-05 00:59 决策: 删所有计数功能
+// 还原到最简版: 缩略图 / 文件名 / 大小 / alt 编辑 / 复制 / 删除
 // ============================================================
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { MediaItem } from "@/lib/types";
-import { SeedEditModal } from "./SeedEditModal";
 
 function formatSize(bytes: number): string {
   if (bytes < 1024) return `${bytes}B`;
@@ -22,32 +21,13 @@ function categoryIcon(category: string): string {
   return "📄";
 }
 
-// v0.35: 全量 counter (含种子信息, 供 admin 装门面编辑)
-interface SimpleCounter {
-  view: number;
-  download: number;
-  base_value: number;
-  seed_download_count: number;
-  seed_enabled: number;
-  view_count: number;
-  download_count: number;
-}
-
-export function ResourceAdminGrid({
-  items,
-  counters
-}: {
-  items: MediaItem[];
-  counters: Record<string, SimpleCounter>;
-}) {
+export function ResourceAdminGrid({ items }: { items: MediaItem[] }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editAlt, setEditAlt] = useState<string>("");
-  // v0.35: 种子编辑 modal
-  const [seedModalItem, setSeedModalItem] = useState<MediaItem | null>(null);
 
   function handleDelete(item: MediaItem) {
     if (!confirm(`确定要删除此资源吗?\n\n${item.filename}\n${formatSize(item.size)}\n\n⚠️ 文件物理删除, 引用追踪也会清空。`)) return;
@@ -61,6 +41,7 @@ export function ResourceAdminGrid({
       } else {
         setError(data.error ?? "删除失败");
       }
+      setBusyId(item.id);
       setBusyId(null);
     });
   }
@@ -111,7 +92,6 @@ export function ResourceAdminGrid({
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {items.map((item) => {
-          const c = counters[item.id];
           return (
             <div
               key={item.id}
@@ -143,17 +123,6 @@ export function ResourceAdminGrid({
                   <span>{formatSize(item.size)}</span>
                   <span className="rounded bg-bg-base px-1.5 py-0.5">{item.mime_type.split("/")[1]}</span>
                 </div>
-                {/* 老板 Q3: 真实浏览/下载数 (含 base_value 种子) */}
-                {c && (
-                  <div className="flex items-center justify-between text-fg-muted">
-                    <span title={`浏览 ${c.view_count} + 种子 ${c.base_value}${c.seed_enabled ? '' : ' (装饰已关)'}`}>
-                      👁 {c.view}
-                    </span>
-                    <span title={`下载 ${c.download_count} + 种子 ${c.seed_download_count}${c.seed_enabled ? '' : ' (装饰已关)'}`}>
-                      ⬇ {c.download}
-                    </span>
-                  </div>
-                )}
 
                 {/* alt 编辑 */}
                 {editingId === item.id ? (
@@ -202,15 +171,6 @@ export function ResourceAdminGrid({
                   >
                     ✏️
                   </button>
-                  {c && (
-                    <button
-                      onClick={() => setSeedModalItem(item)}
-                      className="flex-1 rounded border border-border px-1 py-1 text-xs hover:bg-bg-base"
-                      title={`种子编辑 (base=${c.base_value}, dl_seed=${c.seed_download_count}, ${c.seed_enabled ? '启用' : '关'})`}
-                    >
-                      ⚙️
-                    </button>
-                  )}
                   <a
                     href={item.url}
                     target="_blank"
@@ -234,19 +194,6 @@ export function ResourceAdminGrid({
           );
         })}
       </div>
-
-      {/* v0.35: 种子编辑 modal (顶层 render, 不嵌在 grid 内) */}
-      {seedModalItem && counters[seedModalItem.id] && (
-        <SeedEditModal
-          item={seedModalItem}
-          initialBaseValue={counters[seedModalItem.id].base_value}
-          initialSeedDownload={counters[seedModalItem.id].seed_download_count}
-          initialSeedEnabled={counters[seedModalItem.id].seed_enabled}
-          realView={counters[seedModalItem.id].view_count}
-          realDownload={counters[seedModalItem.id].download_count}
-          onClose={() => setSeedModalItem(null)}
-        />
-      )}
     </div>
   );
 }

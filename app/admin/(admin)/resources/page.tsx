@@ -1,12 +1,11 @@
 // ============================================================
-// /admin/resources - 资源库管理 (v0.34 Phase 4, 旧 /admin/media 升级)
-// Grid 视图 + 上传 + alt 编辑 + 引用追踪
-// 老板 15:14 决策: 砍 video, 三类 (image/document/audio)
+// /admin/resources - 资源库管理 (v0.35 砍计数版)
+// 老板 2026-07-05 00:59 决策: 删所有计数功能
+// 还原最简版: Grid 视图 + 上传 + alt 编辑 + 复制 + 删除
 // ============================================================
-import { mediaRepo, mediaCounterRepo } from "@/lib/repo";
+import { mediaRepo } from "@/lib/repo";
 import { ResourceUploader } from "./_components/ResourceUploader";
 import { ResourceAdminGrid } from "./_components/ResourceAdminGrid";
-import { displayView, displayDownload } from "@/lib/counter";
 import { formatBytes } from "@/lib/utils";
 import type { MediaCategory } from "@/lib/types";
 
@@ -33,29 +32,9 @@ export default function ResourcesListPage({ searchParams }: { searchParams: Sear
     : mediaRepo.listAll({ q, limit: 200 });
   const totalSize = mediaRepo.totalSize();
 
-  // 批量取 counter (Q3 显示真实数)
-  const counters = mediaCounterRepo.listByMediaIds(items.map((m) => m.id));
-
   // 序列化: better-sqlite3 行有 null prototype, 不能直接传给 Client Component
   // ⚠️ "Only plain objects can be passed to Client Components" #428396957
-  // safeItems + safeCounters 都走 JSON 双跳, 必剥 prototype
   const safeItems = JSON.parse(JSON.stringify(items));
-  // 把 counter 转成 { media_id: { view, download, ... } } 客户端, 再 JSON 序列化
-  // v0.35: 加 base_value + seed_download_count + seed_enabled + view_count + download_count
-  // 供 AdminGrid 种子编辑 modal 使用 (装门面场景)
-  const safeCounters = JSON.parse(JSON.stringify(
-    Object.fromEntries(
-      Array.from(counters.entries()).map(([id, c]) => [id, {
-        view: displayView(c),
-        download: displayDownload(c),
-        base_value: c.base_value,
-        seed_download_count: c.seed_download_count ?? 50,
-        seed_enabled: c.seed_enabled ?? 1,
-        view_count: c.view_count,
-        download_count: c.download_count,
-      }])
-    )
-  ));
 
   return (
     <div className="space-y-6">
@@ -108,7 +87,7 @@ export default function ResourcesListPage({ searchParams }: { searchParams: Sear
         </a>
       </form>
 
-      <ResourceAdminGrid items={safeItems} counters={safeCounters} />
+      <ResourceAdminGrid items={safeItems} />
     </div>
   );
 }

@@ -1,14 +1,10 @@
 // ============================================================
-// GET /api/resources/[id]/download — 真实文件下载 + 计数 +1
-// 老板 Q3: 真实累计, 不做来源限制 (公开资源浏览即可下载)
-// 老板 21:54 反馈: 下载后跳转 localhost:3000/... (错)
-//   根因: Next.js `request.url` 在 cloudflared tunnel 后返回内部 URL
-//   修复: 用 x-forwarded-host + x-forwarded-proto 构造 public URL
+// GET /api/resources/[id]/download — 简化: 直接 302 到文件 (不计数)
+// 老板 2026-07-05 00:59 决策: 删所有计数功能
+// 保留 URL 是为了前端 <a href> 链接不断 (公开/管理都用此 endpoint)
 // ============================================================
 import { NextResponse } from "next/server";
-import { mediaRepo, mediaCounterRepo, mediaAccessLogRepo } from "@/lib/repo";
-import { displayDownload } from "@/lib/counter";
-import { getClientIp, hashIp } from "@/lib/utils";
+import { mediaRepo } from "@/lib/repo";
 
 export const dynamic = "force-dynamic";
 
@@ -20,22 +16,6 @@ export async function GET(
   if (!item) {
     return NextResponse.json({ ok: false, error: "not_found" }, { status: 404 });
   }
-
-  const ip = getClientIp(request);
-  const ipHash = hashIp(ip);
-
-  // 计数 + 写日志 (下载不去重, 用户多次下载每次都计数)
-  const counter = mediaCounterRepo.incDownload(params.id);
-  if (!counter) {
-    return NextResponse.json({ ok: false, error: "counter_missing" }, { status: 500 });
-  }
-  mediaAccessLogRepo.insert({
-    media_id: params.id,
-    access_type: "download",
-    ip_hash: ipHash,
-    user_agent_hash: null,
-    country: null
-  });
 
   // 构造 public download URL (兼容 CDN/tunnel 反代)
   // 优先 x-forwarded-host (cloudflared/CFNginx 设), 然后 host header

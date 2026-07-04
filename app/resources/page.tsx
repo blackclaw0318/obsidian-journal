@@ -1,13 +1,12 @@
 // ============================================================
-// /resources - 资源库公开页 (v0.34 Phase 4, v0.33 媒体页升级)
-// 老板 17:26 Q3 决策: 三类 tabs (image/document/audio) + 真实计数显示
-// 砍 video (老板 15:14 决策)
-// 卡片点击 → ResourcePreviewModal
+// /resources - 资源库公开页 (v0.35 砍计数版)
+// 老板 2026-07-05 00:59 决策: 删所有计数功能
+// 三类 tabs (image/document/audio) + 砍 video
+// 卡片点击 → ResourcePreviewModal (无 view/download 计数)
 // ============================================================
 import Link from "next/link";
-import { mediaRepo, mediaCounterRepo, siteConfigRepo } from "@/lib/repo";
+import { mediaRepo, siteConfigRepo } from "@/lib/repo";
 import { canonical } from "@/lib/seo";
-import { displayView, displayDownload } from "@/lib/counter";
 import { ResourceGrid } from "./_components/ResourceGrid";
 import type { MediaCategory } from "@/lib/types";
 
@@ -48,28 +47,10 @@ export default function ResourcesPage({ searchParams }: { searchParams: SearchPa
   const totalSize = mediaRepo.totalSize();
   const allCount = mediaRepo.count();
 
-  // 批量取 counter (老板 Q3: 显示真实浏览/下载数)
-  const countersMap = mediaCounterRepo.listByMediaIds(items.map((m) => m.id));
-
+  // v0.35 砍计数后: 不再取 counter
   // 序列化 (better-sqlite3 行不能直接传 client component — null prototype 会触发
   // "Only plain objects can be passed to Client Components" #428396957)
-  // 双重策略: safeItems 走 JSON 剥离 prototype, safeCounters 转换 Map → object 后再 JSON
   const safeItems = JSON.parse(JSON.stringify(items));
-  // v0.35: 为老数据补默认值 (seed_enabled / seed_download_count 可选, 在过渡期不全)
-  const safeCounters = JSON.parse(
-    JSON.stringify(
-      Object.fromEntries(
-        Array.from(countersMap.entries()).map(([id, c]) => [
-          id,
-          {
-            ...c,
-            seed_enabled: c.seed_enabled ?? 1,
-            seed_download_count: c.seed_download_count ?? c.base_value,
-          },
-        ])
-      )
-    )
-  );
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-12">
@@ -106,7 +87,7 @@ export default function ResourcesPage({ searchParams }: { searchParams: SearchPa
           {q ? `未找到匹配 "${q}" 的文件` : "该分类暂无文件"}
         </div>
       ) : (
-        <ResourceGrid items={safeItems} counters={safeCounters} />
+        <ResourceGrid items={safeItems} />
       )}
     </div>
   );

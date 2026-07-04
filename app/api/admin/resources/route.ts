@@ -191,7 +191,7 @@ export async function POST(req: Request) {
     const insertAndRespond = () => {
       try {
         const url = `/uploads/${storedFilename}`;
-        const { categoryFromMime } = require("@/lib/counter");
+        const { categoryFromMime } = require("@/lib/media-categories");
         const item = mediaRepo.create({
           filename: storedFilename,
           mime_type: storedMimeType,

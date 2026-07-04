@@ -13,7 +13,7 @@ process.env.SKIP_DB_INIT = "0";
 const TEST_DB = "data/test-media.db";
 
 const { mediaRepo, resetAllData } = await import("../../lib/repo.ts");
-const { categoryFromMime } = await import("../../lib/counter.ts");
+const { categoryFromMime } = await import("../../lib/media-categories.ts");
 
 before(() => {
   for (const f of [TEST_DB, `${TEST_DB}-wal`, `${TEST_DB}-shm`]) {

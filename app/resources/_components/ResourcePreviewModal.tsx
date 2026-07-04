@@ -1,20 +1,12 @@
 "use client";
 
 // ============================================================
-// ResourcePreviewModal - 按 category/mime 渲染预览 (v0.34 Phase 4)
-//  - 砍 video (老板 15:14 决策)
-//  - image/* / audio/* / application/pdf / text/* / 其他
-//  - 背景点击 + ESC → 关闭
-//  - body scroll lock
-//  - v0.35 (老板 22:20): 加载 24h 访客统计透明化
+// ResourcePreviewModal - 按 category/mime 渲染预览 (v0.35 砍计数版)
+// 老板 2026-07-05 00:59 决策: 删所有计数功能
+// 还原到最简版: 仅 image / audio / pdf / text / 其它 + 下载按钮
 // ============================================================
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback } from "react";
 import type { MediaItem } from "@/lib/types";
-
-interface Stats {
-  counter: { display_view: number; display_download: number; real_view_count: number; real_download_count: number };
-  recent_24h: { visitors: number; views: number };
-}
 
 interface Props {
   item: MediaItem | null;
@@ -23,10 +15,8 @@ interface Props {
 
 export function ResourcePreviewModal({ item, onClose }: Props) {
   const handleClose = useCallback(() => onClose(), [onClose]);
-  const [stats, setStats] = useState<Stats | null>(null);
 
   // ESC 关闭 + body scroll lock
-  // 浏览 +1 已上移到 ResourceGrid.handleCardClick, 这里不重复触发
   useEffect(() => {
     if (!item) return;
     const onKey = (e: KeyboardEvent) => {
@@ -35,15 +25,6 @@ export function ResourcePreviewModal({ item, onClose }: Props) {
     document.addEventListener("keydown", onKey);
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-
-    // v0.35: 加载 24h 访客统计 (透明化, 让用户看到该资源被多个访客访问过)
-    setStats(null);  // reset
-    fetch(`/api/resources/${item.id}/stats`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data?.ok) setStats(data);
-      })
-      .catch(() => {/* ignore */});
 
     return () => {
       document.removeEventListener("keydown", onKey);
@@ -123,19 +104,10 @@ export function ResourcePreviewModal({ item, onClose }: Props) {
           </div>
         )}
 
-        {/* 底部 info bar + 下载按钮 + 24h 透明统计 (老板 22:20) */}
+        {/* 底部 info bar + 下载按钮 (v0.35 砍计数后) */}
         <div className="mt-2 flex items-center justify-between gap-4 rounded bg-black/60 px-3 py-1.5 text-xs text-white">
           <span className="truncate">{item.alt ?? item.filename}</span>
           <div className="flex shrink-0 items-center gap-3">
-            {stats && (
-              <span
-                className="rounded bg-white/10 px-2 py-0.5 text-[11px]"
-                title={`近 24h 独立访客: ${stats.recent_24h.visitors} 人 / 总浏览: ${stats.recent_24h.views} 次`}
-                data-testid="recent-24h-stats"
-              >
-                24h {stats.recent_24h.visitors} 人浏览
-              </span>
-            )}
             <span className="opacity-70">{mime}</span>
             <a
               href={`/api/resources/${item.id}/download`}
