@@ -54,3 +54,24 @@ export function formatCount(n: number): string {
   if (n < 1_000_000) return `${(n / 1000).toFixed(1)}k`;
   return `${(n / 1_000_000).toFixed(1)}M`;
 }
+/**
+ * 取客户端 IP (从 x-forwarded-for / x-real-ip 头, fallback "unknown")
+ */
+export function getClientIp(request: Request): string {
+  const xff = request.headers.get("x-forwarded-for");
+  if (xff) return xff.split(",")[0].trim();
+  const xri = request.headers.get("x-real-ip");
+  if (xri) return xri.trim();
+  return "unknown";
+}
+
+/**
+ * IP 哈希 (用于 24h 去重, 不持久化原 IP)
+ * 使用简单 SHA-256 + 截断 + salt (v0.34: 暂用静态 salt, 后续可放 env)
+ */
+export function hashIp(ip: string, salt = "obsidian-v0.34"): string {
+  // 简化: 浏览器 crypto.subtle 在 server 端不可用 (Next.js server 跑在 Node)
+  // 用 Node:crypto 的 createHash 同步版本 (lightweight)
+  const nodeCrypto = require("node:crypto") as typeof import("node:crypto");
+  return nodeCrypto.createHash("sha256").update(`${salt}:${ip}`).digest("hex").slice(0, 16);
+}

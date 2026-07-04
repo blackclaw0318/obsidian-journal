@@ -18,9 +18,14 @@ interface Props {
 export function ResourcePreviewModal({ item, onClose }: Props) {
   const handleClose = useCallback(() => onClose(), [onClose]);
 
-  // ESC 关闭 + body scroll lock
+  // ESC 关闭 + body scroll lock + 浏览 +1 (24h 去重, 服务器端 in dedupe)
   useEffect(() => {
     if (!item) return;
+    // 浏览 +1 (POST /api/resources/[id]/view, 24h 同 ip 去重)
+    fetch(`/api/resources/${item.id}/view`, { method: "POST", keepalive: true }).catch(() => {
+      // 静默吞错 (浏览计数非关键路径)
+    });
+
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") handleClose();
     };
@@ -96,7 +101,7 @@ export function ResourcePreviewModal({ item, onClose }: Props) {
             <div className="font-medium">{item.filename}</div>
             <div className="text-sm text-fg-muted">该类型暂不支持预览</div>
             <a
-              href={item.url}
+              href={`/api/resources/${item.id}/download`}
               download={item.filename}
               className="rounded bg-accent px-4 py-2 text-sm text-white hover:bg-accent/90"
             >
@@ -105,10 +110,19 @@ export function ResourcePreviewModal({ item, onClose }: Props) {
           </div>
         )}
 
-        {/* 底部 info bar */}
+        {/* 底部 info bar + 下载按钮 (老板 Q3: 真实 download +1) */}
         <div className="mt-2 flex items-center justify-between gap-4 rounded bg-black/60 px-3 py-1.5 text-xs text-white">
           <span className="truncate">{item.alt ?? item.filename}</span>
-          <span className="shrink-0 opacity-70">{mime}</span>
+          <div className="flex shrink-0 items-center gap-3">
+            <span className="opacity-70">{mime}</span>
+            <a
+              href={`/api/resources/${item.id}/download`}
+              download={item.filename}
+              className="rounded bg-white/20 px-2 py-1 hover:bg-white/30"
+            >
+              ⬇ 下载
+            </a>
+          </div>
         </div>
       </div>
     </div>

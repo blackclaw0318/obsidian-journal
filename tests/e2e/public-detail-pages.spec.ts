@@ -7,9 +7,16 @@ import { test, expect } from "@playwright/test";
 test.describe.serial("公开端详情页 v0.12", () => {
   test("/resources 公开页加载 + 分类 tab", async ({ page }) => {
     await page.goto("/resources");
-    await expect(page.locator("h1")).toContainText("媒体库");
+    await expect(page.locator("h1")).toContainText("资源库");
     // 至少一个分类 tab 可见
     await expect(page.getByRole("link", { name: /图片/ }).first()).toBeVisible();
+  });
+
+  test("/media 旧路径重定向到 /resources", async ({ page }) => {
+    const resp = await page.goto("/media");
+    // redirect 触发后 url 应变为 /resources
+    await page.waitForURL(/\/resources/);
+    expect(page.url()).toContain("/resources");
   });
 
   test("/novels 列表 → 详情", async ({ page }) => {
