@@ -79,7 +79,9 @@ export function downloadSeed(c: Pick<MediaCounter, "base_value" | "seed_enabled"
 /**
  * 24h 去重窗口 (秒) — 同 ip_hash 在此时间内只 +1
  */
-export const VIEW_DEDUPE_WINDOW_SEC = 24 * 60 * 60;
+// 24h 同 ip 去重 — 同 IP 在此时间内只 +1 (老板 22:20 反馈: 太严看不到累计, 改 30 分钟)
+// 个人博客场景, 30 分钟足够防刷 + 老板能看到表现。
+export const VIEW_DEDUPE_WINDOW_SEC = 30 * 60;  // 30 分钟 (不是 24h)
 
 /**
  * 检测 mime 是否属于合法资源分类 (v0.34 砍 video)

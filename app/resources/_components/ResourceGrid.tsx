@@ -8,7 +8,7 @@
 //    → 修复: 用 useState 维护 live counters, 点卡片时先 POST /view
 //      再开 modal, server 返 display 后乐观更新本地
 // ============================================================
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import type { MediaItem, MediaCounter } from "@/lib/types";
 import { displayView, displayDownload } from "@/lib/counter";
 import { ResourcePreviewModal } from "./ResourcePreviewModal";
@@ -43,12 +43,16 @@ export function ResourceGrid({
   const [liveCounters, setLiveCounters] = useState<Record<string, MediaCounter>>({});
   // 21:54 反饯: 点击后要有可见反馈 (不论是否 dedup)
   const [clickFeedback, setClickFeedback] = useState<Record<string, { ts: number; dedup: boolean }>>({});
+  // 22:20 老板反馈: dedup 时看着"没动", 加临时 +1 脉冲动画让用户看着在工作
+  const [pulseUntil, setPulseUntil] = useState<Record<string, number>>({});
 
   // 点击卡片 → fire POST /view (24h 同 ip 去重) → 收到 display 后乐观更新本地
   const handleCardClick = useCallback(async (item: MediaItem) => {
     // 立即打开 modal + 展示加载反馈
     setActive(item);
     setClickFeedback((prev) => ({ ...prev, [item.id]: { ts: Date.now(), dedup: false }}));
+    // 立即启脉冲 (即使后端 dedup, 表面上看 +1)
+    setPulseUntil((prev) => ({ ...prev, [item.id]: Date.now() + 1500 }));
 
     try {
       const res = await fetch(`/api/resources/${item.id}/view`, {
@@ -95,6 +99,15 @@ export function ResourceGrid({
         }
         return changed ? next : prev;
       });
+      setPulseUntil((prev) => {
+        const next: typeof prev = {};
+        let changed = false;
+        for (const [id, ts] of Object.entries(prev)) {
+          if (now < ts) next[id] = ts;
+          else changed = true;
+        }
+        return changed ? next : prev;
+      });
     }, 500);
     return () => clearInterval(t);
   }, []);
@@ -111,7 +124,10 @@ export function ResourceGrid({
           // 优先用 live counter (用户已交互过), 否则用 server-render 的初始值
           const counter = liveCounters[m.id] ?? counters[m.id];
           // 老板 Q3 决策: 真实数 (无区间, 无上限)
-          const viewNum = counter ? displayView(counter) : 0;
+          const baseViewNum = counter ? displayView(counter) : 0;
+          // 22:20 老板反馈: dedup 时加 +1 脉冲动画让用户看着在工作
+          const isPulsing = (pulseUntil[m.id] ?? 0) > Date.now();
+          const viewNum = isPulsing ? baseViewNum + 1 : baseViewNum;
           const downloadNum = counter ? displayDownload(counter) : 0;
           const feedback = clickFeedback[m.id];
           return (
@@ -151,8 +167,8 @@ export function ResourceGrid({
                   {m.width && m.height && <span>{m.width}×{m.height}</span>}
                 </div>
                 <div className="mt-1 flex items-center justify-between text-xs text-fg-muted">
-                  <span title={`浏览 ${counter?.view_count ?? 0} + 种子 ${counter?.base_value ?? 0}${counter?.seed_enabled === 0 ? ' (装饰已关)' : ''}`}>
-                    👁 {viewNum}
+                  <span title={`浏览 ${counter?.view_count ?? 0} + 种子 ${counter?.base_value ?? 0}${counter?.seed_enabled === 0 ? ' (装饰已关)' : ''}${isPulsing ? ' · 点击脉冲 +1' : ''}`}>
+                    <span className={isPulsing ? 'font-bold text-emerald-400' : ''}>👁 {viewNum}</span>
                     {feedback && (
                       <span
                         className={`ml-1 inline-block rounded px-1 text-[10px] font-semibold ${feedback.dedup ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'} animate-pulse`}

@@ -127,8 +127,8 @@ describe("counter.ts (v0.34 Phase 4)", () => {
   });
 
   describe("VIEW_DEDUPE_WINDOW_SEC", () => {
-    it("应为 86400 (24h)", () => {
-      expect(VIEW_DEDUPE_WINDOW_SEC).toBe(86400);
+    it("应为 1800 (30 分钟, 老板 22:20 反馈)", () => {
+      expect(VIEW_DEDUPE_WINDOW_SEC).toBe(1800);
     });
   });
 

@@ -1602,6 +1602,29 @@ export const mediaAccessLogRepo = {
       LIMIT 1
     `).get(mediaId, accessType, ipHash, since);
     return !!row;
+  },
+
+  // v0.35 (老板 22:20): 统计近 24h 不同 IP 的访问人次 (透明化展示, 老板可以看到累计)
+  // 个人博客场景: 个人查看也算一个访客, 透明计数
+  countRecentVisitors(mediaId: string, windowSec: number = 86400): number {
+    const since = Math.floor(Date.now() / 1000) - windowSec;
+    const row = db.prepare(`
+      SELECT COUNT(DISTINCT ip_hash) AS visitors
+      FROM media_access_logs
+      WHERE media_id = ? AND access_type = 'view' AND created_at >= ?
+    `).get(mediaId, since) as { visitors: number } | undefined;
+    return row?.visitors ?? 0;
+  },
+
+  // v0.35: 统计近 24h 浏览总次数 (含 dedup)
+  countRecentViews(mediaId: string, windowSec: number = 86400): number {
+    const since = Math.floor(Date.now() / 1000) - windowSec;
+    const row = db.prepare(`
+      SELECT COUNT(*) AS total
+      FROM media_access_logs
+      WHERE media_id = ? AND access_type = 'view' AND created_at >= ?
+    `).get(mediaId, since) as { total: number } | undefined;
+    return row?.total ?? 0;
   }
 };
 
