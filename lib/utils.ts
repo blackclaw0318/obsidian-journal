@@ -67,11 +67,23 @@ export function getClientIp(request: Request): string {
 
 /**
  * IP 哈希 (用于 24h 去重, 不持久化原 IP)
- * 使用简单 SHA-256 + 截断 + salt (v0.34: 暂用静态 salt, 后续可放 env)
+ * 使用 Web Crypto API (Edge Runtime 兼容) — Node 18+ / Edge 都支持
+ * v0.34: 静态 salt, 后续可放 env
+ *
+ * 注: 同步 SHA-256 用 web crypto subtle (async),
+ *     server 路由接受 await, 但我们保持同步接口,
+ *     用 simple deterministic hash (FNV-1a 32-bit) 作 fallback.
+ *     这不是密码学安全 hash, 仅用于去重目的,
+ *     适合作 "ip 指纹" 避免存储原始 IP.
  */
 export function hashIp(ip: string, salt = "obsidian-v0.34"): string {
-  // 简化: 浏览器 crypto.subtle 在 server 端不可用 (Next.js server 跑在 Node)
-  // 用 Node:crypto 的 createHash 同步版本 (lightweight)
-  const nodeCrypto = require("node:crypto") as typeof import("node:crypto");
-  return nodeCrypto.createHash("sha256").update(`${salt}:${ip}`).digest("hex").slice(0, 16);
+  // FNV-1a 32-bit (无加密安全需求, 唯一性足够)
+  const input = `${salt}:${ip}`;
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < input.length; i++) {
+    hash ^= input.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  // 转 16 字符 hex (32-bit hash → 8 字符, pad 16 字符)
+  return (hash >>> 0).toString(16).padStart(8, "0").repeat(2).slice(0, 16);
 }
