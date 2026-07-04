@@ -1,8 +1,12 @@
-// /videos 路由 (v0.6.1 schema: VideoSeries + Video 独立 model)
-import Link from "next/link";
+// ============================================================
+// /videos - 视频列表 (v0.12, v0.6.1; v0.33 P0-3 卡片化)
+//  - Series 列表 (顶部)
+//  - 已发布单集 grid (card form, 含 cover + duration + link)
+// ============================================================
 import type { Metadata } from "next";
 import { videoSeriesRepo, videoRepo, siteConfigRepo } from "@/lib/repo";
 import { absoluteUrl, canonical, jsonLdVideo } from "@/lib/seo";
+import { VideoCard } from "./_components/VideoCard";
 
 export const dynamic = "force-dynamic";
 
@@ -27,11 +31,14 @@ export default function VideosPage() {
   const publishedVideos = allVideos.filter((v) => v.status === "published");
   const site = siteConfigRepo.get();
 
+  // series map for badge lookup
+  const seriesMap = new Map(series.map((s) => [s.id, s]));
+
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
       <header className="mb-8">
         <h1 className="text-3xl font-bold">🎬 视频</h1>
-        <p className="text-fg-muted mt-2">视频系列 + 单集 (v0.6.1 独立 model)</p>
+        <p className="mt-2 text-fg-muted">视频系列 + 单集 (v0.6.1 独立 model)</p>
       </header>
 
       {/* JSON-LD: ItemList of VideoObject (schema.org) */}
@@ -52,41 +59,49 @@ export default function VideosPage() {
         />
       )}
 
+      {/* 系列 */}
       <section className="mb-12">
-        <h2 className="text-xl font-semibold mb-4">系列 ({series.length})</h2>
+        <h2 className="mb-4 text-xl font-semibold">系列 ({series.length})</h2>
         {series.length === 0 ? (
           <p className="text-fg-muted">暂无视频系列。</p>
         ) : (
-          <ul className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {series.map((s) => (
-              <li key={s.id} className="border-b border-border pb-4">
-                <h3 className="text-lg font-semibold">{s.title}</h3>
-                {s.description && <p className="text-fg-muted mt-1">{s.description}</p>}
-              </li>
+              <div
+                key={s.id}
+                className="rounded-lg border border-border bg-bg-card p-4"
+                data-testid="video-series-card"
+              >
+                <h3 className="truncate text-lg font-semibold" title={s.title}>{s.title}</h3>
+                {s.description && (
+                  <p className="mt-1 line-clamp-3 text-sm text-fg-muted">{s.description}</p>
+                )}
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </section>
 
+      {/* 单集 (已发布) */}
       <section>
-        <h2 className="text-xl font-semibold mb-4">已发布单集 ({publishedVideos.length})</h2>
+        <h2 className="mb-4 text-xl font-semibold">已发布单集 ({publishedVideos.length})</h2>
         {publishedVideos.length === 0 ? (
           <p className="text-fg-muted">暂无已发布视频。</p>
         ) : (
-          <ul className="space-y-3">
+          <div
+            className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+            data-testid="videos-grid"
+          >
             {publishedVideos.map((v) => (
-              <li key={v.id} className="border-b border-border pb-3">
-                <span className="font-medium">{v.title}</span>
-                {v.description && <p className="text-sm text-fg-muted mt-1">{v.description}</p>}
-              </li>
+              <VideoCard
+                key={v.id}
+                video={v}
+                seriesTitle={v.series_id ? seriesMap.get(v.series_id)?.title : null}
+              />
             ))}
-          </ul>
+          </div>
         )}
       </section>
-
-      <footer className="mt-12 pt-6 border-t border-border text-sm">
-        <Link href="/" className="hover:underline">← 返回首页</Link>
-      </footer>
     </div>
   );
 }

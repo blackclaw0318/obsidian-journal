@@ -1,11 +1,12 @@
 // ============================================================
-// /media - 媒体库公开页 (v0.12, v0.6.1 §8)
-// 真显示 media_items (按 mimeType 分类: 图片/视频/文档)
+// /media - 媒体库公开页 (v0.12, v0.6.1 §8; v0.33: 卡片可点预览)
+// 真显示 media_items (按 mimeType 分类: 图片/视频/文档/音频)
+// 卡片点击 → MediaPreviewModal (client side)
 // ============================================================
 import Link from "next/link";
 import { mediaRepo, siteConfigRepo } from "@/lib/repo";
-import { formatCount, formatDate } from "@/lib/utils";
 import { canonical } from "@/lib/seo";
+import { MediaGrid } from "./_components/MediaGrid";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +27,13 @@ export function generateMetadata({ searchParams }: { searchParams: SearchParams 
   };
 }
 
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+  return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GB`;
+}
+
 export default function MediaPage({ searchParams }: { searchParams: SearchParams }) {
   const type = searchParams.type ?? "";
   const q = searchParams.q;
@@ -34,17 +42,20 @@ export default function MediaPage({ searchParams }: { searchParams: SearchParams
   const totalSize = mediaRepo.totalSize();
   const allCount = mediaRepo.count();
 
+  // better-sqlite3 行 prototype 不能直接传给 client component, 序列化
+  const safeItems = JSON.parse(JSON.stringify(items));
+
   return (
     <div className="mx-auto max-w-6xl px-6 py-12">
       <header className="mb-8">
         <h1 className="text-3xl font-bold">🖼️ 媒体库</h1>
         <p className="mt-2 text-fg-muted">
-          共 <strong>{allCount}</strong> 个文件 · 总大小 {formatBytes(totalSize)} · 当前 <strong>{items.length}</strong> 个{cat.label}
+          共 <strong>{allCount}</strong> 个文件 · 总大小 {formatBytes(totalSize)} · 当前 <strong>{total ?? items.length}</strong> 个{cat.label}
         </p>
       </header>
 
       <form className="mb-6 flex flex-wrap items-center gap-2">
-        <div className="flex gap-1">
+        <div className="flex flex-wrap gap-1">
           {CATEGORIES.map((c) => (
             <Link
               key={c.value}
@@ -64,47 +75,13 @@ export default function MediaPage({ searchParams }: { searchParams: SearchParams
         <button type="submit" className="rounded border border-border bg-bg px-3 py-1.5 text-sm">搜索</button>
       </form>
 
-      {items.length === 0 ? (
+      {safeItems.length === 0 ? (
         <div className="rounded-lg border border-dashed border-border bg-bg-muted p-12 text-center text-fg-muted">
           {q ? `未找到匹配 "${q}" 的文件` : "该分类暂无文件"}
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {items.map((m) => {
-            const isImage = m.mime_type.startsWith("image/");
-            const isVideo = m.mime_type.startsWith("video/");
-            return (
-              <div key={m.id} className="overflow-hidden rounded border border-border bg-bg-card">
-                <div className="flex aspect-video items-center justify-center overflow-hidden bg-bg-muted">
-                  {isImage ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img src={m.url} alt={m.alt ?? m.filename} loading="lazy" className="h-full w-full object-cover" />
-                  ) : isVideo ? (
-                    <div className="text-4xl text-fg-muted">🎬</div>
-                  ) : (
-                    <div className="text-4xl text-fg-muted">📄</div>
-                  )}
-                </div>
-                <div className="p-3">
-                  <div className="truncate text-sm font-medium" title={m.filename}>{m.alt ?? m.filename}</div>
-                  <div className="mt-1 flex items-center justify-between text-xs text-fg-muted">
-                    <span>{formatBytes(m.size)}</span>
-                    {m.width && m.height && <span>{m.width}×{m.height}</span>}
-                  </div>
-                  <div className="mt-1 text-xs text-fg-muted">{formatDate(new Date(m.uploaded_at * 1000))}</div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <MediaGrid items={safeItems} />
       )}
     </div>
   );
-}
-
-function formatBytes(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  if (bytes < 1024 * 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
-  return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GB`;
 }
