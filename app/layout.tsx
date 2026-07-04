@@ -13,6 +13,7 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { SmoothScroll } from "../components/SmoothScroll";
 import { PageTransition } from "../components/PageTransition";
+import { RouteProgress } from "../components/RouteProgress";
 import { absoluteUrl } from "../lib/seo";
 
 /**
@@ -133,6 +134,8 @@ export default function RootLayout({
             由 Next.js metadata.alternates.types 生成 (metadataBase = NEXT_PUBLIC_SITE_URL) */}
       </head>
       <body className="min-h-screen bg-bg text-fg antialiased">
+        {/* v0.32 P0-: 顶进度条 (点击链接立即反馈, 路由变化完成) */}
+        <RouteProgress />
         <SmoothScroll>
           <div className="flex min-h-screen flex-col">
             <Nav siteName={siteName} defaultTheme={defaultTheme} />

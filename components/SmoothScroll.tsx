@@ -7,11 +7,14 @@
 //   - touchMultiplier 1.4 → 2 (移动端更跟手)
 //   - syncTouch: false (macOS/iOS 顺滑感, 避免与 native 滚动冲突)
 //   - wheelMultiplier 1 (保持桌面细腻)
+// v0.32 P0-: 内嵌 <LenisRouteReset />, 路由切换时 instant scroll to top
+//            (解决"页面慢慢飘到顶"的等待感)
 // ============================================================
 "use client";
 
 import { ReactLenis } from "lenis/react";
 import type { LenisOptions } from "lenis";
+import { LenisRouteReset } from "./LenisRouteReset";
 
 const options: LenisOptions = {
   duration: 1.0,
@@ -26,6 +29,8 @@ const options: LenisOptions = {
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
   return (
     <ReactLenis root options={options}>
+      {/* v0.32: 路由切换 instant scroll (在 Lenis context 内) */}
+      <LenisRouteReset />
       {children}
     </ReactLenis>
   );
