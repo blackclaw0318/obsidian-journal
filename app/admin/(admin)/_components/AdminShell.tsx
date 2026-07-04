@@ -177,7 +177,8 @@ export function AdminShell({ user, children }: { user: SafeUser; children: React
             <div className="drawer-safe-bottom border-t border-border p-4">
               <div className="mb-3 flex items-center gap-2">
                 <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-accent/20 text-sm font-semibold text-accent">
-                  {(user.name ?? user.email)[0]?.toUpperCase()}
+                  {/* 用 email 首字符 (避免 CJK 单字名与头像视觉重复, e.g. 上坤 → [上][上坤]) */}
+                  {user.email[0]?.toUpperCase()}
                 </span>
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-medium">{user.name}</div>
@@ -227,7 +228,8 @@ export function AdminShell({ user, children }: { user: SafeUser; children: React
               className="flex items-center gap-2 rounded px-2 py-1 text-sm hover:bg-bg-base"
             >
               <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent/20 text-xs font-semibold text-accent">
-                {(user.name ?? user.email)[0]?.toUpperCase()}
+                {/* 用 email 首字符 (避免 CJK 单字名与头像视觉重复) */}
+                {user.email[0]?.toUpperCase()}
               </span>
               <span className="hidden sm:inline">{user.name ?? user.email}</span>
               <span className="text-xs">▾</span>
