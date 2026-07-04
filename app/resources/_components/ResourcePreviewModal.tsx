@@ -18,14 +18,10 @@ interface Props {
 export function ResourcePreviewModal({ item, onClose }: Props) {
   const handleClose = useCallback(() => onClose(), [onClose]);
 
-  // ESC 关闭 + body scroll lock + 浏览 +1 (24h 去重, 服务器端 in dedupe)
+  // ESC 关闭 + body scroll lock
+  // 浏览 +1 已上移到 ResourceGrid.handleCardClick, 这里不重复触发
   useEffect(() => {
     if (!item) return;
-    // 浏览 +1 (POST /api/resources/[id]/view, 24h 同 ip 去重)
-    fetch(`/api/resources/${item.id}/view`, { method: "POST", keepalive: true }).catch(() => {
-      // 静默吞错 (浏览计数非关键路径)
-    });
-
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") handleClose();
     };

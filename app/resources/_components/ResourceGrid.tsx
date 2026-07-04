@@ -4,8 +4,11 @@
 // ResourceGrid (公开端) - 资源卡片网格 + 点击预览 (v0.34 Phase 4)
 //  - 老板 Q3: 显示真实浏览/下载数 (base_value 100-999 + 累计)
 //  - 砍 video (v0.34 老板 15:14 决策)
+//  - 老板 20:20 反馈: 点击预览后, 数字不刷新
+//    → 修复: 用 useState 维护 live counters, 点卡片时先 POST /view
+//      再开 modal, server 返 display 后乐观更新本地
 // ============================================================
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import type { MediaItem, MediaCounter } from "@/lib/types";
 import { displayView, displayDownload } from "@/lib/counter";
 import { ResourcePreviewModal } from "./ResourcePreviewModal";
@@ -36,6 +39,43 @@ export function ResourceGrid({
 }) {
   const [active, setActive] = useState<MediaItem | null>(null);
 
+  // 老板 20:20: 用 local state 跟踪最新 counter (server 触发的 +1 反映到 UI)
+  const [liveCounters, setLiveCounters] = useState<Record<string, MediaCounter>>({});
+
+  // 点击卡片 → fire POST /view (24h 同 ip 去重) → 收到 display 后乐观更新本地
+  const handleCardClick = useCallback(async (item: MediaItem) => {
+    // 立即打开 modal (UX 不阻塞)
+    setActive(item);
+
+    // 触发 view +1 (fire-and-forget, 失败也不影响 UX)
+    try {
+      const res = await fetch(`/api/resources/${item.id}/view`, {
+        method: "POST",
+        keepalive: true
+      });
+      const data = await res.json();
+      if (data?.ok) {
+        // 24h 内同 ip 重复请求 → data.deduplicated=true, 但 display 仍是当前真实数
+        // 把 display 反算回 base_value + view_count
+        const existing = counters[item.id];
+        if (existing) {
+          const delta = data.display - displayView(existing);
+          if (delta > 0) {
+            setLiveCounters((prev) => ({
+              ...prev,
+              [item.id]: {
+                ...existing,
+                view_count: existing.view_count + delta
+              }
+            }));
+          }
+        }
+      }
+    } catch {
+      // 静默吞错 (浏览计数非关键路径)
+    }
+  }, [counters]);
+
   return (
     <>
       <div
@@ -45,7 +85,8 @@ export function ResourceGrid({
         {items.map((m) => {
           const isImage = m.mime_type.startsWith("image/");
           const { icon, hint } = categoryThumb(m.category);
-          const counter = counters[m.id];
+          // 优先用 live counter (用户已交互过), 否则用 server-render 的初始值
+          const counter = liveCounters[m.id] ?? counters[m.id];
           // 老板 Q3 决策: 真实数 (无区间, 无上限)
           const viewNum = counter ? displayView(counter) : 0;
           const downloadNum = counter ? displayDownload(counter) : 0;
@@ -53,7 +94,7 @@ export function ResourceGrid({
             <button
               type="button"
               key={m.id}
-              onClick={() => setActive(m)}
+              onClick={() => handleCardClick(m)}
               data-testid="resource-card"
               data-mime={m.mime_type}
               data-category={m.category}
