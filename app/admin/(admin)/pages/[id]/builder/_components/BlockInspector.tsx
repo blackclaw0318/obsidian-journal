@@ -72,7 +72,7 @@ function ImageInspector({ block }: { block: Block }) {
   if (block.type !== "image") return null;
   return (
     <div className="flex flex-col gap-3">
-      <Field label="图片 URL (支持 /media/...)">
+      <Field label="图片 URL (支持 /uploads/...)">
         <input value={block.src} onChange={(e) => update(block.id, { src: e.target.value })} className={inputCls} />
       </Field>
       <Field label="Alt 描述">
@@ -318,7 +318,7 @@ function HeroInspector({ block }: { block: Block }) {
       <Field label="副标题"><input value={block.subtitle ?? ""} onChange={(e) => update(block.id, { subtitle: e.target.value })} className={inputCls} /></Field>
       <Field label="CTA 按钮文字"><input value={block.ctaText ?? ""} onChange={(e) => update(block.id, { ctaText: e.target.value })} className={inputCls} /></Field>
       <Field label="CTA 跳转 URL"><input value={block.ctaUrl ?? ""} onChange={(e) => update(block.id, { ctaUrl: e.target.value })} className={inputCls} placeholder="/posts" /></Field>
-      <Field label="背景图 URL (可选)"><input value={block.bgImage ?? ""} onChange={(e) => update(block.id, { bgImage: e.target.value })} className={inputCls} placeholder="/media/xxx.jpg" /></Field>
+      <Field label="背景图 URL (可选)"><input value={block.bgImage ?? ""} onChange={(e) => update(block.id, { bgImage: e.target.value })} className={inputCls} placeholder="/uploads/....jpg" /></Field>
     </div>
   );
 }

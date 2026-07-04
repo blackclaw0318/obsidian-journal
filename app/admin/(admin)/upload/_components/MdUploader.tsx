@@ -171,7 +171,7 @@ export function MdUploader({ series, novels }: Props) {
 
         <div>
           <label className="block text-sm font-medium mb-1">Markdown 内容 * <span className="text-fg-muted">(支持 --- frontmatter --- 头)</span></label>
-          <textarea value={md} onChange={(e) => setMd(e.target.value)} rows={20} placeholder={`---\ntitle: 我的文章\nslug: my-post\nexcerpt: 摘要\ncover: /media/cover.jpg\ntags: tech, react\n---\n\n# 标题\n\n正文...`} className="w-full rounded border border-border bg-bg px-3 py-2 text-sm font-mono" />
+          <textarea value={md} onChange={(e) => setMd(e.target.value)} rows={20} placeholder={`---\ntitle: 我的文章\nslug: my-post\nexcerpt: 摘要\ncover: /uploads/...er.jpg\ntags: tech, react\n---\n\n# 标题\n\n正文...`} className="w-full rounded border border-border bg-bg px-3 py-2 text-sm font-mono" />
         </div>
 
         <div className="flex items-center gap-2">

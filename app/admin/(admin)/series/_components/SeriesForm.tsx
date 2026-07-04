@@ -100,7 +100,7 @@ export function SeriesForm({ initial, mode }: Props) {
 
       <div>
         <label className="block text-sm font-medium mb-1">封面图 URL</label>
-        <input value={coverImage ?? ""} onChange={(e) => setCoverImage(e.target.value)} placeholder="/media/images/cover.jpg" className="w-full rounded border border-border bg-bg px-3 py-2 text-sm font-mono" />
+        <input value={coverImage ?? ""} onChange={(e) => setCoverImage(e.target.value)} placeholder="/uploads/...ges/cover.jpg" className="w-full rounded border border-border bg-bg px-3 py-2 text-sm font-mono" />
       </div>
 
       <div>

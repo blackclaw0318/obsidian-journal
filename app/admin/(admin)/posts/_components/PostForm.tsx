@@ -177,7 +177,7 @@ export function PostForm({
           value={coverImage ?? ""}
           onChange={(e) => setCoverImage(e.target.value)}
           className="w-full rounded border border-border bg-bg-base px-3 py-2 font-mono text-sm outline-none focus:border-accent"
-          placeholder="https://... 或 /media/..."
+          placeholder="https://... 或 /uploads/..."
         />
       </label>
 
