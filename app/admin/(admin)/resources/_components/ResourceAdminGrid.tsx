@@ -8,6 +8,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { MediaItem } from "@/lib/types";
+import { SeedEditModal } from "./SeedEditModal";
 
 function formatSize(bytes: number): string {
   if (bytes < 1024) return `${bytes}B`;
@@ -21,7 +22,16 @@ function categoryIcon(category: string): string {
   return "📄";
 }
 
-interface SimpleCounter { view: number; download: number }
+// v0.35: 全量 counter (含种子信息, 供 admin 装门面编辑)
+interface SimpleCounter {
+  view: number;
+  download: number;
+  base_value: number;
+  seed_download_count: number;
+  seed_enabled: number;
+  view_count: number;
+  download_count: number;
+}
 
 export function ResourceAdminGrid({
   items,
@@ -36,6 +46,8 @@ export function ResourceAdminGrid({
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editAlt, setEditAlt] = useState<string>("");
+  // v0.35: 种子编辑 modal
+  const [seedModalItem, setSeedModalItem] = useState<MediaItem | null>(null);
 
   function handleDelete(item: MediaItem) {
     if (!confirm(`确定要删除此资源吗?\n\n${item.filename}\n${formatSize(item.size)}\n\n⚠️ 文件物理删除, 引用追踪也会清空。`)) return;
@@ -134,8 +146,12 @@ export function ResourceAdminGrid({
                 {/* 老板 Q3: 真实浏览/下载数 (含 base_value 种子) */}
                 {c && (
                   <div className="flex items-center justify-between text-fg-muted">
-                    <span title="浏览数">👁 {c.view}</span>
-                    <span title="下载数">⬇ {c.download}</span>
+                    <span title={`浏览 ${c.view_count} + 种子 ${c.base_value}${c.seed_enabled ? '' : ' (装饰已关)'}`}>
+                      👁 {c.view}
+                    </span>
+                    <span title={`下载 ${c.download_count} + 种子 ${c.seed_download_count}${c.seed_enabled ? '' : ' (装饰已关)'}`}>
+                      ⬇ {c.download}
+                    </span>
                   </div>
                 )}
 
@@ -186,6 +202,15 @@ export function ResourceAdminGrid({
                   >
                     ✏️
                   </button>
+                  {c && (
+                    <button
+                      onClick={() => setSeedModalItem(item)}
+                      className="flex-1 rounded border border-border px-1 py-1 text-xs hover:bg-bg-base"
+                      title={`种子编辑 (base=${c.base_value}, dl_seed=${c.seed_download_count}, ${c.seed_enabled ? '启用' : '关'})`}
+                    >
+                      ⚙️
+                    </button>
+                  )}
                   <a
                     href={item.url}
                     target="_blank"
@@ -209,6 +234,19 @@ export function ResourceAdminGrid({
           );
         })}
       </div>
+
+      {/* v0.35: 种子编辑 modal (顶层 render, 不嵌在 grid 内) */}
+      {seedModalItem && counters[seedModalItem.id] && (
+        <SeedEditModal
+          item={seedModalItem}
+          initialBaseValue={counters[seedModalItem.id].base_value}
+          initialSeedDownload={counters[seedModalItem.id].seed_download_count}
+          initialSeedEnabled={counters[seedModalItem.id].seed_enabled}
+          realView={counters[seedModalItem.id].view_count}
+          realDownload={counters[seedModalItem.id].download_count}
+          onClose={() => setSeedModalItem(null)}
+        />
+      )}
     </div>
   );
 }

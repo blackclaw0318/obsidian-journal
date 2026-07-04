@@ -55,8 +55,20 @@ export default function ResourcesPage({ searchParams }: { searchParams: SearchPa
   // "Only plain objects can be passed to Client Components" #428396957)
   // 双重策略: safeItems 走 JSON 剥离 prototype, safeCounters 转换 Map → object 后再 JSON
   const safeItems = JSON.parse(JSON.stringify(items));
+  // v0.35: 为老数据补默认值 (seed_enabled / seed_download_count 可选, 在过渡期不全)
   const safeCounters = JSON.parse(
-    JSON.stringify(Object.fromEntries(countersMap))
+    JSON.stringify(
+      Object.fromEntries(
+        Array.from(countersMap.entries()).map(([id, c]) => [
+          id,
+          {
+            ...c,
+            seed_enabled: c.seed_enabled ?? 1,
+            seed_download_count: c.seed_download_count ?? c.base_value,
+          },
+        ])
+      )
+    )
   );
 
   return (

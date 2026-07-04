@@ -391,6 +391,32 @@ function migrateSchema(): void {
   } catch {
     // 已存在
   }
+  // v0.35 Phase 4: media_counters 加 seed_enabled (老板 2026-07-04 20:37 决策)
+  // 1 = 显示种子 + 真实, 0 = 只显示真实数 (老板装门面用)
+  try {
+    db.exec(`ALTER TABLE media_counters ADD COLUMN seed_enabled INTEGER NOT NULL DEFAULT 1;`);
+  } catch {
+    // 已存在
+  }
+  // v0.35 Phase 4: media_counters 加 seed_download_count (与 base_value 区分)
+  // 原 base_value 仅用于 view 种子, 下载种子独立可调 (老板装门面场景)
+  try {
+    db.exec(`ALTER TABLE media_counters ADD COLUMN seed_download_count INTEGER NOT NULL DEFAULT 50;`);
+    // 老数据用 base_value 一半填入 (默认 50% 概率被下载)
+    db.exec(`
+      UPDATE media_counters
+      SET seed_download_count = MAX(50, base_value / 2)
+      WHERE seed_download_count = 50;
+    `);
+  } catch {
+    // 已存在
+  }
+  // v0.35 Phase 4: media_counters.base_value 范围放宽 1-99999 (老板可手动调高到几万)
+  // 注意: 仅放宽上限, 不破坏 CHECK (SQLite 不支持 ALTER CHECK, 需重建表)
+  // 为避免数据迁移, 简单方案: 创新表 + 数据迁移 + 改名的代码留 v0.35+ 真正需要时再做
+  // 当前: admin API 端放宽校验即可 (DB 层仍 100-999)
+  // === v0.35 end ===
+
   // v0.34 Phase 4: media_items 加 category + is_paid + media_counters + media_access_logs
   try {
     db.exec(`ALTER TABLE media_items ADD COLUMN category TEXT NOT NULL DEFAULT 'image';`);

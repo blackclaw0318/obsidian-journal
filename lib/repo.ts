@@ -1515,6 +1515,67 @@ export const mediaCounterRepo = {
     `).run(now, mediaId);
     if (result.changes === 0) return null;
     return this.byId(mediaId);
+  },
+
+  // v0.35 Phase 4: 改单条种子 (admin 装门面场景)
+  patchSeed(mediaId: string, patch: { base_value?: number; seed_download_count?: number; seed_enabled?: number }): MediaCounter | null {
+    const sets: string[] = [];
+    const vals: Array<string | number> = [];
+    if (patch.base_value !== undefined) {
+      sets.push("base_value = ?");
+      vals.push(patch.base_value);
+    }
+    if (patch.seed_download_count !== undefined) {
+      sets.push("seed_download_count = ?");
+      vals.push(patch.seed_download_count);
+    }
+    if (patch.seed_enabled !== undefined) {
+      sets.push("seed_enabled = ?");
+      vals.push(patch.seed_enabled);
+    }
+    if (sets.length === 0) return this.byId(mediaId);
+    vals.push(mediaId);
+    const result = db.prepare(`UPDATE media_counters SET ${sets.join(", ")} WHERE media_id = ?`).run(...vals);
+    if (result.changes === 0) return null;
+    return this.byId(mediaId);
+  },
+
+  // v0.35 Phase 4: 批量调整种子 (老板装门面一键提升人气)
+  // delta: 可正可负 (例: +200 全站装热门)
+  // category 过滤: 'image' | 'document' | 'audio' | undefined (全站)
+  bulkAdjustSeed(delta: number, opts: { category?: "image" | "document" | "audio" } = {}): { affected: number } {
+    if (!Number.isFinite(delta)) return { affected: 0 };
+    // 防误锁: 限定 view_seed 范围 0-99999, download_seed 0-99999
+    let where = "1=1";
+    const params: Array<string | number> = [];
+    if (opts.category) {
+      where = "m.category = ?";
+      params.push(opts.category);
+    }
+    const result = db.prepare(`
+      UPDATE media_counters
+      SET base_value = MAX(100, MIN(999, base_value + ?))
+      FROM media_items m
+      WHERE media_counters.media_id = m.id AND ${where}
+    `).run(delta, ...params);
+    return { affected: Number(result.changes) };
+  },
+
+  // v0.35 Phase 4: 重置所有种子为默认随机 100-999 (一键返回原状)
+  randomizeAllSeeds(opts: { category?: "image" | "document" | "audio" } = {}): { affected: number } {
+    let where = "1=1";
+    const params: Array<string | number> = [];
+    if (opts.category) {
+      where = "m.category = ?";
+      params.push(opts.category);
+    }
+    const result = db.prepare(`
+      UPDATE media_counters
+      SET base_value = 100 + ABS(RANDOM() % 900)
+      FROM media_items m
+      WHERE media_counters.media_id = m.id AND ${where}
+    `).run(...params);
+    return { affected: Number(result.changes) };
   }
 };
 

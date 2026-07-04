@@ -1,6 +1,7 @@
 // ============================================================
 // lib/counter.ts — v0.34 Phase 4 资源计数工具
 // 老板 17:26 Q3 决策: 计数不设上限 + 显示真实数 + 初始随机百位数 (100-999)
+// v0.35 升级: 种子可关 (seed_enabled) + view/download 种子独立 (老板装门面需求)
 // ============================================================
 
 import type { MediaCounter } from "./types";
@@ -9,24 +10,70 @@ import type { MediaCounter } from "./types";
  * 生成 base_value (100-999 随机整数, 含端点)
  * 上传资源时调用一次, 写入 media_counters.base_value
  * 之后不再变化, 真实浏览/下载数累加到 view_count / download_count
+ *
+ * v0.35: admin 可通过 PATCH /api/admin/resources/[id]/seed 改 1-9999 (无 CHECK 限制)
  */
 export function genBaseValue(): number {
   return 100 + Math.floor(Math.random() * 900); // [100, 999]
 }
 
 /**
- * 显示用浏览数 = base_value + view_count
- * 不做区间, 不做模糊, 直接返回整数
+ * 生成 seed_download_count (默认 50, 老板可调)
+ * v0.35 新加, 老数据迁移时填 = base_value / 2
  */
-export function displayView(c: Pick<MediaCounter, "base_value" | "view_count">): number {
+export function genSeedDownload(baseValue: number = 100): number {
+  return Math.max(50, Math.floor(baseValue / 2));
+}
+
+/**
+ * 显示用浏览数 = seed_enabled ? (base_value + view_count) : view_count
+ * v0.35: 尊重 seed_enabled 开关 (admin 可关掉只显示真实数)
+ */
+export function displayView(c: Pick<MediaCounter, "base_value" | "view_count"> & { seed_enabled?: number }): number {
+  if (c.seed_enabled === 0) return c.view_count;
   return c.base_value + c.view_count;
 }
 
 /**
- * 显示用下载数 = base_value + download_count
+ * 显示用下载数 = seed_enabled ? (seed_download_count + download_count) : download_count
+ * v0.35: view/download 种子独立, 优先用 seed_download_count, 兜底 base_value
  */
-export function displayDownload(c: Pick<MediaCounter, "base_value" | "download_count">): number {
-  return c.base_value + c.download_count;
+export function displayDownload(
+  c: Pick<MediaCounter, "base_value" | "download_count"> & { seed_enabled?: number; seed_download_count?: number }
+): number {
+  if (c.seed_enabled === 0) return c.download_count;
+  const seed = c.seed_download_count ?? c.base_value;
+  return seed + c.download_count;
+}
+
+/**
+ * view 真实数 (不含种子)
+ */
+export function realView(c: Pick<MediaCounter, "view_count">): number {
+  return c.view_count;
+}
+
+/**
+ * download 真实数 (不含种子)
+ */
+export function realDownload(c: Pick<MediaCounter, "download_count">): number {
+  return c.download_count;
+}
+
+/**
+ * view 种子值 (不含真实数) — UI tooltip "(基础 N + 真实 M)" 用
+ */
+export function viewSeed(c: Pick<MediaCounter, "base_value" | "seed_enabled">): number {
+  if (c.seed_enabled === 0) return 0;
+  return c.base_value;
+}
+
+/**
+ * download 种子值
+ */
+export function downloadSeed(c: Pick<MediaCounter, "base_value" | "seed_enabled"> & { seed_download_count?: number }): number {
+  if (c.seed_enabled === 0) return 0;
+  return c.seed_download_count ?? c.base_value;
 }
 
 /**

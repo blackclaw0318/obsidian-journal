@@ -98,12 +98,13 @@ test("displayView = base_value + view_count", () => {
   assert.equal(displayView(c1), c0.base_value + 5);
 });
 
-test("displayDownload = base_value + download_count", () => {
+test("displayDownload = seed_download_count + download_count (v0.35)", () => {
   const m = makeMediaItem();
   const c0 = mediaCounterRepo.byId(m.id)!;
   for (let i = 0; i < 3; i++) mediaCounterRepo.incDownload(m.id);
   const c1 = mediaCounterRepo.byId(m.id)!;
-  assert.equal(displayDownload(c1), c0.base_value + 3);
+  // v0.35: 下载种子独立可调, 默认 50
+  assert.equal(displayDownload(c1), c0.seed_download_count + 3);
 });
 
 // ============================================================
@@ -191,4 +192,93 @@ test("mediaRepo.listByCategory 按 category 筛", () => {
   const audios = mediaRepo.listByCategory({ category: "audio" });
   assert.equal(audios.total, 1);
   assert.equal(audios.items[0].id, mp3.id);
+});
+
+// ============================================================
+// 6. v0.35: patchSeed + bulkAdjustSeed + seed_enabled (老板 2026-07-04 20:37)
+// ============================================================
+
+test("v0.35: patchSeed 可单独改 base_value", () => {
+  const m = makeMediaItem();
+  const updated = mediaCounterRepo.patchSeed(m.id, { base_value: 999 });
+  assert.ok(updated);
+  assert.equal(updated!.base_value, 999);
+  assert.equal(displayView(updated!), 999);  // 0 real + 999 seed
+});
+
+test("v0.35: patchSeed 超过 999 被 CHECK 拒绝", () => {
+  const m = makeMediaItem();
+  assert.throws(
+    () => mediaCounterRepo.patchSeed(m.id, { base_value: 5000 }),
+    /CHECK constraint/
+  );
+});
+
+test("v0.35: patchSeed 可单独改 seed_download_count (独立于 view seed)", () => {
+  const m = makeMediaItem();
+  const updated = mediaCounterRepo.patchSeed(m.id, { seed_download_count: 200 });
+  assert.ok(updated);
+  assert.equal(updated!.seed_download_count, 200);
+  assert.equal(displayDownload(updated!), 200);  // 0 real + 200 seed
+});
+
+test("v0.35: patchSeed 可关 seed_enabled (只显示真实数)", () => {
+  const m = makeMediaItem();
+  mediaCounterRepo.incView(m.id);
+  const before = mediaCounterRepo.byId(m.id)!;
+  // seed_enabled 默认 1, 关闭后 view 数从 base+1 变为 1
+  assert.equal(displayView(before), before.base_value + 1);
+
+  const after = mediaCounterRepo.patchSeed(m.id, { seed_enabled: 0 })!;
+  assert.equal(displayView(after), 1);  // 只显示真实数
+  assert.equal(displayDownload(after), 0);
+});
+
+test("v0.35: bulkAdjustSeed 全站 +50 装门面 (CHECK 上限 999)", () => {
+  for (let i = 0; i < 3; i++) makeMediaItem();
+  const before = mediaCounterRepo.listByMediaIds(
+    mediaRepo.listAll({ limit: 100 }).items.map((m) => m.id)
+  );
+  const beforeBaseValues = Array.from(before.values()).map((c) => c.base_value);
+
+  const result = mediaCounterRepo.bulkAdjustSeed(50);
+  assert.equal(result.affected, 3);
+
+  const after = mediaCounterRepo.listByMediaIds(
+    mediaRepo.listAll({ limit: 100 }).items.map((m) => m.id)
+  );
+  const afterBaseValues = Array.from(after.values()).map((c) => c.base_value);
+  for (let i = 0; i < 3; i++) {
+    assert.equal(afterBaseValues[i], beforeBaseValues[i] + 50);
+  }
+});
+
+test("v0.35: bulkAdjustSeed 按 category 过滤 (只调图片)", () => {
+  const img = makeMediaItem("image/png");
+  const aud = makeMediaItem("audio/mpeg");
+  const pdf = makeMediaItem("application/pdf");
+
+  // 先置图片 100, audio/pdf 设为 999 (避免随机 干扰)
+  mediaCounterRepo.patchSeed(img.id, { base_value: 100 });
+  mediaCounterRepo.patchSeed(aud.id, { base_value: 999 });
+  mediaCounterRepo.patchSeed(pdf.id, { base_value: 999 });
+
+  const result = mediaCounterRepo.bulkAdjustSeed(50, { category: "image" });
+  assert.equal(result.affected, 1, "只调 1 个图片");
+
+  const imgCounter = mediaCounterRepo.byId(img.id)!;
+  const audCounter = mediaCounterRepo.byId(aud.id)!;
+  const pdfCounter = mediaCounterRepo.byId(pdf.id)!;
+  assert.equal(imgCounter.base_value, 150);  // 100 + 50
+  assert.equal(audCounter.base_value, 999);  // 不变
+  assert.equal(pdfCounter.base_value, 999);  // 不变
+});
+
+test("v0.35: randomizeAllSeeds 重置为 100-999 随机", () => {
+  const m = makeMediaItem();
+  mediaCounterRepo.patchSeed(m.id, { base_value: 100 });  // 设为最小值
+  const result = mediaCounterRepo.randomizeAllSeeds();
+  assert.equal(result.affected, 1);
+  const c = mediaCounterRepo.byId(m.id)!;
+  assert.ok(c.base_value >= 100 && c.base_value <= 999, `base_value 应 ∈ [100,999], 实际 ${c.base_value}`);
 });

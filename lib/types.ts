@@ -174,12 +174,14 @@ export interface MediaItem {
 
 export interface MediaCounter {
   media_id: string;
-  base_value: number;            // v0.34: 100-999 随机种子 (一次性)
+  base_value: number;            // v0.34: 100-999 随机种子 (一次性) — v0.35: admin 可调 1-9999
   view_count: number;
   download_count: number;
   last_viewed_at: number | null;
   last_downloaded_at: number | null;
   created_at: number;
+  seed_enabled?: number;         // v0.35: 1=显示 seed+real, 0=只显示 real (老板可关掉装饰)
+  seed_download_count?: number;  // v0.35: 下载独立种子, 与 view 种子可不同 (默认 50)
 }
 
 export interface MediaAccessLog {

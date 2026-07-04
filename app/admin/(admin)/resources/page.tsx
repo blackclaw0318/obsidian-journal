@@ -40,12 +40,19 @@ export default function ResourcesListPage({ searchParams }: { searchParams: Sear
   // ⚠️ "Only plain objects can be passed to Client Components" #428396957
   // safeItems + safeCounters 都走 JSON 双跳, 必剥 prototype
   const safeItems = JSON.parse(JSON.stringify(items));
-  // 把 counter 转成 { media_id: { view, download } } 简化客户端, 再 JSON 序列化
+  // 把 counter 转成 { media_id: { view, download, ... } } 客户端, 再 JSON 序列化
+  // v0.35: 加 base_value + seed_download_count + seed_enabled + view_count + download_count
+  // 供 AdminGrid 种子编辑 modal 使用 (装门面场景)
   const safeCounters = JSON.parse(JSON.stringify(
     Object.fromEntries(
       Array.from(counters.entries()).map(([id, c]) => [id, {
         view: displayView(c),
-        download: displayDownload(c)
+        download: displayDownload(c),
+        base_value: c.base_value,
+        seed_download_count: c.seed_download_count ?? 50,
+        seed_enabled: c.seed_enabled ?? 1,
+        view_count: c.view_count,
+        download_count: c.download_count,
       }])
     )
   ));

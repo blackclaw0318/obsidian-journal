@@ -1,11 +1,16 @@
-// tests/unit/counter.test.mts — v0.34 Phase 4
-// 验证: genBaseValue 范围 + display 函数 + mime 检测 (image/document/audio)
+// tests/unit/counter.test.mts — v0.34 Phase 4 + v0.35 (种子可控)
+// 验证: genBaseValue 范围 + display 函数 + mime 检测 + v0.35 seed_enabled 开关 + view/dl 独立种子
 
 import { describe, it, expect } from "vitest";
 import {
   genBaseValue,
+  genSeedDownload,
   displayView,
   displayDownload,
+  realView,
+  realDownload,
+  viewSeed,
+  downloadSeed,
   isAllowedResourceMime,
   categoryFromMime,
   VIEW_DEDUPE_WINDOW_SEC
@@ -124,6 +129,100 @@ describe("counter.ts (v0.34 Phase 4)", () => {
   describe("VIEW_DEDUPE_WINDOW_SEC", () => {
     it("应为 86400 (24h)", () => {
       expect(VIEW_DEDUPE_WINDOW_SEC).toBe(86400);
+    });
+  });
+
+  // ============================================================
+  // v0.35 Phase 4: 种子可控 (老板 2026-07-04 20:37 需求)
+  // ============================================================
+
+  describe("v0.35: seed_enabled 开关", () => {
+    it("seed_enabled=1 → 显示 seed + real (默认行为)", () => {
+      expect(displayView({ base_value: 100, view_count: 5, seed_enabled: 1 })).toBe(105);
+      expect(displayDownload({ base_value: 100, download_count: 3, seed_enabled: 1 })).toBe(103);
+    });
+
+    it("seed_enabled=0 → 只显示 real (老板关闭装饰场景)", () => {
+      expect(displayView({ base_value: 999, view_count: 5, seed_enabled: 0 })).toBe(5);
+      expect(displayDownload({ base_value: 999, download_count: 3, seed_enabled: 0 })).toBe(3);
+    });
+
+    it("seed_enabled 未定义 → 默认 1 (不破坏 v0.34 逻辑)", () => {
+      expect(displayView({ base_value: 200, view_count: 5 })).toBe(205);
+      expect(displayDownload({ base_value: 200, download_count: 3 })).toBe(203);
+    });
+  });
+
+  describe("v0.35: view/download 独立种子", () => {
+    it("view seed=base_value, download seed=seed_download_count", () => {
+      const c = {
+        base_value: 100,
+        seed_download_count: 50,
+        view_count: 10,
+        download_count: 3,
+        seed_enabled: 1,
+      };
+      expect(displayView(c)).toBe(110);  // 100 + 10
+      expect(displayDownload(c)).toBe(53);  // 50 + 3
+    });
+
+    it("seed_download_count 缺省 → 兑底 base_value (老数据兼容)", () => {
+      const c = { base_value: 200, view_count: 0, download_count: 5 };
+      expect(displayDownload(c)).toBe(205);
+    });
+
+    it("view/dl 种子独立可调 (老板装门面场景: view 500, download 50)", () => {
+      const c = {
+        base_value: 500,        // view seed 顶高
+        seed_download_count: 50, // download seed 低调
+        view_count: 100,
+        download_count: 2,
+        seed_enabled: 1,
+      };
+      expect(displayView(c)).toBe(600);   // 500+100
+      expect(displayDownload(c)).toBe(52); // 50+2
+    });
+  });
+
+  describe("v0.35: realView / realDownload (不含种子)", () => {
+    it("返回原始真实数", () => {
+      expect(realView({ view_count: 123 })).toBe(123);
+      expect(realDownload({ download_count: 45 })).toBe(45);
+    });
+  });
+
+  describe("v0.35: viewSeed / downloadSeed (只返回种子值)", () => {
+    it("seed_enabled=1 返回对应种子", () => {
+      expect(viewSeed({ base_value: 500, seed_enabled: 1 })).toBe(500);
+      expect(downloadSeed({ base_value: 500, seed_enabled: 1, seed_download_count: 50 })).toBe(50);
+    });
+
+    it("seed_enabled=0 返回 0 (不装门面)", () => {
+      expect(viewSeed({ base_value: 500, seed_enabled: 0 })).toBe(0);
+      expect(downloadSeed({ base_value: 500, seed_enabled: 0, seed_download_count: 50 })).toBe(0);
+    });
+
+    it("downloadSeed 缺省 seed_download_count → 兑底 base_value", () => {
+      expect(downloadSeed({ base_value: 300, seed_enabled: 1 })).toBe(300);
+    });
+  });
+
+  describe("v0.35: genSeedDownload", () => {
+    it("默认 base_value 输入应返回 ≥ 50", () => {
+      expect(genSeedDownload(100)).toBeGreaterThanOrEqual(50);
+    });
+
+    it("base_value=200 → seed_download 100 (50% of base)", () => {
+      expect(genSeedDownload(200)).toBe(100);
+    });
+
+    it("base_value=300 → seed_download 150", () => {
+      expect(genSeedDownload(300)).toBe(150);
+    });
+
+    it("默认参数 (100) → 应返回 ≥ 50", () => {
+      const v = genSeedDownload();
+      expect(v).toBeGreaterThanOrEqual(50);
     });
   });
 });

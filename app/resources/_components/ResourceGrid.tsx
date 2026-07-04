@@ -127,8 +127,8 @@ export function ResourceGrid({
                   {m.width && m.height && <span>{m.width}×{m.height}</span>}
                 </div>
                 <div className="mt-1 flex items-center justify-between text-xs text-fg-muted">
-                  <span title="浏览数 (基础 100-999 + 真实累计)">👁 {viewNum}</span>
-                  <span title="下载数 (基础 100-999 + 真实累计)">⬇ {downloadNum}</span>
+                  <span title={`浏览 ${counter?.view_count ?? 0} + 种子 ${counter?.base_value ?? 0}${counter?.seed_enabled === 0 ? ' (装饰已关)' : ''}`}>👁 {viewNum}</span>
+                  <span title={`下载 ${counter?.download_count ?? 0} + 种子 ${counter?.seed_download_count ?? counter?.base_value ?? 0}${counter?.seed_enabled === 0 ? ' (装饰已关)' : ''}`}>⬇ {downloadNum}</span>
                   <span>{formatDate(m.uploaded_at)}</span>
                 </div>
               </div>

@@ -133,7 +133,8 @@ test("不同 access_type (view vs download) 独立计数", async () => {
   assert.equal(c.view_count, 1, "view +1");
   assert.equal(c.download_count, 1, "download +1");
   assert.equal(displayView(c) - c.base_value, 1);
-  assert.equal(displayDownload(c) - c.base_value, 1);
+  // v0.35: download seed 独立, 兑底为 base_value/2 但默认 50
+  assert.equal(displayDownload(c) - c.seed_download_count, 1);
 });
 
 test("download 不去重 (用户多次下载每次 +1)", async () => {
@@ -152,7 +153,8 @@ test("download 不去重 (用户多次下载每次 +1)", async () => {
 
   const c = mediaCounterRepo.byId(m.id)!;
   assert.equal(c.download_count, 5);
-  assert.equal(displayDownload(c), c.base_value + 5);
+  // v0.35: 下载种子独立于 view seed, 默认 50
+  assert.equal(displayDownload(c), c.seed_download_count + 5);
 });
 
 test("hashIp 确定性 + 不可逆", () => {
