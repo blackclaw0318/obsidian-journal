@@ -1,42 +1,55 @@
 // ============================================================
-// /admin/media - 媒体库 (Phase 3.6)
-// Grid 视图 + 上传 + alt 编辑 + 引用追踪 (3.7 接 Post/Chapter/Page/Video)
+// /admin/resources - 资源库管理 (v0.34 Phase 4, 旧 /admin/media 升级)
+// Grid 视图 + 上传 + alt 编辑 + 引用追踪
+// 老板 15:14 决策: 砍 video, 三类 (image/document/audio)
 // ============================================================
-import { mediaRepo } from "@/lib/repo";
-import { MediaUploader } from "./_components/MediaUploader";
-import { MediaGrid } from "./_components/MediaGrid";
+import { mediaRepo, mediaCounterRepo } from "@/lib/repo";
+import { ResourceUploader } from "./_components/ResourceUploader";
+import { ResourceAdminGrid } from "./_components/ResourceAdminGrid";
+import { displayView, displayDownload } from "@/lib/counter";
+import type { MediaCategory } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 type SearchParams = {
-  type?: string; // 'image' | 'video' | 'audio' | 'pdf'
+  type?: string; // 'image' | 'document' | 'audio'
   q?: string;
 };
 
-const TYPE_OPTIONS = [
-  { value: "", label: "全部", prefix: undefined },
-  { value: "image", label: "图片", prefix: "image/" },
-  { value: "video", label: "视频", prefix: "video/" },
-  { value: "audio", label: "音频", prefix: "audio/" },
-  { value: "pdf", label: "PDF", prefix: "application/pdf" }
+const TYPE_OPTIONS: Array<{ value: MediaCategory | ""; label: string }> = [
+  { value: "", label: "全部" },
+  { value: "image", label: "图片" },
+  { value: "document", label: "文档" },
+  { value: "audio", label: "音频" }
 ];
 
-export default function MediaListPage({ searchParams }: { searchParams: SearchParams }) {
-  const type = searchParams.type || "";
+export default function ResourcesListPage({ searchParams }: { searchParams: SearchParams }) {
+  const type = (searchParams.type || "") as MediaCategory | "";
   const q = searchParams.q || undefined;
 
-  const opt = TYPE_OPTIONS.find((o) => o.value === type) ?? TYPE_OPTIONS[0];
-  const { items, total } = mediaRepo.listAll({ mimePrefix: opt.prefix, q, limit: 200 });
+  const { items, total } = type
+    ? mediaRepo.listByCategory({ category: type as MediaCategory, limit: 200 })
+    : mediaRepo.listAll({ q, limit: 200 });
   const totalSize = mediaRepo.totalSize();
+
+  // 批量取 counter (Q3 显示真实数)
+  const counters = mediaCounterRepo.listByMediaIds(items.map((m) => m.id));
 
   // 序列化: better-sqlite3 行有 null prototype, 不能直接传给 Client Component
   const safeItems = JSON.parse(JSON.stringify(items));
+  // 把 counter 转成 { media_id: { view, download } } 简化客户端
+  const safeCounters = Object.fromEntries(
+    Array.from(counters.entries()).map(([id, c]) => [id, {
+      view: displayView(c),
+      download: displayDownload(c)
+    }])
+  );
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">🖼 媒体库</h1>
+          <h1 className="text-2xl font-bold">📦 资源库</h1>
           <p className="mt-1 text-sm text-fg-muted">
             共 <strong>{total}</strong> 个文件 · 总大小 <strong>{(totalSize / 1024 / 1024).toFixed(1)}MB</strong>
             {q && ` · 搜索: "${q}"`}
@@ -44,7 +57,7 @@ export default function MediaListPage({ searchParams }: { searchParams: SearchPa
         </div>
       </div>
 
-      <MediaUploader />
+      <ResourceUploader />
 
       {/* 筛选 + 搜索 */}
       <form className="flex flex-wrap items-end gap-3 rounded-lg border border-border bg-bg-card p-4">
@@ -56,7 +69,7 @@ export default function MediaListPage({ searchParams }: { searchParams: SearchPa
             className="rounded border border-border bg-bg-base px-3 py-1.5 text-sm outline-none focus:border-accent"
           >
             {TYPE_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>{o.label}</option>
+              <option key={o.value || "all"} value={o.value}>{o.label}</option>
             ))}
           </select>
         </label>
@@ -76,14 +89,14 @@ export default function MediaListPage({ searchParams }: { searchParams: SearchPa
           筛选
         </button>
         <a
-          href="/admin/media"
+          href="/admin/resources"
           className="rounded border border-border px-3 py-1.5 text-sm hover:bg-bg-base"
         >
           重置
         </a>
       </form>
 
-      <MediaGrid items={safeItems} />
+      <ResourceAdminGrid items={safeItems} counters={safeCounters} />
     </div>
   );
 }

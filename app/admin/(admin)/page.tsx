@@ -1,6 +1,6 @@
 // ============================================================
 // /admin - 仪表盘 (v0.11, v0.6.1 §7.2)
-// 统计: 帖子/系列/小说/视频/页面/媒体 各数量 + 最近 7 天 daily_stat
+// 统计: 帖子/系列/小说/视频/页面/资源 各数量 + 最近 7 天 daily_stat
 // ============================================================
 import Link from "next/link";
 import {
@@ -57,7 +57,7 @@ export default function DashboardPage() {
           <StatCard label="小说" value={novelCount} href="/admin/novels" />
           <StatCard label="视频" value={videoCount} sub={`${videoSeriesCount} 系列`} href="/admin/videos" />
           <StatCard label="静态页" value={pageCount} href="/admin/pages" />
-          <StatCard label="媒体" value={mediaCount} sub={`${formatCount(mediaRepo.totalSize())} bytes`} href="/admin/media" />
+          <StatCard label="资源" value={mediaCount} sub={`${formatCount(mediaRepo.totalSize())} bytes`} href="/admin/resources" />
           <StatCard label="友链" value={socialCount} href="/admin/socials" />
           <StatCard label="最近 7d PV" value={formatCount(totalPv7d)} sub={`${formatCount(totalPostViews7d)} 文章浏览`} />
         </div>

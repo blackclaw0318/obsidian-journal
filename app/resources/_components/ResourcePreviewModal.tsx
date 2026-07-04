@@ -1,13 +1,9 @@
 "use client";
 
 // ============================================================
-// MediaPreviewModal - 按 mime type 渲染预览 (v0.33 P0-1)
-//  - image/*   → 全屏 <img>
-//  - video/*   → <video controls autoPlay>
-//  - audio/*   → <audio controls>
-//  - application/pdf → <iframe>
-//  - text/*    → <pre>
-//  - 其他      → "暂不支持预览" + 下载
+// ResourcePreviewModal - 按 category/mime 渲染预览 (v0.34 Phase 4)
+//  - 砍 video (老板 15:14 决策)
+//  - image/* / audio/* / application/pdf / text/* / 其他
 //  - 背景点击 + ESC → 关闭
 //  - body scroll lock
 // ============================================================
@@ -19,7 +15,7 @@ interface Props {
   onClose: () => void;
 }
 
-export function MediaPreviewModal({ item, onClose }: Props) {
+export function ResourcePreviewModal({ item, onClose }: Props) {
   const handleClose = useCallback(() => onClose(), [onClose]);
 
   // ESC 关闭 + body scroll lock
@@ -41,11 +37,9 @@ export function MediaPreviewModal({ item, onClose }: Props) {
 
   const mime = item.mime_type;
   const isImage = mime.startsWith("image/");
-  const isVideo = mime.startsWith("video/");
   const isAudio = mime.startsWith("audio/");
   const isPdf = mime === "application/pdf";
   const isText = mime.startsWith("text/");
-  const downloadable = !isText && !isPdf; // iframe/直链
 
   return (
     <div
@@ -54,7 +48,7 @@ export function MediaPreviewModal({ item, onClose }: Props) {
       aria-label={`预览 ${item.filename}`}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
       onClick={handleClose}
-      data-testid="media-preview-modal"
+      data-testid="resource-preview-modal"
     >
       <button
         onClick={handleClose}
@@ -67,7 +61,7 @@ export function MediaPreviewModal({ item, onClose }: Props) {
       <div
         className="relative max-h-[90vh] max-w-[90vw] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
-        data-testid="media-preview-content"
+        data-testid="resource-preview-content"
       >
         {isImage ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -75,15 +69,6 @@ export function MediaPreviewModal({ item, onClose }: Props) {
             src={item.url}
             alt={item.alt ?? item.filename}
             className="max-h-[90vh] max-w-[90vw] rounded object-contain"
-          />
-        ) : isVideo ? (
-          <video
-            key={item.id}
-            src={item.url}
-            controls
-            autoPlay
-            playsInline
-            className="max-h-[90vh] max-w-[90vw] rounded"
           />
         ) : isAudio ? (
           <div className="flex flex-col items-center gap-4 rounded-lg bg-bg-card p-8">
@@ -110,15 +95,13 @@ export function MediaPreviewModal({ item, onClose }: Props) {
             <div className="text-6xl">📄</div>
             <div className="font-medium">{item.filename}</div>
             <div className="text-sm text-fg-muted">该类型暂不支持预览</div>
-            {downloadable && (
-              <a
-                href={item.url}
-                download={item.filename}
-                className="rounded bg-accent px-4 py-2 text-sm text-white hover:bg-accent/90"
-              >
-                ⬇ 下载文件
-              </a>
-            )}
+            <a
+              href={item.url}
+              download={item.filename}
+              className="rounded bg-accent px-4 py-2 text-sm text-white hover:bg-accent/90"
+            >
+              ⬇ 下载文件
+            </a>
           </div>
         )}
 

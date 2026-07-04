@@ -33,7 +33,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/posts", label: "文章" },
   { href: "/novels", label: "小说" },
   { href: "/videos", label: "视频" },
-  { href: "/media", label: "媒体" },
+  { href: "/resources", label: "资源" },
   { href: "/admin", label: "⚙ 管理" }
 ];
 

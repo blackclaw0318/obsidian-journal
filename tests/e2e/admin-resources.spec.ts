@@ -13,11 +13,11 @@ test.describe.serial("Admin 媒体库", () => {
     await page.getByLabel("邮箱").fill("admin@obsidian.local");
     await page.getByLabel("密码").fill("admin123");
     await page.click('button[type="submit"]');
-    await page.waitForURL(/\/admin(\/posts|\/novels|\/videos|\/video-series|\/pages|\/media|\/settings|$)/);
+    await page.waitForURL(/\/admin(\/posts|\/novels|\/videos|\/video-series|\/pages|\/resources|\/settings|$)/);
   });
 
   test("媒体库 — 页面渲染 + uploader 存在", async ({ page }) => {
-    await page.goto("/admin/media");
+    await page.goto("/admin/resources");
     await expect(page.getByRole("heading", { name: "媒体库" })).toBeVisible();
     await expect(page.getByText(/点击或拖拽文件到此处上传/)).toBeVisible();
   });
@@ -40,7 +40,7 @@ test.describe.serial("Admin 媒体库", () => {
     writeFileSync(tmpPng, pngBytes);
 
     // 2) 上传
-    await page.goto("/admin/media");
+    await page.goto("/admin/resources");
     await page.locator('input[type="file"]').setInputFiles(tmpPng);
 
     // 3) 等待上传完成, reload 验证 grid
@@ -61,7 +61,7 @@ test.describe.serial("Admin 媒体库", () => {
 
     const form = new FormData();
     form.append("file", new Blob(["hello"], { type: "text/plain" }), "evil.txt");
-    const res = await request.post("/api/admin/media", {
+    const res = await request.post("/api/admin/resources", {
       multipart: { file: { name: "evil.txt", mimeType: "text/plain", buffer: Buffer.from("hello") } }
     });
     expect(res.status()).toBe(400);
@@ -70,7 +70,7 @@ test.describe.serial("Admin 媒体库", () => {
   });
 
   test("媒体库 — 类型筛选 (image)", async ({ page }) => {
-    await page.goto("/admin/media?type=image");
+    await page.goto("/admin/resources?type=image");
     await expect(page.getByRole("heading", { name: "媒体库" })).toBeVisible();
   });
 });
@@ -89,7 +89,7 @@ test.describe("媒体库 v0.33.3 race fix", () => {
     // 12MB 二进制 (不是真视频, 但足以测流式 + race fix)
     const buffer = Buffer.alloc(12 * 1024 * 1024, 0x42);
     const start = Date.now();
-    const uploadRes = await request.post("/api/admin/media", {
+    const uploadRes = await request.post("/api/admin/resources", {
       multipart: {
         file: { name: "boss-12mb.mp4", mimeType: "video/mp4", buffer }
       }
@@ -126,7 +126,7 @@ test.describe("媒体库 v0.33.3 race fix", () => {
     setTimeout(() => controller.abort(), 200); // 200ms 后 client 断开
 
     try {
-      await request.post("/api/admin/media", {
+      await request.post("/api/admin/resources", {
         headers: {
           "Content-Type": `multipart/form-data; boundary=${boundary}`,
           "Content-Length": String(body.length),

@@ -1,7 +1,7 @@
 "use client";
 
 // ============================================================
-// MediaUploader (Phase 3.6 → v0.33 P0-2, v0.33.1 P0-修)
+// ResourceUploader (Phase 3.6 → v0.33 P0-2, v0.33.1 P0-修)
 // 真上传进度 + 服务器处理状态 + 串行 + 自动刷新
 //  - XHR (fetch 不支持 upload progress)
 //  - 3 阶段状态: uploading → processing → success/error
@@ -41,7 +41,7 @@ function mimeIcon(mime: string): string {
   return "📄";
 }
 
-export function MediaUploader() {
+export function ResourceUploader() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<FileEntry[]>([]);
@@ -118,7 +118,7 @@ export function MediaUploader() {
 
       const form = new FormData();
       form.append("file", entry.file);
-      xhr.open("POST", "/api/admin/media");
+      xhr.open("POST", "/api/admin/resources");
       xhr.send(form);
     });
   }
@@ -144,7 +144,7 @@ export function MediaUploader() {
     // 大文件警告
     const big = newEntries.filter((e) => e.file.size > WARN_SIZE);
     if (big.length > 0) {
-      console.warn(`[MediaUploader] ${big.length} 个文件超过 50MB, 可能超时`);
+      console.warn(`[ResourceUploader] ${big.length} 个文件超过 50MB, 可能超时`);
     }
 
     // 串行上传 (concurrency=1)
@@ -174,7 +174,7 @@ export function MediaUploader() {
         onDrop={(e) => { e.preventDefault(); setDragging(false); handleSelected(e.dataTransfer.files); }}
         onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
         onDragLeave={() => setDragging(false)}
-        data-testid="media-uploader-drop"
+        data-testid="resource-uploader-drop"
         className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition ${
           dragging ? "border-accent bg-accent/5" : "border-border bg-bg-card hover:border-accent/50 hover:bg-bg-card/80"
         }`}
@@ -189,7 +189,7 @@ export function MediaUploader() {
           accept="image/*,video/*,audio/*,application/pdf"
           onChange={(e) => handleSelected(e.target.files)}
           className="hidden"
-          data-testid="media-uploader-input"
+          data-testid="resource-uploader-input"
         />
       </div>
 
@@ -217,13 +217,13 @@ export function MediaUploader() {
 
       {/* 逐文件状态 */}
       {files.length > 0 && (
-        <ul className="space-y-1.5" data-testid="media-uploader-list">
+        <ul className="space-y-1.5" data-testid="resource-uploader-list">
           {files.map((entry) => {
             const isLarge = entry.file.size > WARN_SIZE;
             return (
               <li
                 key={entry.id}
-                data-testid="media-uploader-entry"
+                data-testid="resource-uploader-entry"
                 data-status={entry.status}
                 className="flex items-center gap-3 rounded-lg border border-border bg-bg-card p-2"
               >
@@ -265,7 +265,7 @@ export function MediaUploader() {
                     <button
                       onClick={() => retry(entry)}
                       className="rounded border border-border px-2 py-1 text-xs hover:bg-bg-base"
-                      data-testid="media-uploader-retry"
+                      data-testid="resource-uploader-retry"
                     >
                       重试
                     </button>

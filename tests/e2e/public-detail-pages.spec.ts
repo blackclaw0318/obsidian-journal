@@ -1,12 +1,12 @@
 // ============================================================
 // 公开端详情页 e2e (v0.12)
-// /novels/[slug] /novels/[slug]/volume-N /chapters/[slug] /videos/[slug] /pages/[slug] /media
+// /novels/[slug] /novels/[slug]/volume-N /chapters/[slug] /videos/[slug] /pages/[slug] /resources
 // ============================================================
 import { test, expect } from "@playwright/test";
 
 test.describe.serial("公开端详情页 v0.12", () => {
-  test("/media 公开页加载 + 分类 tab", async ({ page }) => {
-    await page.goto("/media");
+  test("/resources 公开页加载 + 分类 tab", async ({ page }) => {
+    await page.goto("/resources");
     await expect(page.locator("h1")).toContainText("媒体库");
     // 至少一个分类 tab 可见
     await expect(page.getByRole("link", { name: /图片/ }).first()).toBeVisible();

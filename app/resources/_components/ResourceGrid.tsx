@@ -1,13 +1,14 @@
 "use client";
 
 // ============================================================
-// MediaGrid (公开端) - 媒体卡片网格 + 点击预览 (v0.33 P0-1)
-//  - 卡片可点击 → 打开 MediaPreviewModal
-//  - 按 mime type 渲染缩略图 (image 用 <img>, 其他用 emoji)
+// ResourceGrid (公开端) - 资源卡片网格 + 点击预览 (v0.34 Phase 4)
+//  - 老板 Q3: 显示真实浏览/下载数 (base_value 100-999 + 累计)
+//  - 砍 video (v0.34 老板 15:14 决策)
 // ============================================================
 import { useState } from "react";
-import type { MediaItem } from "@/lib/types";
-import { MediaPreviewModal } from "./MediaPreviewModal";
+import type { MediaItem, MediaCounter } from "@/lib/types";
+import { displayView, displayDownload } from "@/lib/counter";
+import { ResourcePreviewModal } from "./ResourcePreviewModal";
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -20,34 +21,42 @@ function formatDate(ts: number): string {
   return new Date(ts * 1000).toLocaleDateString("zh-CN");
 }
 
-function mimeThumb(mime: string): { icon: string; hint: string } {
-  if (mime.startsWith("image/")) return { icon: "🖼", hint: "图片" };
-  if (mime.startsWith("video/")) return { icon: "🎬", hint: "视频" };
-  if (mime.startsWith("audio/")) return { icon: "🎵", hint: "音频" };
-  if (mime === "application/pdf") return { icon: "📕", hint: "PDF" };
-  if (mime.startsWith("text/")) return { icon: "📝", hint: "文本" };
-  return { icon: "📄", hint: "文件" };
+function categoryThumb(category: string): { icon: string; hint: string } {
+  if (category === "image") return { icon: "🖼", hint: "图片" };
+  if (category === "audio") return { icon: "🎵", hint: "音频" };
+  return { icon: "📄", hint: "文档" };
 }
 
-export function MediaGrid({ items }: { items: MediaItem[] }) {
+export function ResourceGrid({
+  items,
+  counters
+}: {
+  items: MediaItem[];
+  counters: Record<string, MediaCounter>;
+}) {
   const [active, setActive] = useState<MediaItem | null>(null);
 
   return (
     <>
       <div
         className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-        data-testid="media-grid"
+        data-testid="resources-grid"
       >
         {items.map((m) => {
           const isImage = m.mime_type.startsWith("image/");
-          const { icon, hint } = mimeThumb(m.mime_type);
+          const { icon, hint } = categoryThumb(m.category);
+          const counter = counters[m.id];
+          // 老板 Q3 决策: 真实数 (无区间, 无上限)
+          const viewNum = counter ? displayView(counter) : 0;
+          const downloadNum = counter ? displayDownload(counter) : 0;
           return (
             <button
               type="button"
               key={m.id}
               onClick={() => setActive(m)}
-              data-testid="media-card"
+              data-testid="resource-card"
               data-mime={m.mime_type}
+              data-category={m.category}
               className="group overflow-hidden rounded-lg border border-border bg-bg-card text-left transition hover:border-accent/60 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-accent"
             >
               <div className="relative flex aspect-video items-center justify-center overflow-hidden bg-bg-muted">
@@ -76,14 +85,18 @@ export function MediaGrid({ items }: { items: MediaItem[] }) {
                   <span>{formatBytes(m.size)}</span>
                   {m.width && m.height && <span>{m.width}×{m.height}</span>}
                 </div>
-                <div className="mt-1 text-xs text-fg-muted">{formatDate(m.uploaded_at)}</div>
+                <div className="mt-1 flex items-center justify-between text-xs text-fg-muted">
+                  <span title="浏览数 (基础 100-999 + 真实累计)">👁 {viewNum}</span>
+                  <span title="下载数 (基础 100-999 + 真实累计)">⬇ {downloadNum}</span>
+                  <span>{formatDate(m.uploaded_at)}</span>
+                </div>
               </div>
             </button>
           );
         })}
       </div>
 
-      <MediaPreviewModal item={active} onClose={() => setActive(null)} />
+      <ResourcePreviewModal item={active} onClose={() => setActive(null)} />
     </>
   );
 }

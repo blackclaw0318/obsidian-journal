@@ -15,7 +15,7 @@ const STATIC_PAGES = [
   { path: "/posts",   changefreq: "daily",  priority: 0.9 },
   { path: "/novels",  changefreq: "weekly", priority: 0.8 },
   { path: "/videos",  changefreq: "weekly", priority: 0.7 },
-  { path: "/media",   changefreq: "monthly", priority: 0.5 },
+  { path: "/resources",   changefreq: "monthly", priority: 0.5 },
   { path: "/feed.xml", changefreq: "daily",  priority: 0.6 },
   { path: "/rss.xml",  changefreq: "daily",  priority: 0.6 }
 ];

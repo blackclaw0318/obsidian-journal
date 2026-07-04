@@ -1,5 +1,5 @@
 // ============================================================
-// /api/admin/media - 媒体库 CRUD (Phase 3.6, v0.33.3 race 修复)
+// /api/admin/resources - 资源库 CRUD (v0.34 Phase 4, 旧 media 升级 + 砍 video)
 // GET:  列表 (mime 前缀 + 搜索)
 // POST: 上传 (multipart, busboy 流式, race-safe respond)
 //  - finish + writableFinished 检查 (消 race)

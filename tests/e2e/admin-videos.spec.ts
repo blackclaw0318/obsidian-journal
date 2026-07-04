@@ -13,7 +13,7 @@ test.describe.serial("Admin 视频 + 系列", () => {
     await page.getByLabel("邮箱").fill("admin@obsidian.local");
     await page.getByLabel("密码").fill("admin123");
     await page.click('button[type="submit"]');
-    await page.waitForURL(/\/admin(\/posts|\/novels|\/videos|\/video-series|\/pages|\/media|\/settings|$)/);
+    await page.waitForURL(/\/admin(\/posts|\/novels|\/videos|\/video-series|\/resources|\/settings|$)/);
   });
 
   test("视频系列 — 创建 → 编辑 → 删除", async ({ page }) => {

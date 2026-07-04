@@ -1,5 +1,5 @@
 // ============================================================
-// /api/admin/media/[id] - 媒体更新 / 删除 (Phase 3.6)
+// /api/admin/resources/[id] - 资源更新 / 删除 (v0.34 Phase 4)
 // GET:    详情 + 引用追踪
 // PATCH:  更新 alt 文本
 // DELETE: 物理删除 (含 unlink 文件 + 清 media_usages)

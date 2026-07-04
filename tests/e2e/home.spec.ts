@@ -104,8 +104,8 @@ test.describe("Phase 2.1 重构 (按 v0.6.1 schema)", () => {
     await expect(page.getByRole("heading", { name: /视频/ })).toBeVisible();
   });
 
-  test("/media 媒体页可访问 (Phase 3 占位)", async ({ page }) => {
-    const resp = await page.goto("/media");
+  test("/resources 资源页可访问 (Phase 3 占位)", async ({ page }) => {
+    const resp = await page.goto("/resources");
     expect(resp?.status()).toBe(200);
     await expect(page.getByRole("heading", { name: /媒体库/ })).toBeVisible();
   });
