@@ -59,6 +59,12 @@ export default function DashboardPage() {
           <StatCard label="静态页" value={pageCount} href="/admin/pages" />
           <StatCard label="资源" value={mediaCount} sub={`${formatCount(mediaRepo.totalSize())} bytes`} href="/admin/resources" />
           <StatCard label="友链" value={socialCount} href="/admin/socials" />
+          <StatCard
+            label="访问监控"
+            value="📊"
+            sub="板块级 PV/UV · 365 天"
+            href="/admin/analytics"
+          />
           <StatCard label="最近 7d PV" value={formatCount(totalPv7d)} sub={`${formatCount(totalPostViews7d)} 文章浏览`} />
         </div>
       </section>

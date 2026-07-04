@@ -214,8 +214,29 @@ export function initSchema(): void {
     );
     CREATE INDEX IF NOT EXISTS idx_usages_ref ON media_usages(ref_type, ref_id);
 
-    -- v0.35 砍计数后: media_counters / media_access_logs 表已删
-    -- (v0.34 计数功能, 2026-07-05 00:59 老板决策)
+    -- v0.35.2 (老板 2026-07-05 01:18 拍板): 板块访问监控
+    -- page_views: 原始访问流 (middleware 拦截 HTML GET, 24h 同 ip_hash+path 去重)
+    -- page_views_daily: 每日聚合缓存 (避免 dashboard 重算)
+    -- 数据保留 365 天 (Q4 老板决策)
+    CREATE TABLE IF NOT EXISTS page_views (
+      id TEXT PRIMARY KEY,
+      path TEXT NOT NULL,
+      section TEXT NOT NULL,           -- 第 1 段 (+ admin 第 2 段, 例 /admin/posts → 'admin/posts')
+      ip_hash TEXT NOT NULL,
+      user_agent TEXT,                 -- Q3: 存 UA (浏览器/设备分布)
+      visited_at INTEGER NOT NULL DEFAULT (unixepoch())
+    );
+    CREATE INDEX IF NOT EXISTS idx_pv_section_time ON page_views(section, visited_at);
+    CREATE INDEX IF NOT EXISTS idx_pv_path_time ON page_views(path, visited_at);
+    CREATE INDEX IF NOT EXISTS idx_pv_ip_hash ON page_views(ip_hash);
+
+    CREATE TABLE IF NOT EXISTS page_views_daily (
+      section TEXT NOT NULL,
+      date TEXT NOT NULL,              -- 'YYYY-MM-DD' (UTC+8)
+      pv INTEGER NOT NULL DEFAULT 0,   -- page views (含 dedup)
+      uv INTEGER NOT NULL DEFAULT 0,   -- unique visitors (24h 同 ip_hash 去重)
+      PRIMARY KEY (section, date)
+    );
 
     -- 7. Page (Block 组合)
     CREATE TABLE IF NOT EXISTS pages (
