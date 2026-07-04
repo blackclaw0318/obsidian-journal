@@ -1,6 +1,6 @@
 {
   "name": "obsidian-journal",
-  "version": "0.31.0",
+  "version": "0.32.0",
   "private": true,
   "description": "黑曜石日志 - 个人博客平台 (Block 编辑器 + 14 model 数据模型)",
   "scripts": {
