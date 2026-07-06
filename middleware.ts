@@ -130,6 +130,23 @@ function fireRecord(req: NextRequest): void {
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // ===== 域名重定向 (v0.36, 2026-07-06) =====
+  // dev.shangkun.uk → www.shangkun.uk (308 永久,保 SEO)
+  // cloudflared 透传 host 头;Next.js 拿到 dev.shangkun.uk 时直接 308 跳 www
+  // 排除 /api/* 避免内部接口被重定向 (虽然 cloudflared ingress 已分流,但双保险)
+  // 关键: url.port = "" 必须显式清掉,否则 clone() 会保留原 host 的端口(cloudflared 转发过来会带 3000)
+  const host =
+    req.headers.get("x-forwarded-host") ??
+    req.headers.get("host") ??
+    req.nextUrl.host;
+  if (host === "dev.shangkun.uk" && !pathname.startsWith("/api")) {
+    const url = req.nextUrl.clone();
+    url.protocol = "https";
+    url.host = "www.shangkun.uk";
+    url.port = ""; // 清掉端口,避免 location: www.shangkun.uk:3000/ 这种丑 URL
+    return NextResponse.redirect(url, 308);
+  }
+
   // ===== /posts/[slug] 服务端 view_count +1 (v0.35.3) =====
   // 只匹配单段 slug (避免命中 /posts 或 /posts/page/...)
   const postMatch = pathname.match(/^\/posts\/([^/]+)\/?$/);
