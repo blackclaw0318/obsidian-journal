@@ -40,6 +40,9 @@ const basePost: PostWithAuthor = {
   updated_at: 1719120000,
   view_count: 0,
   fts: null,
+  external_id: null,
+  idempotency_key: null,
+  external_meta: null,
   author: { name: "上坤", email: "shangkun@handfoot.cn" }
 };
 

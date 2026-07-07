@@ -219,6 +219,26 @@ export const AUTH_CONSTANTS = {
   JWT_ALG
 };
 
+// ============ v0.37 P4: Bot User (publisher HMAC 注入用) ============
+// bot user 永远无法登录 (password_hash = "NO_LOGIN", verifyPassword 因非 bcrypt 前缀失败)
+// 也不需要 sessions (API 注入, 不走 cookie)
+const BOT_USERS: Record<string, { id: string; email: string; name: string }> = {
+  "novel-bot": { id: "u_bot_novel", email: "novel-bot@system.local", name: "novel-bot" },
+  "yk-bot": { id: "u_bot_yk", email: "yk-bot@system.local", name: "yk-bot" },
+};
+
+/** 取 bot user id (publisher HMAC 注入时 author_id 用) */
+export function getBotUserId(name: "novel-bot" | "yk-bot"): string {
+  const bot = BOT_USERS[name];
+  if (!bot) throw new Error(`[auth] unknown bot user: ${name}`);
+  return bot.id;
+}
+
+/** 列出所有 bot user name (启动校验 / 测试用) */
+export function listBotUserNames(): string[] {
+  return Object.keys(BOT_USERS);
+}
+
 // ============ 测试 helper (仅供 tests/ 调用) ============
 // 清除 in-memory rate limit Map (测试间隔离, 避免上一个 test 的 5 次错误计数影响下一个)
 export function __resetRateLimitForTesting(): void {

@@ -53,6 +53,10 @@ export interface Post {
   updated_at: number;
   view_count: number;
   fts: string | null;
+  // v0.37 P4: 外部 publisher HMAC 注入 (无则 NULL)
+  external_id: string | null;
+  idempotency_key: string | null;
+  external_meta: string | null;  // JSON 字符串
 }
 
 export interface PostWithAuthor extends Post {

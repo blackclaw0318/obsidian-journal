@@ -2,7 +2,7 @@
 // 数据访问层 (Repository Pattern) - 基于 node:sqlite
 // 替代 Prisma client, 完全可控
 // ============================================================
-import { db, initSchema } from "./db";
+import { db, initSchema, migrateSchema } from "./db";
 import type {
   Post,
   PostWithAuthor,
@@ -100,12 +100,29 @@ export const postRepo = {
     db.prepare(`UPDATE posts SET view_count = view_count + 1 WHERE id = ?`).run(id);
   },
 
-  create(data: Omit<Post, "id" | "created_at" | "updated_at" | "view_count" | "fts">): Post {
+  create(
+    data: Omit<
+      Post,
+      | "id"
+      | "created_at"
+      | "updated_at"
+      | "view_count"
+      | "fts"
+      | "external_id"
+      | "idempotency_key"
+      | "external_meta"
+    > & {
+      // v0.37 P4: 外部 publisher 注入 (默认 null, 仅 external API 传)
+      external_id?: string | null;
+      idempotency_key?: string | null;
+      external_meta?: string | null;
+    }
+  ): Post {
     const id = uid("post");
     const now = Math.floor(Date.now() / 1000);
     db.prepare(`
-      INSERT INTO posts (id, slug, title, excerpt, content, cover_image, status, category, tags, author_id, series_id, published_at, created_at, updated_at, view_count)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
+      INSERT INTO posts (id, slug, title, excerpt, content, cover_image, status, category, tags, author_id, series_id, published_at, created_at, updated_at, view_count, external_id, idempotency_key, external_meta)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?)
     `).run(
       id,
       data.slug,
@@ -120,9 +137,47 @@ export const postRepo = {
       data.series_id ?? null,
       data.published_at ?? null,
       now,
-      now
+      now,
+      data.external_id ?? null,
+      data.idempotency_key ?? null,
+      data.external_meta ?? null
     );
-    return { ...data, id, created_at: now, updated_at: now, view_count: 0, fts: null };
+    return {
+      ...data,
+      id,
+      created_at: now,
+      updated_at: now,
+      view_count: 0,
+      fts: null,
+      external_id: data.external_id ?? null,
+      idempotency_key: data.idempotency_key ?? null,
+      external_meta: data.external_meta ?? null,
+    };
+  },
+
+  // v0.37 P4: 外部 publisher 注入支持 (幂等查找)
+  findByExternalId(externalId: string): PostWithAuthor | null {
+    const row = db
+      .prepare(`
+        SELECT p.*, u.name AS author_name, u.email AS author_email
+        FROM posts p JOIN users u ON u.id = p.author_id
+        WHERE p.external_id = ?
+        LIMIT 1
+      `)
+      .get(externalId);
+    return row ? rowToPostWithAuthor(row) : null;
+  },
+
+  findByIdempotencyKey(key: string): PostWithAuthor | null {
+    const row = db
+      .prepare(`
+        SELECT p.*, u.name AS author_name, u.email AS author_email
+        FROM posts p JOIN users u ON u.id = p.author_id
+        WHERE p.idempotency_key = ?
+        LIMIT 1
+      `)
+      .get(key);
+    return row ? rowToPostWithAuthor(row) : null;
   },
 
   // Phase 2.2 + v0.29 P2-19: FTS5 trigram 双轨搜索 (中文友好)
@@ -1491,4 +1546,7 @@ export function resetAllData(): void {
     DELETE FROM users;
     DELETE FROM site_config;
   `);
+  // v0.37 P4: resetAllData 删了 users 表里的 bot user, 重新跑 migrateSchema
+  // 让 u_bot_novel / u_bot_yk 重新插入 (INSERT OR IGNORE 幂等, 老 bot user 不会被覆盖)
+  migrateSchema();
 }

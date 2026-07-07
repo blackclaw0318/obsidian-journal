@@ -96,10 +96,17 @@ export function initSchema(): void {
       created_at INTEGER NOT NULL DEFAULT (unixepoch()),
       updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
       view_count INTEGER NOT NULL DEFAULT 0,
-      fts TEXT
+      fts TEXT,
+      -- v0.37 P4: 外部 publisher 注入 (HMAC 鉴权) 标识, 幂等用
+      external_id TEXT,
+      idempotency_key TEXT,
+      external_meta TEXT  -- JSON 字符串 (chapter_idx / season_no / publisher_内部元数据)
     );
     CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status, published_at);
     CREATE INDEX IF NOT EXISTS idx_posts_category ON posts(category);
+    -- 注: v0.37 P4 的 2 个 UNIQUE 索引 (idx_posts_external_id / idx_posts_idempotency) 不在 initSchema
+    -- 创建, 原因: 老库 ALTER 加列后, CREATE INDEX 在 initSchema 抛 "no such column" 会导致整个 exec 中断.
+    -- 这 2 个 unique index 由 migrateSchema 创建 (老库 ALTER 后跑, 新库 init 后跑).
     -- idx_posts_series 老库缺 series_id 列, 在 migrateSchema 里补建 (避免 init 失败)
 
     -- 兼容老库: 若 posts 缺 series_id 列, 补上 (v0.11 迁移)
@@ -344,7 +351,7 @@ export function initSchema(): void {
 // ============================================================
 // schema 迁移 (v0.11+) — 老库补列
 // ============================================================
-function migrateSchema(): void {
+export function migrateSchema(): void {
   // v0.11: posts 加 series_id 列 + 索引 (老库兼容)
   try {
     db.exec(`ALTER TABLE posts ADD COLUMN series_id TEXT REFERENCES series(id) ON DELETE SET NULL;`);
@@ -444,6 +451,49 @@ function migrateSchema(): void {
     db.exec(`DELETE FROM media_items WHERE mime_type LIKE 'video/%';`);
   } catch (err) {
     console.error("[db] v0.34 video cleanup:", err);
+  }
+
+  // v0.37 P4: posts 加 external_id / idempotency_key / external_meta (老库兼容)
+  try {
+    db.exec(`ALTER TABLE posts ADD COLUMN external_id TEXT;`);
+  } catch {
+    // 已存在
+  }
+  try {
+    db.exec(`ALTER TABLE posts ADD COLUMN idempotency_key TEXT;`);
+  } catch {
+    // 已存在
+  }
+  try {
+    db.exec(`ALTER TABLE posts ADD COLUMN external_meta TEXT;`);
+  } catch {
+    // 已存在
+  }
+  // 顺序关键: 先 ALTER 加列, 再 CREATE UNIQUE INDEX (老库必须这个顺序, 新库也是)
+  try {
+    db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_posts_external_id ON posts(external_id) WHERE external_id IS NOT NULL;`);
+  } catch {
+    // 已存在
+  }
+  try {
+    db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_posts_idempotency ON posts(idempotency_key) WHERE idempotency_key IS NOT NULL;`);
+  } catch {
+    // 已存在
+  }
+
+  // v0.37 P4: 插入 bot user (publisher HMAC 注入用, 无密码, 永远无法登录)
+  // password_hash = "NO_LOGIN" (verifyPassword 会因 startsWith("$2") 失败, 永远不让真登录)
+  try {
+    db.prepare(`
+      INSERT OR IGNORE INTO users (id, email, password_hash, name, role)
+      VALUES (?, ?, ?, ?, ?)
+    `).run("u_bot_novel", "novel-bot@system.local", "NO_LOGIN", "novel-bot", "bot");
+    db.prepare(`
+      INSERT OR IGNORE INTO users (id, email, password_hash, name, role)
+      VALUES (?, ?, ?, ?, ?)
+    `).run("u_bot_yk", "yk-bot@system.local", "NO_LOGIN", "yk-bot", "bot");
+  } catch (err) {
+    console.error("[db] v0.37 bot user seed:", err);
   }
 }
 
