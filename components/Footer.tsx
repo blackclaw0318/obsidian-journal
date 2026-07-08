@@ -11,7 +11,6 @@ import { siteConfigRepo } from "@/lib/repo";
 export function Footer() {
   const config = siteConfigRepo.get();
   const siteName = config?.site_name ?? "黑曜石日志";
-  const defaultTheme = (config?.default_theme ?? "light") as string;
   const year = new Date().getFullYear();
   const siteLicense = config?.site_license ?? "CC BY-NC-SA 4.0";
   const siteLicenseUrl =
@@ -27,9 +26,6 @@ export function Footer() {
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
               <span>{siteName}</span>
             </div>
-            <p className="text-xs">
-              © {year} {siteName} · Built by 黑 (Hei) · 主题: {defaultTheme}
-            </p>
             <p className="text-xs">
               本站内容采用{" "}
               <a
