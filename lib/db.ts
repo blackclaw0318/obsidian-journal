@@ -276,6 +276,12 @@ export function initSchema(): void {
       og_image TEXT,
       favicon TEXT,
       analytics TEXT,
+      site_license TEXT NOT NULL DEFAULT 'CC BY-NC-SA 4.0',
+      site_license_url TEXT NOT NULL DEFAULT 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
+      copyright_holder TEXT NOT NULL DEFAULT '上坤',
+      aigc_disclosure INTEGER NOT NULL DEFAULT 1,
+      copyright_page_md TEXT NOT NULL DEFAULT '',
+      contact_email TEXT NOT NULL DEFAULT '',
       updated_at INTEGER NOT NULL DEFAULT (unixepoch())
     );
 
@@ -396,6 +402,13 @@ export function migrateSchema(): void {
   } catch {
     // 已存在
   }
+  // v0.38 P5.5: 版权声明 6 字段 (license / url / holder / aigc / page_md / contact)
+  try { db.exec(`ALTER TABLE site_config ADD COLUMN site_license TEXT NOT NULL DEFAULT 'CC BY-NC-SA 4.0';`); } catch {}
+  try { db.exec(`ALTER TABLE site_config ADD COLUMN site_license_url TEXT NOT NULL DEFAULT 'https://creativecommons.org/licenses/by-nc-sa/4.0/';`); } catch {}
+  try { db.exec(`ALTER TABLE site_config ADD COLUMN copyright_holder TEXT NOT NULL DEFAULT '上坤';`); } catch {}
+  try { db.exec(`ALTER TABLE site_config ADD COLUMN aigc_disclosure INTEGER NOT NULL DEFAULT 1;`); } catch {}
+  try { db.exec(`ALTER TABLE site_config ADD COLUMN copyright_page_md TEXT NOT NULL DEFAULT '';`); } catch {}
+  try { db.exec(`ALTER TABLE site_config ADD COLUMN contact_email TEXT NOT NULL DEFAULT '';`); } catch {}
   // v0.35 00:59 老板决策: 删所有计数功能
   // media_counters / media_access_logs 表 / 字段 / 迁移全部砍
 
@@ -477,6 +490,34 @@ export function migrateSchema(): void {
   }
   try {
     db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_posts_idempotency ON posts(idempotency_key) WHERE idempotency_key IS NOT NULL;`);
+  } catch {
+    // 已存在
+  }
+
+  // v0.38 P2 (2026-07-08): chapters 加 external_id / idempotency_key / external_meta
+  // (外部 publisher HMAC 注入小说章节用, 与 posts 同样的模式)
+  try {
+    db.exec(`ALTER TABLE chapters ADD COLUMN external_id TEXT;`);
+  } catch {
+    // 已存在
+  }
+  try {
+    db.exec(`ALTER TABLE chapters ADD COLUMN idempotency_key TEXT;`);
+  } catch {
+    // 已存在
+  }
+  try {
+    db.exec(`ALTER TABLE chapters ADD COLUMN external_meta TEXT;`);
+  } catch {
+    // 已存在
+  }
+  try {
+    db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_chapters_external_id ON chapters(external_id) WHERE external_id IS NOT NULL;`);
+  } catch {
+    // 已存在
+  }
+  try {
+    db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_chapters_idempotency ON chapters(idempotency_key) WHERE idempotency_key IS NOT NULL;`);
   } catch {
     // 已存在
   }

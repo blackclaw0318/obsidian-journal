@@ -38,7 +38,14 @@ export function SettingsForm({ initial }: { initial: SiteConfig }) {
           allow_custom_html: data.allow_custom_html,
           baidu_push_enabled: data.baidu_push_enabled,
           baidu_push_token: data.baidu_push_token,
-          analytics: data.analytics
+          analytics: data.analytics,
+          // v0.38 P5.5: 版权声明 6 字段
+          site_license: data.site_license,
+          site_license_url: data.site_license_url,
+          copyright_holder: data.copyright_holder,
+          aigc_disclosure: data.aigc_disclosure,
+          copyright_page_md: data.copyright_page_md,
+          contact_email: data.contact_email
           // 注意: avatar_url / favicon / og_image 由专用上传端点处理, 不在此处保存
         })
       });
@@ -138,6 +145,43 @@ export function SettingsForm({ initial }: { initial: SiteConfig }) {
             placeholder='<script async src="https://www.googletagmanager.com/..."></script>'
           />
         </Field>
+      </Section>
+
+      {/* v0.38 P7: 版权设置 */}
+      <Section title="📜 版权设置 (v0.38 P5.5)">
+        <Field label="整站 License (如 CC BY-NC-SA 4.0)">
+          <input className={inputCls} value={data.site_license} onChange={(e) => update("site_license", e.target.value)} maxLength={100} placeholder="CC BY-NC-SA 4.0" />
+        </Field>
+        <Field label="License URL">
+          <input className={inputCls} value={data.site_license_url} onChange={(e) => update("site_license_url", e.target.value)} placeholder="https://creativecommons.org/licenses/by-nc-sa/4.0/" />
+        </Field>
+        <Field label="版权持有人 (如 上坤 / Shangkun)">
+          <input className={inputCls} value={data.copyright_holder} onChange={(e) => update("copyright_holder", e.target.value)} maxLength={100} placeholder="上坤" />
+        </Field>
+        <Switch
+          label="AI 辅助生成披露 (AIGC Disclosure)"
+          hint="(开启后, 文章/章节末尾自动声明 AI 生成, 符合中国《生成式 AI 服务管理办法》)"
+          checked={data.aigc_disclosure === 1}
+          onChange={(v) => update("aigc_disclosure", v ? 1 : 0)}
+        />
+        <Field label="联系邮箱 (显示在 /copyright 页)">
+          <input className={inputCls} value={data.contact_email} onChange={(e) => update("contact_email", e.target.value)} placeholder="your@email.com" />
+        </Field>
+        <Field label="/copyright 页 Markdown (留空用默认)">
+          <textarea
+            className={`${inputCls} min-h-[200px] font-mono text-xs`}
+            value={data.copyright_page_md ?? ""}
+            onChange={(e) => update("copyright_page_md", e.target.value)}
+            placeholder="# 版权声明... (留空用默认 5 段内容)"
+          />
+        </Field>
+        <div className="rounded border border-border bg-bg-base px-3 py-2 text-xs text-fg-muted">
+          💡 <strong>/copyright 页预览</strong>:{" "}
+          <a href="/copyright" target="_blank" rel="noopener noreferrer" className="underline">
+            在新标签打开
+          </a>
+          (保存后刷新生效)
+        </div>
       </Section>
 
       {/* 操作栏 */}

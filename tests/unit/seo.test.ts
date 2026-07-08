@@ -28,6 +28,12 @@ const baseSite: SiteConfig = {
   og_image: null,
   favicon: null,
   avatar_url: null,
+  site_license: "CC BY-NC-SA 4.0",
+  site_license_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  copyright_holder: "上坤",
+  aigc_disclosure: 1,
+  copyright_page_md: "",
+  contact_email: "",
   analytics: null,
   updated_at: 1719120000
 };

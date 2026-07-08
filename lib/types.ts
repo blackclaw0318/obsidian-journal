@@ -214,6 +214,13 @@ export interface SiteConfig {
   favicon: string | null;
   analytics: string | null;
   avatar_url: string | null;
+  // v0.38 P5.5: 版权声明 6 字段
+  site_license: string;
+  site_license_url: string;
+  copyright_holder: string;
+  aigc_disclosure: 0 | 1;
+  copyright_page_md: string;
+  contact_email: string;
   updated_at: number;
 }
 

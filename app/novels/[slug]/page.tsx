@@ -8,6 +8,7 @@ import type { Metadata } from "next";
 import { novelRepo, siteConfigRepo } from "@/lib/repo";
 import { formatDate, formatCount } from "@/lib/utils";
 import { absoluteUrl, canonical, jsonLdBook } from "@/lib/seo";
+import { ArticleCopyright } from "@/components/ArticleCopyright";
 
 export const dynamic = "force-dynamic";
 
@@ -108,6 +109,9 @@ export default function NovelDetailPage({ params }: Props) {
           })}
         </div>
       )}
+
+      {/* v0.38 P5.5: 小说详情末尾版权声明 */}
+      <ArticleCopyright type="novel" slug={novel.slug} />
     </article>
   );
 }

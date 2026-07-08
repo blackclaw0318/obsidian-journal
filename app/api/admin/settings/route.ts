@@ -35,6 +35,13 @@ interface UpdateBody {
   og_image?: string | null;
   favicon?: string | null;
   analytics?: string | null;
+  // v0.38 P5.5: 版权声明 6 字段
+  site_license?: string;
+  site_license_url?: string;
+  copyright_holder?: string;
+  aigc_disclosure?: 0 | 1 | boolean;
+  copyright_page_md?: string;
+  contact_email?: string;
 }
 
 function toInt(v: unknown): 0 | 1 {
@@ -88,6 +95,35 @@ export async function PUT(req: Request) {
   if (body.og_image !== undefined) updates.og_image = body.og_image?.trim() || null;
   if (body.favicon !== undefined) updates.favicon = body.favicon?.trim() || null;
   if (body.analytics !== undefined) updates.analytics = body.analytics?.trim() || null;
+
+  // v0.38 P5.5: 版权声明 6 字段校验 + 入库
+  if (body.site_license !== undefined) {
+    const v = String(body.site_license).trim();
+    if (!v) return NextResponse.json({ ok: false, error: "missing_site_license" }, { status: 400 });
+    if (v.length > 100) return NextResponse.json({ ok: false, error: "site_license_too_long" }, { status: 400 });
+    updates.site_license = v;
+  }
+  if (body.site_license_url !== undefined) {
+    const v = String(body.site_license_url).trim();
+    if (v && !/^https?:\/\//.test(v)) {
+      return NextResponse.json({ ok: false, error: "invalid_site_license_url" }, { status: 400 });
+    }
+    updates.site_license_url = v || "https://creativecommons.org/licenses/by-nc-sa/4.0/";
+  }
+  if (body.copyright_holder !== undefined) {
+    const v = String(body.copyright_holder).trim();
+    if (v.length > 100) return NextResponse.json({ ok: false, error: "copyright_holder_too_long" }, { status: 400 });
+    updates.copyright_holder = v || "上坤";
+  }
+  if (body.aigc_disclosure !== undefined) updates.aigc_disclosure = toInt(body.aigc_disclosure);
+  if (body.copyright_page_md !== undefined) updates.copyright_page_md = String(body.copyright_page_md);
+  if (body.contact_email !== undefined) {
+    const v = String(body.contact_email).trim();
+    if (v && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) {
+      return NextResponse.json({ ok: false, error: "invalid_contact_email" }, { status: 400 });
+    }
+    updates.contact_email = v;
+  }
 
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ ok: false, error: "no_updates" }, { status: 400 });

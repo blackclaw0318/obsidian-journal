@@ -14,6 +14,7 @@ import { formatDate } from "@/lib/utils";
 import { absoluteUrl, canonical, jsonLdArticle, getOgImage } from "@/lib/seo";
 import { ViewCounter } from "@/components/ViewCounter";
 import { MarkdownReveal } from "@/components/MarkdownReveal";
+import { ArticleCopyright } from "@/components/ArticleCopyright";
 
 export const dynamic = "force-dynamic";
 
@@ -134,6 +135,9 @@ export default function PostDetailPage({ params }: { params: { slug: string } })
         html={safeHtml}
         className="prose prose-zinc max-w-none dark:prose-invert"
       />
+
+      {/* v0.38 P5.5: 文章末尾版权声明 */}
+      <ArticleCopyright type="post" slug={post.slug} />
     </article>
   );
 }
