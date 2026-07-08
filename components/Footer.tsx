@@ -19,32 +19,8 @@ export function Footer() {
   return (
     <footer className="border-t border-border bg-bg-muted/50">
       <div className="mx-auto max-w-5xl px-6 py-10 text-sm text-fg-muted">
-        {/* 上排：社交导航（右对齐） */}
-        <nav className="flex flex-wrap items-center justify-end gap-4">
-          <Link
-            href="https://github.com/blackclaw0318/obsidian-journal"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="transition-colors hover:text-fg"
-          >
-            GitHub
-          </Link>
-          <span className="opacity-30">·</span>
-          <Link href="/rss.xml" className="transition-colors hover:text-fg">
-            RSS
-          </Link>
-          <span className="opacity-30">·</span>
-          <Link href="/feed.xml" className="transition-colors hover:text-fg">
-            Atom
-          </Link>
-          <span className="opacity-30">·</span>
-          <Link href="/sitemap.xml" className="transition-colors hover:text-fg">
-            Sitemap
-          </Link>
-        </nav>
-
-        {/* 下排：License + 版权（居中，与上排分隔） */}
-        <p className="mt-6 border-t border-border pt-4 text-center text-xs">
+        {/* License + 版权（居中） */}
+        <p className="text-center text-xs">
           本站内容采用{" "}
           <a
             href={siteLicenseUrl}
