@@ -10,7 +10,7 @@ import { chapterRepo, siteConfigRepo, volumeRepo, novelRepo, chapterRepo as chRe
 import { formatCount, formatDate } from "@/lib/utils";
 import { absoluteUrl, canonical } from "@/lib/seo";
 import { MarkdownReveal } from "@/components/MarkdownReveal";
-import { ArticleCopyright } from "@/components/ArticleCopyright";
+
 
 export const dynamic = "force-dynamic";
 
@@ -96,8 +96,7 @@ export default function ChapterDetailPage({ params }: Props) {
         ) : <span />}
       </nav>
 
-      {/* v0.38 P5.5: 章节末尾版权声明 */}
-      <ArticleCopyright type="chapter" slug={chapter.slug} />
+      
     </article>
   );
 }

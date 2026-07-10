@@ -43,7 +43,7 @@ export function SettingsForm({ initial }: { initial: SiteConfig }) {
           site_license: data.site_license,
           site_license_url: data.site_license_url,
           copyright_holder: data.copyright_holder,
-          aigc_disclosure: data.aigc_disclosure,
+          
           copyright_page_md: data.copyright_page_md,
           contact_email: data.contact_email
           // 注意: avatar_url / favicon / og_image 由专用上传端点处理, 不在此处保存
@@ -158,12 +158,7 @@ export function SettingsForm({ initial }: { initial: SiteConfig }) {
         <Field label="版权持有人 (如 上坤 / Shangkun)">
           <input className={inputCls} value={data.copyright_holder} onChange={(e) => update("copyright_holder", e.target.value)} maxLength={100} placeholder="上坤" />
         </Field>
-        <Switch
-          label="AI 辅助生成披露 (AIGC Disclosure)"
-          hint="(开启后, 文章/章节末尾自动声明 AI 生成, 符合中国《生成式 AI 服务管理办法》)"
-          checked={data.aigc_disclosure === 1}
-          onChange={(v) => update("aigc_disclosure", v ? 1 : 0)}
-        />
+        
         <Field label="联系邮箱 (显示在 /copyright 页)">
           <input className={inputCls} value={data.contact_email} onChange={(e) => update("contact_email", e.target.value)} placeholder="your@email.com" />
         </Field>

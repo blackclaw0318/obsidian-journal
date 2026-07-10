@@ -32,7 +32,7 @@ export default function SettingsPage() {
         site_license: raw.site_license,
         site_license_url: raw.site_license_url,
         copyright_holder: raw.copyright_holder,
-        aigc_disclosure: raw.aigc_disclosure,
+        
         copyright_page_md: raw.copyright_page_md,
         contact_email: raw.contact_email,
         updated_at: raw.updated_at
@@ -54,7 +54,7 @@ export default function SettingsPage() {
         site_license: "CC BY-NC-SA 4.0",
         site_license_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
         copyright_holder: "上坤",
-        aigc_disclosure: 1 as const,
+        
         copyright_page_md: "",
         contact_email: "",
         updated_at: 0

@@ -39,7 +39,6 @@ interface UpdateBody {
   site_license?: string;
   site_license_url?: string;
   copyright_holder?: string;
-  aigc_disclosure?: 0 | 1 | boolean;
   copyright_page_md?: string;
   contact_email?: string;
 }
@@ -115,7 +114,7 @@ export async function PUT(req: Request) {
     if (v.length > 100) return NextResponse.json({ ok: false, error: "copyright_holder_too_long" }, { status: 400 });
     updates.copyright_holder = v || "上坤";
   }
-  if (body.aigc_disclosure !== undefined) updates.aigc_disclosure = toInt(body.aigc_disclosure);
+  
   if (body.copyright_page_md !== undefined) updates.copyright_page_md = String(body.copyright_page_md);
   if (body.contact_email !== undefined) {
     const v = String(body.contact_email).trim();
