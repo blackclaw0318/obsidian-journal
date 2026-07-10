@@ -446,3 +446,194 @@ i.prototype.getBPSType=function(e){
 - ⚠️ **老板 browser "有 cookie" ≠ iframe 行为** — 即使老板给我 BDUSS,iframe 嵌入也是 cookie 隔离,**仍然 100% 看到提取码页**(除非老板 BDUSS 也作为 iframe url query 带过去,但 BDUSS 是秘密不能公开)
 - ✅ **逆向的边界** — 我能逆向 videoPlay.js 看 API endpoint,但**逆向出来仍然受 cookie + Referer + 签名约束**,不能绕过
 - ✅ **永远以访客视角验证** — 老板能看 ≠ 访客能看。**任何"老板实测能工作"的论断都要 web_fetch / curl 双盲测试**
+
+---
+
+# 第三章 — v0.41 **V3 方案 (老板 16:07 追加)**: BaiduPCS-Go 自动化拉取 ⭐ 黑推荐
+
+> 状态: **⏸️ 等老板拍板 Q1-Q3** (2026-07-10 16:07)
+> 触发: 老板明示 "用 qjfoidnh/BaiduPCS-Go 解析直链,然后嵌入网站"
+> 前置: V2 (commit `3c49761`) 已论证 iframe 100% 失效 + dlink 不能直接外链 (8h 过期 + Referer + 需 BDUSS)
+
+---
+
+## 11. 老板 16:07 提案 + 黑视角冷峻修正
+
+### 11.1 老板原意 (curl 实证后再发)
+
+老板:**"用 qjfoidnh/BaiduPCS-Go 获取直链 → 嵌入网站 → 访客能看"**。
+
+老板参考其 README:
+```
+获取下载直链
+BaiduPCS-Go locate <文件1> <文件2> ...
+```
+
+**黑视角冷峻前置** (§2 已论证,这里再浓缩):
+
+即使 BaiduPCS-Go `locate` 拿到 dlink,**dlink 仍是百度 BCE 私有 CDN 签名 URL**,3 重锁:
+1. **Referer 必须 `pan.baidu.com`** (访客从 shangkun.uk 发请求,Referer=shangkun.uk,被拒)
+2. **8h 过期** (首次能放 8h,之后死链)
+3. **可能需 BDUSS cookie** (boss 登录态)
+
+→ **"粘贴 dlink 到 `<video src={dlink}>`" = 90% 失败**。必须加后端层。
+
+### 11.2 ⭐ V3 黑推荐方案: BaiduPCS-Go **自动化拉取** (Q1=B+)
+
+**核心思路**: **不嵌入 dlink,而是用 BaiduPCS-Go 把视频文件直接下载到 server 本地,复用现有 media_items 架构**。
+
+```
+Admin 粘贴 URL
+   ↓ POST /api/admin/videos/baidu-import
+[Next.js API]
+   ↓ spawn BaiduPCS-Go
+[BaiduPCS-Go]
+   ↓ share save (转存到自己网盘) → download (下载到本地)
+[/var/lib/obsidian/videos/{uuid}.mp4]
+   ↓ insert media_items (category=video, source_platform=baidu_pan)
+[Postgres]
+   ↓
+[公开页 /videos/{slug}]
+   ↓ <video src="/api/media/{id}"> ← 复用现有 stream 逻辑,零修改
+```
+
+**老板体验**:
+```
+1. 老板给一次 BDUSS → 我存 .env → 配 BaiduPCS-Go (一次性 5min)
+2. 老板进 shangkun.uk/admin/videos/new
+3. 切 "Baidu Pan" tab → 粘贴 https://pan.baidu.com/s/1u9z55NvCI7w0jkLIWavghw?pwd=2333
+4. 点 "🔍 解析" → 显示文件名/大小/缩略图
+5. 老板点 "📥 拉取到 shangkun.uk" → 进度条 (10s-2min 取决于视频大小)
+6. 完事 → 公开页立即可看,永久零依赖 (不再受 BDUSS 过期/dlink 失效影响)
+```
+
+### 11.3 3 方案对比 (3 选 1)
+
+| 方案 | 工程 | UX | 合规 | 长期维护 | 黑评 |
+|---|---|---|---|---|---|
+| **A 后端代理 dlink** (老板原意) | 2.5d | 粘贴即可看 (但 dlink 8h 失效需 refresh) | ⚠️ 灰 | BDUSS 必维护 | 备选 |
+| **B 纯自托管** (V2 推荐) | 1.5d | 老板手动下载+上传 (30s/视频) | ✅ 干净 | 0 | 中庸 |
+| **⭐ B+ 自动化拉取** (V3 推荐) | **2d** | **粘贴即拉取 (30s/视频),后续永久零依赖** | ✅ 干净 | BDUSS **仅在拉新视频时** | **最推荐** |
+
+### 11.4 BaiduPCS-Go 核心能力 (调研 16:10)
+
+| 维度 | 实测/调研 |
+|---|---|
+| **语言** | Go 1.18+ (go.mod 已确认) |
+| **Stars** | ⭐ 5268 |
+| **Last push** | 2026-06-18 (3 周前,极活跃) |
+| **核心命令** | `login` / `config set -bduss=<bduss>` / `share` (含 save/list) / `download` / `locate` |
+| **持久登录** | ✅ 支持 `config set -bduss` 一次配置,后续不需再 login |
+| **多线程下载** | ✅ 内置,`max_parallel` 可配 |
+| **断点续传** | ✅ |
+| **已知风险** | ⚠️ 2022 issue #172 反映百度已能识别第三方下载器,**SVIP 也不一定稳** |
+| **CDN/限速** | ⚠️ Cloudflare Tunnel IP 可能被限速 (同 xhs-novel-bot 教训) |
+
+### 11.5 工程分解 (2d 闭环)
+
+| 步骤 | 时间 | 内容 | 关键文件 |
+|---|---|---|---|
+| **0.5d 装 BaiduPCS-Go** | 上午 | server 装 binary + 配 BDUSS (.env) + 验证 `locate` | `scripts/install-baidupcs.sh` + `.env` (gitignored) |
+| **0.5d Subprocess 集成** | 下午 | `lib/baidu-pcs.ts` (spawn + 解析) + 错误处理 (3 重试 + 指数退避 + WeCom 告警) | `lib/baidu-pcs.ts` |
+| **0.5d API + DB** | 上午 | `/api/admin/videos/baidu-import` (POST) + `media_items` schema 加 `source_platform` `source_url` `source_pwd` `baidu_fs_id` | 1 route + 1 migration |
+| **0.5d Admin UI + 测试** | 下午 | `/admin/videos/new` 加 "Baidu Pan" tab + 进度条 + 6 单测 + 2 集成 + 1 e2e | 1 page + 1 modal + tests |
+
+### 11.6 关键工程细节
+
+#### 11.6.1 Subprocess 调用 (不写 Go 包装,简单稳定)
+
+```typescript
+// lib/baidu-pcs.ts
+import { spawn } from 'child_process';
+
+const PCS_BIN = '/usr/local/bin/BaiduPCS-Go';
+
+export async function fetchBaiduPanVideo(shareUrl: string, pwd: string) {
+  // 1. 转存到自己网盘 (拿 fs_id)
+  const { stdout: saveOut } = await runPCS([
+    'share', 'save', '--url', shareUrl, '--pwd', pwd,
+  ]);
+  // → "保存到 /apps/bypy/分享的/xxx.mp4, fs_id=1234567890"
+  const { fsId, serverPath } = parseSaveOutput(saveOut);
+  
+  // 2. 下载到 server 本地
+  const localPath = `/var/lib/obsidian/videos/${uuid()}.mp4`;
+  await runPCS(['download', serverPath, '--saveto', localPath], {
+    timeout: 5 * 60 * 1000,  // 5 min
+  });
+  
+  const size = await fs.stat(localPath).then(s => s.size);
+  return { localPath, size, fsId, originalName: basename(serverPath) };
+}
+```
+
+#### 11.6.2 持久登录态 (避免每次 re-login)
+
+```bash
+# install-baidupcs.sh (一次性)
+curl -fsSL https://github.com/qjfoidnh/BaiduPCS-Go/releases/latest/download/BaiduPCS-Go-linux-amd64.zip \
+  -o /tmp/pcs.zip
+unzip /tmp/pcs.zip -d /usr/local/bin/
+chmod +x /usr/local/bin/BaiduPCS-Go
+
+# 配 BDUSS (从 .env 读,不入仓)
+source /root/.openclaw/workspace/projects/obsidian-journal/.env
+/usr/local/bin/BaiduPCS-Go config set -bduss="$BAIDU_BDUSS"
+/usr/local/bin/BaiduPCS-Go config set -user_agent "netdisk;2.2.51.6;netdisk;10.0.63;PC;android-android"
+
+/usr/local/bin/BaiduPCS-Go ls /  # 验证登录
+```
+
+#### 11.6.3 DB Schema 增量
+
+```sql
+-- prisma migrate dev --name add_baidu_pan_fields
+ALTER TABLE media_items
+  ADD COLUMN source_platform TEXT NOT NULL DEFAULT 'local',  -- local|baidu_pan|bilibili|youtube
+  ADD COLUMN source_url TEXT,                                  -- 原分享 URL (baidu 时)
+  ADD COLUMN source_pwd TEXT,                                  -- 提取码 (加密存)
+  ADD COLUMN baidu_fs_id BIGINT,                               -- 百度网盘 fs_id (供后续 refresh)
+  ADD COLUMN original_filename TEXT;                           -- 百度网盘中原始名
+
+CREATE INDEX idx_media_items_source_platform ON media_items(source_platform);
+```
+
+#### 11.6.4 已知坑预判 + 应对
+
+| 风险 | 应对 |
+|---|---|
+| 百度识别 BaiduPCS-Go (issue #172) | 拉取失败 → 自动 fallback 提示"请上传本地文件" |
+| CF Tunnel IP 限速 | UI 显式进度条 + 预估时间,不假装秒传 |
+| BDUSS 1-2 月过期 | 拉取时检测,过期时给老板微信告警 + 提示重给 |
+| 大文件超时 (>500MB) | 默认 500MB 限制,Q3 可调 |
+| 多并发拉取触发风控 | 串行处理 (一次一个拉取任务) |
+| 拉取失败留下半截文件 | `tempfile.NamedTemporaryFile` → 成功 rename,失败 unlink |
+
+### 11.7 冷峻教训 (✅ 入 OPERATIONS)
+
+- ⚠️ **BaiduPCS-Go `locate` 拿 dlink ≠ 能嵌入** — dlink 是 CDN 签名 URL,8h 过期,Referer/cookie 限制
+- ⚠️ **黑视角核心: "粘贴 URL → 永久可看" 的正确做法是"下载到本地",不是"嵌入 dlink"** — 这是 V3 的关键洞察
+- ⚠️ **BaiduPCS-Go 2022 起百度已能识别** (issue #172) — SVIP 也不一定稳,必须有 fallback
+- ⚠️ **CF Tunnel IP 限速预期内** — UI 必须显示进度,不可静默
+- ✅ **subprocess vs Go 包装**: 老板偶发拉取(几个视频/周),subprocess 简单稳定,不写 Go 包装
+- ✅ **持久登录态**: `config set -bduss` 一次性配好,避免每次 re-login 触发风控
+- ✅ **B+ 方案 = 复用 media_items 架构零侵入** — 公开页 + Admin UI + 计数 + 种子数全复用
+- ✅ **DLP 友好**: 文件拉一次落本地,删百度网盘原文件不影响播放
+
+### 11.8 老板决策清单 Q1-Q3
+
+| # | 决策项 | 候选 | 黑推荐 |
+|---|---|---|---|
+| **Q1** | 选哪个方案? | A / B / **B+** | **B+** (2d,粘贴即用,永久零依赖) |
+| **Q2** | BDUSS 一次提供后可维护? | 是 / 否 | **是** (1-2 月过期,过期时拉新视频前 boss 重给) |
+| **Q3** | 视频大小限制? | 200MB / 500MB / 1GB | **500MB** (老板视频小) |
+
+### 11.9 仓库状态 (本版提交)
+
+| 项 | 值 |
+|---|---|
+| V3 方案章节 | `docs/PHASE5_PLAN_V41_BAIDU_PAN_VIDEO.md` 追加 §11 (本版新增) |
+| 待 commit | `docs(phase5): v0.41 V3 — 老板追加 BaiduPCS-Go 自动化拉取方案 Q1=B+` |
+| MEMORY.md | ⏳ 待更新 (V3 决策清单 + 教训入档) |
+| 状态 | ⏸️ 等老板 Q1-Q3 拍板,Q1=B+ 则 2d 闭环 |
+| 推进顺序 | 拍板 → 装 BaiduPCS-Go (0.5d) → 装 BDUSS (老板) → 代码 (1.5d) |
