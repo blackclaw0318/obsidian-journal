@@ -9,6 +9,7 @@ import MarkdownIt from "markdown-it";
 import { chapterRepo, siteConfigRepo, volumeRepo, novelRepo, chapterRepo as chRepo } from "@/lib/repo";
 import { formatCount, formatDate } from "@/lib/utils";
 import { absoluteUrl, canonical } from "@/lib/seo";
+import { stripFrontmatter } from "@/lib/utils";
 import { MarkdownReveal } from "@/components/MarkdownReveal";
 
 
@@ -51,7 +52,7 @@ export default function ChapterDetailPage({ params }: Props) {
   const prev = idx > 0 ? siblings[idx - 1] : null;
   const next = idx >= 0 && idx < siblings.length - 1 ? siblings[idx + 1] : null;
 
-  const html = md.render(chapter.content);
+  const html = md.render(stripFrontmatter(chapter.content));
 
   return (
     <article className="mx-auto max-w-3xl px-6 py-12">

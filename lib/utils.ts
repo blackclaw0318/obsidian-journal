@@ -108,3 +108,28 @@ export function formatBytes(bytes: number): string {
   if (bytes < 1024 * 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
   return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GB`;
 }
+
+/**
+ * 剥离 Markdown 开头的 YAML frontmatter (v0.42 fix)
+ *
+ * 用例:
+ *   外部推送的 content 可能包含 `--- yaml ---` 头,
+ *   不剥掉的话会被 markdown-it 当成正文渲染,前端会出现整段 raw 字段。
+ *
+ * 行为:
+ *   - 必须以 `---\n` 开头才算 frontmatter,否则原样返回
+ *   - 第二个 `---` 必须是行首(允许前后空白),其后跟换行符
+ *   - 找不到成对的 `---` 时原样返回(不抛错,前端容错)
+ *
+ * 示例:
+ *   "---\ntitle: x\n---\n正文" → "正文"
+ *   "正文无 frontmatter"      → "正文无 frontmatter"
+ *   "---\n未闭合"             → "---\n未闭合"
+ */
+export function stripFrontmatter(md: string): string {
+  if (!md.startsWith("---")) return md;
+  // 匹配开头 `---`,再找下一个行首 `---`
+  const match = md.match(/^---\s*\n[\s\S]*?\n---\s*(\n|$)/);
+  if (!match) return md;
+  return md.slice(match[0].length);
+}

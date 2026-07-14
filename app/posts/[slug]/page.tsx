@@ -10,7 +10,7 @@ import type { Metadata } from "next";
 import MarkdownIt from "markdown-it";
 import DOMPurify from "isomorphic-dompurify";
 import { postRepo, siteConfigRepo } from "@/lib/repo";
-import { formatDate } from "@/lib/utils";
+import { formatDate, stripFrontmatter } from "@/lib/utils";
 import { absoluteUrl, canonical, jsonLdArticle, getOgImage } from "@/lib/seo";
 import { ViewCounter } from "@/components/ViewCounter";
 import { MarkdownReveal } from "@/components/MarkdownReveal";
@@ -89,7 +89,8 @@ export default function PostDetailPage({ params }: { params: { slug: string } })
   const ldJson = site ? jsonLdArticle({ post, site }) : null;
 
   // Markdown 渲染 + DOMPurify 清洗 (防御 XSS, 即便 allowCustomHtml 关)
-  const rawHtml = md.render(post.content);
+  // v0.42 fix: 外部推送可能带 YAML frontmatter, 必须剥离 (否则 raw 字段会泄露到正文)
+  const rawHtml = md.render(stripFrontmatter(post.content));
   const safeHtml = DOMPurify.sanitize(rawHtml, {
     USE_PROFILES: { html: true }
   });
