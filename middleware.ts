@@ -130,6 +130,15 @@ function fireRecord(req: NextRequest): void {
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // ===== /uploads/* 静态资源重写到动态 API (2026-07-08) =====
+  // 解决 next start 启动时缓存 public/ 文件列表 → 上传新文件 404 的问题
+  // /uploads/* → /api/uploads/* (URL 不变, 内部走动态 serve, 支持热加载)
+  if (pathname.startsWith("/uploads/") || pathname === "/uploads") {
+    const url = req.nextUrl.clone();
+    url.pathname = `/api/uploads${pathname.replace(/^\/uploads/, "")}`;
+    return NextResponse.rewrite(url);
+  }
+
   // ===== 域名重定向 (v0.36, 2026-07-06) =====
   // dev.shangkun.uk → www.shangkun.uk (308 永久,保 SEO)
   // cloudflared 透传 host 头;Next.js 拿到 dev.shangkun.uk 时直接 308 跳 www

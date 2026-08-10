@@ -239,6 +239,26 @@ export function listBotUserNames(): string[] {
   return Object.keys(BOT_USERS);
 }
 
+// ============ v0.38 P2: Admin User (novel publisher 推送内容署名) ============
+// novel-publisher 推的内容显示作者 = 老板 (admin user, name="上坤")
+// 取 role='admin' 的首个 user; 假设系统中只有 1 个 admin
+// (v0.37 P4 启动时由 seed.ts 插入 admin@obsidian.local, name="上坤")
+let _cachedAdminUserId: string | null = null;
+export function getAdminUserId(): string {
+  if (_cachedAdminUserId) return _cachedAdminUserId;
+  const row = db.prepare(`SELECT id FROM users WHERE role = 'admin' AND deleted_at IS NULL ORDER BY created_at ASC LIMIT 1`).get() as { id: string } | undefined;
+  if (!row) {
+    throw new Error("[auth] no admin user found; publisher author 映射需要 1 个 admin user");
+  }
+  _cachedAdminUserId = row.id;
+  return _cachedAdminUserId;
+}
+
+/** 测试用: 清缓存的 admin user id (db-reset 后重读) */
+export function __resetAdminUserIdCache(): void {
+  _cachedAdminUserId = null;
+}
+
 // ============ 测试 helper (仅供 tests/ 调用) ============
 // 清除 in-memory rate limit Map (测试间隔离, 避免上一个 test 的 5 次错误计数影响下一个)
 export function __resetRateLimitForTesting(): void {

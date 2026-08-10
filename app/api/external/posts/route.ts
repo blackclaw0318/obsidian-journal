@@ -3,87 +3,26 @@
 // ============================================================
 // 契约: docs/API_INTEGRATION.md (obsidian-novel-publisher 仓库)
 // 接收 publisher (obsidian-novel-publisher / obsidian-yk-script) 推送的小说/视频脚本内容
-// 鉴权: HMAC-SHA256 over `${timestamp}.${canonical_body}`, ±5min window
+// 鉴权: HMAC-SHA256 over `${timestamp}.${body}`, ±5min window (shared lib/external-auth.ts)
 // 幂等: external_id UNIQUE 索引 + idempotency_key UNIQUE 索引
-// rate limit: 10 req/min/IP (内存 Map, 多进程需换 Redis)
+// rate limit: 10 req/min/IP (shared lib/external-auth.ts)
 // ============================================================
 import { NextResponse } from "next/server";
-import { createHmac, timingSafeEqual } from "node:crypto";
 import { db } from "@/lib/db";
 import { postRepo } from "@/lib/repo";
-import { getBotUserId } from "@/lib/auth";
+import {
+  ALLOWED_PUBLISHERS,
+  checkRateLimit,
+  verifyHmac,
+} from "@/lib/external-auth";
 import type { Post } from "@/lib/types";
 
 export const runtime = "nodejs";
 // 不缓存 (每次都是新请求)
 export const dynamic = "force-dynamic";
 
-// ============ 鉴权配置 ============
-const TIMESTAMP_WINDOW_MS = 5 * 60 * 1000; // ±5 分钟
-const RATE_LIMIT_MAX = 10;                 // 10 req
-const RATE_LIMIT_WINDOW_MS = 60_000;       // per min
-
-const ALLOWED_PUBLISHERS: Record<
-  string,
-  { secret: string; authorName: "novel-bot" | "yk-bot"; allowedCategories: string[] }
-> = {
-  "novel-publisher": {
-    secret: process.env.OBSIDIAN_NOVEL_PUBLISH_SECRET ?? "",
-    authorName: "novel-bot",
-    allowedCategories: ["novel", "tech"],
-  },
-  "yk-script": {
-    secret: process.env.OBSIDIAN_YK_PUBLISH_SECRET ?? "",
-    authorName: "yk-bot",
-    allowedCategories: ["life"],
-  },
-};
-
-// ============ 内存 rate limit (per IP) ============
-// 注: 多实例部署需换 Redis. 单进程 dev/prod 4c16g 够用
-const rateLimitMap = new Map<string, number[]>();
-
-export function checkRateLimit(ip: string, now = Date.now()): boolean {
-  const arr = (rateLimitMap.get(ip) ?? []).filter(t => now - t < RATE_LIMIT_WINDOW_MS);
-  if (arr.length >= RATE_LIMIT_MAX) {
-    rateLimitMap.set(ip, arr); // 保留以便再查
-    return false;
-  }
-  arr.push(now);
-  rateLimitMap.set(ip, arr);
-  return true;
-}
-
-// ============ HMAC 验签 ============
-export function verifyHmac(
-  body: string,
-  signature: string,
-  timestamp: string,
-  secret: string,
-  now = Date.now()
-): { ok: boolean; reason?: string } {
-  if (!signature || !timestamp) return { ok: false, reason: "missing_headers" };
-  if (!secret) return { ok: false, reason: "server_misconfigured" };
-
-  // 1. 时间戳窗口
-  const ts = parseInt(timestamp, 10);
-  if (!Number.isFinite(ts)) return { ok: false, reason: "bad_timestamp" };
-  if (Math.abs(now - ts) > TIMESTAMP_WINDOW_MS) {
-    return { ok: false, reason: "timestamp_expired" };
-  }
-
-  // 2. 签名
-  const expected = createHmac("sha256", secret)
-    .update(`${timestamp}.${body}`)
-    .digest("hex");
-  if (signature.length !== expected.length) return { ok: false, reason: "bad_signature" };
-  try {
-    const ok = timingSafeEqual(Buffer.from(signature, "hex"), Buffer.from(expected, "hex"));
-    return ok ? { ok: true } : { ok: false, reason: "bad_signature" };
-  } catch {
-    return { ok: false, reason: "bad_signature" };
-  }
-}
+// 重新导出 HMAC/rate-limit 给现有测试 (避免破坏 v0.37 P4 的 unit 覆盖)
+export { checkRateLimit, verifyHmac } from "@/lib/external-auth";
 
 // ============ 规范化 body 函数已删 (HMAC 签名本身保证 body 完整性) ============
 
@@ -239,7 +178,7 @@ async function handlePost(req: Request, ip: string) {
   }
 
   // 13. 创建 (默认 published, 免人工再发布; 老板可 admin 后台改 draft)
-  const authorId = getBotUserId(publisher.authorName);
+  // publisher.authorId 现在直接是 user_id (v0.38 P2): novel-publisher 用 admin (上坤), yk-script 用 yk-bot
   const post: Post = postRepo.create({
     slug: data.slug,
     title: data.title,
@@ -249,7 +188,7 @@ async function handlePost(req: Request, ip: string) {
     status: "published",
     category: data.category as Post["category"],
     tags: data.tags,
-    author_id: authorId,
+    author_id: publisher.resolveAuthorId(),
     series_id: null,
     published_at: Math.floor(Date.now() / 1000),
     external_id: data.external_id,
@@ -258,7 +197,7 @@ async function handlePost(req: Request, ip: string) {
   });
 
   console.log(
-    `[external/posts] created: publisher=${publisherId} slug=${post.slug} author=${publisher.authorName} post_id=${post.id}`
+    `[external/posts] created: publisher=${publisherId} slug=${post.slug} author_id=${publisher.resolveAuthorId()} post_id=${post.id}`
   );
 
   return NextResponse.json(
@@ -282,6 +221,4 @@ function serializePost(p: Post) {
 }
 
 // ============ 测试 helper ============
-export function __resetRateLimitForTesting(): void {
-  rateLimitMap.clear();
-}
+export { __resetRateLimitForTesting } from "@/lib/external-auth";
