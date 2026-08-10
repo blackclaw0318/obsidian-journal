@@ -1,0 +1,5 @@
+f9aad31 merge: feat/quiz-p1-landing — v0.43 P1 落地页 + STATUS
+96060ee wip(external-publisher): HMAC 接口 (老板未拍,黑临时 commit 以便 merge feat/quiz)
+3320faa docs(quiz): v0.43 P1 STATUS 沉淀 + Q3-Q7 决策清单
+0d724b8 feat(quiz): v0.43 P1 落地页 — /quiz nav + 红楼梦 RBTI 介绍
+a7a73da feat(phase5): v0.42 资源库 UI 改版 — 图片分页 + 音/文档列表
