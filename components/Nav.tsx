@@ -34,6 +34,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/novels", label: "小说" },
   { href: "/videos", label: "视频" },
   { href: "/resources", label: "资源" },
+  { href: "/quiz", label: "测试" },
   { href: "/copyright", label: "版权" },
   { href: "/admin", label: "⚙ 管理" }
 ];
@@ -80,8 +81,8 @@ export function Nav({ siteName, defaultTheme }: NavProps) {
         </Link>
 
         {/* 桌面导航 (md+) */}
-        <ul className="hidden items-center gap-6 text-sm md:flex">
-          {NAV_ITEMS.slice(0, 5).map((item) => (
+        <ul className="hidden items-center gap-5 text-sm md:flex lg:gap-6">
+          {NAV_ITEMS.slice(0, 6).map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}
