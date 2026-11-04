@@ -61,7 +61,14 @@ echo "2/5 Preparing an isolated release and installing dependencies."
 install -d -o homepage -g homepage "$release" /var/cache/homepage/npm
 tar -xzf "$archive" --no-same-owner -C "$release"
 chown -R homepage:homepage "$release"
-runuser -u homepage -- env HOME=/var/lib/homepage npm_config_cache=/var/cache/homepage/npm bash -c 'cd "$1" && npm ci --ignore-scripts' bash "$release" >"$backup/install.log" 2>&1
+# Keep npm ci strict: a stale cross-platform optional dependency lock must be
+# repaired and verified before packaging, never regenerated on the live host.
+runuser -u homepage -- env HOME=/var/lib/homepage npm_config_cache=/var/cache/homepage/npm bash -c '
+  cd "$1"
+  node --version
+  npm --version
+  npm ci --ignore-scripts --include=dev --include=optional --no-audit --no-fund
+' bash "$release" >"$backup/install.log" 2>&1
 
 echo "3/5 Running candidate checks and build with bounded resources."
 systemd-run --quiet --wait --pipe --collect --unit="homepage-build-$tag" \
@@ -93,9 +100,17 @@ for attempt in {1..25}; do
 done
 [[ $ready == 1 ]]
 grep -q '认真做技术' "$backup/candidate-home.html"
-for path in /resume /work/document-quality /posts /novels /videos /resources /admin/login /models/avatar-v2.glb; do
+for path in /resume /work/document-quality /posts /novels /videos /resources /admin/login; do
   curl -fsS --max-time 20 "http://127.0.0.1:3098$path" -o /dev/null
 done
+curl -fsS --max-time 20 http://127.0.0.1:3098/models/avatar-v3.glb -o "$backup/avatar-v3.glb"
+python3 - "$backup/avatar-v3.glb" <<'PY'
+import pathlib, struct, sys
+data = pathlib.Path(sys.argv[1]).read_bytes()
+assert len(data) >= 28, 'Avatar model is empty or truncated'
+magic, version, size = struct.unpack('<4sII', data[:12])
+assert magic == b'glTF' and version == 2 and size == len(data), 'Invalid v3 avatar GLB'
+PY
 [[ $(curl -s --max-time 10 -o /dev/null -w '%{http_code}' http://127.0.0.1:3098/work/not-a-real-project) == 404 ]]
 systemctl stop "$candidate"
 

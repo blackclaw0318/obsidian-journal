@@ -1,16 +1,16 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("首页 (老板必看)", () => {
+test.describe("个人作品集首页", () => {
   test("应该能访问首页", async ({ page }) => {
     await page.goto("/");
-    await expect(page).toHaveTitle(/黑曜石日志/);
+    await expect(page).toHaveTitle(/上坤.*认真做技术/);
   });
 
-  test("首页应该显示站点名 + tagline", async ({ page }) => {
+  test("首页展示个人介绍与描述", async ({ page }) => {
     await page.goto("/");
-    // v0.20 HomeHero framer-motion initial opacity:0, 等动画完成
     await expect(page.locator("h1").first()).toBeVisible({ timeout: 10000 });
-    await expect(page.locator("h1").first()).toContainText("黑曜石日志");
+    await expect(page.locator("h1").first()).toContainText("认真做技术");
+    await expect(page.locator("h1").first()).toContainText("有趣的");
     // tagline 验证: 任一 description meta 含内容即可
     const descs = await page.locator('meta[name="description"]').all();
     expect(descs.length).toBeGreaterThan(0);
@@ -21,7 +21,7 @@ test.describe("首页 (老板必看)", () => {
 
   test("首页应该列出 seed 数据中的文章", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByText("最新文章")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "工作之外，也有自己的宇宙。" })).toBeVisible();
     await expect(page.getByRole("link", { name: /你好, 黑曜石日志/ })).toBeVisible();
   });
 
@@ -104,10 +104,10 @@ test.describe("Phase 2.1 重构 (按 v0.6.1 schema)", () => {
     await expect(page.getByRole("heading", { name: /视频/ })).toBeVisible();
   });
 
-  test("/resources 资源页可访问 (Phase 3 占位)", async ({ page }) => {
+  test("/resources 资源库可访问", async ({ page }) => {
     const resp = await page.goto("/resources");
     expect(resp?.status()).toBe(200);
-    await expect(page.getByRole("heading", { name: /媒体库/ })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /资源库/ })).toBeVisible();
   });
 });
 
