@@ -81,3 +81,7 @@ output/.cache/
 *.tunnel-url
 *.tunnel-warn-flag
 public/uploads/
+
+# Private research, credentials, deployment bundles and local evidence
+.local/
+*.bundle
