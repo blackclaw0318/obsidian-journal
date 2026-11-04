@@ -43,6 +43,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
     <AnimatePresence mode="wait" initial={false}>
       <motion.div
         key={pathname}
+        data-route-path={pathname}
         initial={ENTER}
         animate={ANIMATED}
         exit={EXIT}

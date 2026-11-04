@@ -88,7 +88,7 @@ a, button { -webkit-tap-highlight-color: transparent; }
 .avatar-toolbar button { display: flex; align-items: center; gap: 5px; padding: 7px; border: 1px solid #72786040; border-radius: 50px; font-size: 9px; transition: background .2s; }
 .avatar-toolbar button:hover { background: #f4f4d95e; }
 .avatar-toolbar button span { padding-right: 3px; }
-.avatar-chapter { position: absolute; bottom: 112px; left: 20px; right: 20px; display: none; font-size: 9px; }
+.avatar-chapter { position: absolute; bottom: 120px; left: 20px; right: 20px; padding: 8px 10px; background: #fafbf1ed; border: 1px solid #fff9; border-radius: 3px; color: #32372a; font-size: 9px; line-height: 1.6; pointer-events: none; }
 .avatar-chapter span { display: block; font-size: 11px; margin-top: 3px; }
 .stage-bottom-note { display: flex; justify-content: space-between; font-size: 8px; letter-spacing: .08em; margin: 13px 3px 0; color: var(--color-fg-muted); }
 .section-kicker { display: flex; justify-content: space-between; font: 9px ui-monospace,monospace; letter-spacing: .08em; padding-bottom: 20px; border-bottom: 1px solid var(--color-border); color: var(--color-fg-muted); }
@@ -144,12 +144,38 @@ a, button { -webkit-tap-highlight-color: transparent; }
 @media(max-width:767px) {
   .site-nav { min-height: 72px; padding-left: 22px; padding-right: 22px; }.site-brand { display: flex; }.site-monogram { height: 36px; width: 37px; font-size: 23px; }.site-brand strong { font-size: 11px; }.site-brand>span { font-size: 9px; }.portfolio-page { padding: 0 23px; }.portfolio-topline { font-size: 7px; margin-top: 17px; letter-spacing: .07em; }.portfolio-topline>span:last-child { display: none; }
   .journey-layout { display: flex; flex-direction: column; gap: 0; }.journey-content { display: contents; }.portfolio-hero { padding-top: 48px; padding-bottom: 12px; min-height: 0; order: 0; }.portfolio-hero .eyebrow { font-size: 10px; }.portfolio-hero h1 { font-size: clamp(34px,8.6vw,57px); margin-top: 20px; line-height: 1.4; }.hero-intro { font-size: 13px; margin-top: 20px; }.hero-disciplines { margin-top: 20px; font-size: 10px; }.hero-actions { margin-top: 25px; gap: 25px; }.button-ink { padding: 13px 18px; font-size: 11px; }.hero-footnote,.hero-index { display: none; }
-  .journey-stage { position: relative; top: 0; height: 510px; min-height: 0; padding-top: 20px; order: 1; width: 100%; max-width: 460px; margin: 8px auto 0; }.avatar-stage { min-height: 0; border-radius: 45% 45% 5px 5px; }.avatar-canvas-wrap { inset: 3% -3% 9%; }.avatar-back-word { font-size: 200px; }.stage-coordinate { top: 30px; right: 17%; font-size: 7px; }.avatar-speech { left: 17px; bottom: 67px; }.sticker-top { top: 23%; }.sticker-bottom { bottom: 25%; font-size: 9px; }.avatar-hint { max-width: none; font-size: 8px; }.avatar-toolbar { left: 17px; right: 17px; }
+  .avatar-stage { min-height: 0; border-radius: 45% 45% 5px 5px; }.avatar-canvas-wrap { inset: 3% -3% 9%; }.avatar-back-word { font-size: 200px; }.stage-coordinate { top: 30px; right: 17%; font-size: 7px; }.avatar-speech { left: 17px; bottom: 67px; }.sticker-top { top: 23%; }.sticker-bottom { bottom: 25%; font-size: 9px; }.avatar-hint { max-width: none; font-size: 8px; }.avatar-toolbar { left: 17px; right: 17px; }
+  /* The same canvas becomes a compact companion; it never creates a second model. */
+  .journey-stage { position: sticky; top: 80px; height: 164px; min-height: 0; padding-top: 0; order: 1; width: 100%; max-width: 460px; z-index: 30; margin: 25px auto 0; }
+  .journey-stage .avatar-stage { height: 100%; border-radius: 12px; border: 1px solid var(--color-border); box-shadow: 0 8px 24px #20251b10; }
+  .journey-stage .avatar-canvas-wrap { inset: 3px auto 3px 0; width: 138px; }
+  .journey-stage .avatar-back-word,.journey-stage .avatar-orbit,.journey-stage .stage-cross,.journey-stage .stage-coordinate,.journey-stage .sticker-bottom,.journey-stage .stage-bottom-note,.journey-stage .avatar-hint { display: none; }
+  .journey-stage .sticker-top { top: 12px; left: 144px; right: 10px; justify-content: flex-start; gap: 7px; padding: 0; border: 0; background: none; box-shadow: none; transform: none; font-size: 9px; }
+  .journey-stage .sticker-top>svg { display: none; }
+  .journey-stage .avatar-speech { top: 40px; bottom: auto; left: 144px; right: 12px; max-width: none; padding: 0; border: 0; background: none; box-shadow: none; }
+  .journey-stage .avatar-speech>span { display: none; }
+  .journey-stage.has-project .avatar-speech { display: none; }
+  .journey-stage .avatar-chapter { top: 37px; bottom: auto; left: 144px; right: 12px; padding: 0; border: 0; background: none; font-size: 8px; }
+  .journey-stage .avatar-chapter span { font-size: 12px; line-height: 1.55; margin-top: 4px; }
+  .journey-stage .avatar-toolbar { bottom: 9px; left: 144px; right: 12px; padding-top: 7px; }
+  .journey-stage .avatar-toolbar>div { gap: 7px; }
+  .journey-stage .avatar-toolbar button { min-width: 36px; min-height: 36px; justify-content: center; }
+  .journey-stage .avatar-toolbar button span { display: none; }
   .experience-section { order: 2; padding-top: 70px; }.experience-section h2 { font-size: 39px; }.section-kicker { font-size: 8px; }.section-intro { font-size: 12px; }.project-filters { margin-top: 24px; gap: 5px; }.project-filters button { padding: 7px 8px; font-size: 9px; }.timeline { padding-left: 23px; }.project-chapter { min-height: 0; padding: 30px 0 40px; }.timeline-dot { left: -28px; }.timeline-date { font-size: 10px; margin-bottom: 25px; }.project-chapter h3 { font-size: 29px; }.chapter-summary { font-size: 12px; }.chapter-contribution { font-size: 11px; }.timeline-end { padding-left: 28px; padding-bottom: 70px; }
+  .experience-section,.project-chapter { scroll-margin-top: 260px; }
   .portfolio-capabilities { margin: 0 -23px; padding: 35px 25px 40px; }.portfolio-capabilities h2 { font-size: 30px; margin: 30px 0; }.capability-grid { grid-template-columns: 1fr; gap: 27px; }.capability-grid>div { padding-left: 55px; padding-top: 22px; }.capability-grid svg { position: absolute; left: 0; top: 23px; }.capability-grid h3 { font-size: 16px; margin-bottom: 8px; }.capability-grid p { max-width: none; padding-right: 15px; }.capability-grid>div>span { top: 26px; font-size: 8px; }
   .portfolio-journal { padding: 60px 0; }.journal-heading { display: block; }.journal-heading h2 { font-size: 27px; line-height: 1.5; }.journal-heading>.text-link { margin-top: 18px; font-size: 10px; }.journal-entries>a { gap: 13px; padding: 23px 0; }.journal-entries>a>span { min-width: 45px; font-size: 8px; }.journal-entries h3 { font-size: 13px; }.journal-entries time { display: none; }.journal-entries svg { width: 17px; flex-shrink: 0; }.world-links>a { padding: 20px 13px; font-size: 9px; gap: 17px; }.world-links span { font-size: 18px; }.world-links svg { width: 14px; }.portfolio-outro { padding-top: 15px; }.portfolio-outro h2 { font-size: 39px; }.portfolio-outro>p { font-size: 10px; }.outro-wordmark { font-size: 15.4vw; }.outro-next { margin-bottom: 55px; }
   .project-detail { padding: 25px 23px 50px; }.detail-hero { display: flex; flex-direction: column; gap: 30px; margin-top: 35px; }.detail-hero h1 { font-size: 40px; }.detail-summary { font-size: 13px; }.detail-avatar { width: 100%; max-width: 400px; height: 450px; }.detail-meta { gap: 25px; font-size: 10px; margin-top: 27px; }.detail-body { display: block; padding-top: 30px; margin-top: 40px; }.detail-side { display: none; }.detail-body h2 { font-size: 25px; }.detail-body section>p,.contribution-list li { font-size: 13px; }.contribution-list li { gap: 20px; }.detail-body section { margin-bottom: 40px; }.next-project { margin-top: 45px; }.next-project h2 { font-size: 23px; }.next-project>svg { width: 28px; flex-shrink: 0; }
   .resume-page { padding: 25px 23px 50px; }.resume-tools { margin-bottom: 40px; gap: 10px; }.resume-tools .text-link { font-size: 10px; }.resume-tools .button-ink { font-size: 9px; padding: 10px 12px; gap: 8px; }.resume-header h1 { font-size: 43px; }.resume-header h1>span { font-size: 17px; margin-left: 20px; }.resume-project-heading h3 { font-size: 21px; }
+}
+@media(max-width:767px) and (max-height:500px) {
+  .journey-stage { height: 128px; }
+  .journey-stage .avatar-canvas-wrap { width: 110px; }
+  .journey-stage .sticker-top,.journey-stage .avatar-speech,.journey-stage .avatar-chapter,.journey-stage .avatar-toolbar { left: 116px; }
+  .journey-stage .avatar-chapter { top: 31px; font-size: 0; }
+  .journey-stage .avatar-chapter span { margin-top: 0; font-size: 11px; line-height: 1.4; }
+  .journey-stage .avatar-speech { top: 33px; }
+  .experience-section,.project-chapter { scroll-margin-top: 224px; }
 }
 @media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; transition-duration:.01ms!important; }.hero-footnote { transform: none; } }
 @media print { :root,.dark { --color-bg:#fff; --color-fg:#111; --color-fg-muted:#555; --color-border:#ddd; --color-bg-muted:#f3f3f3; } .site-header,body>div>header,.resume-tools,body footer:not(.resume-note) { display:none!important; }.resume-page { max-width:none; padding:0; margin:0; }.resume-header { padding-bottom:20px; }.resume-header h1 { font-size:32px; margin:12px 0; }.resume-projects article { break-inside:avoid; padding:18px 0; }.resume-projects article p,.resume-projects article li { font-size:10px; }.resume-projects>h2 { font-size:16px; }.resume-project-heading h3 { font-size:17px; }.resume-note { font-size:8px; } @page { margin:16mm; } }

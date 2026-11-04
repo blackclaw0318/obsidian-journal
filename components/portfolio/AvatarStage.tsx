@@ -7,7 +7,7 @@ import { characterScenes, type CharacterScene } from "@/lib/portfolio";
 
 const PortfolioScene = dynamic(() => import("./PortfolioScene"), { ssr: false });
 const expressions = ["自然", "眨眼", "思考"] as const;
-const portraits = ["/images/avatar-v2-concept.webp", "/images/avatar-v2-wink.webp", "/images/avatar-v2-thinking.webp"];
+const portrait = "/images/avatar-v3-concept.webp";
 
 export function AvatarStage({ scene = "hello", chapter = "" }: { scene?: CharacterScene; chapter?: string }) {
   const [expression, setExpression] = useState(0);
@@ -33,17 +33,17 @@ export function AvatarStage({ scene = "hello", chapter = "" }: { scene?: Charact
       <div className="avatar-canvas-wrap">
         {/* Poster is also the usable non-WebGL fallback, not an indefinite spinner. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="avatar-poster" src={portraits[expression]} alt={`上坤的虚拟形象，${expressions[expression]}表情：辫发、耳饰、灰色 Polo 衫，拿着苹果和手机`} />
+        <img className="avatar-poster" src={portrait} alt="上坤的动漫虚拟形象：辫发、耳饰、灰色 Polo 衫，拿着苹果和手机" />
         <PortfolioScene scene={scene} expression={expression} reset={reset} onReady={setReady} />
       </div>
       <div className="avatar-sticker sticker-top"><span className="live-dot" />{state.label}<MoveUpRight size={13} /></div>
       <div className="avatar-sticker sticker-bottom" aria-hidden="true">{state.word}</div>
       <div className="avatar-speech" aria-live="polite"><span>SK SAYS</span><p>{state.caption}</p></div>
       <div className="avatar-toolbar">
-        <span className="avatar-hint">{ready ? "拖动转一转 · 点击换个表情" : "移动指针 · 点击换个表情"}</span>
+        <span className="avatar-hint">{ready ? "眼神跟随你 · 拖动转一转" : "形象预览"}</span>
         <div>
-          <button type="button" onClick={() => setExpression((value) => (value + 1) % expressions.length)} aria-label={`切换角色表情，当前${expressions[expression]}`} title="换个表情"><Smile size={17} /><span>{expressions[expression]}</span></button>
-          <button type="button" onClick={() => { setReset((value) => value + 1); setExpression(0); }} aria-label="重置角色视角" title="重置视角"><RotateCcw size={17} /></button>
+          <button type="button" disabled={!ready} onClick={() => setExpression((value) => (value + 1) % expressions.length)} aria-label={`切换角色表情，当前${expressions[expression]}`} title={ready ? "换个表情" : "三维角色加载后可切换表情"}><Smile size={17} /><span>{expressions[expression]}</span></button>
+          <button type="button" disabled={!ready} onClick={() => { setReset((value) => value + 1); setExpression(0); }} aria-label="重置角色视角" title="重置视角"><RotateCcw size={17} /></button>
         </div>
       </div>
       {chapter && <p className="avatar-chapter">正在探索 <span>{chapter}</span></p>}

@@ -12,6 +12,7 @@ export function PortfolioHome({ articles }: { articles: Article[] }) {
   const [filter, setFilter] = useState<"all" | ProjectCategory>("all");
   const [active, setActive] = useState<string | null>(null);
   const chapters = useRef<HTMLDivElement>(null);
+  const stage = useRef<HTMLElement>(null);
   const projects = portfolioProjects.filter((project) => filter === "all" || project.category === filter);
   const project = portfolioProjects.find((item) => item.slug === active);
 
@@ -19,11 +20,14 @@ export function PortfolioHome({ articles }: { articles: Article[] }) {
     const host = chapters.current;
     if (!host) return;
     const update = () => {
-      const threshold = window.innerHeight * .48;
+      const mobile = window.matchMedia("(max-width: 767px)").matches;
+      // On phones the compact character stays above the reading area.
+      const readingTop = mobile ? 88 + (stage.current?.clientHeight ?? 164) : 110;
+      const threshold = Math.max(window.innerHeight * .48, readingTop + 48);
       let nearest: string | null = null; let distance = Infinity;
       host.querySelectorAll<HTMLElement>("[data-project]").forEach((element) => {
         const box = element.getBoundingClientRect();
-        if (box.top < window.innerHeight * .78 && box.bottom > 110) {
+        if (box.top < window.innerHeight * .78 && box.bottom > readingTop) {
           const nextDistance = Math.abs(box.top + Math.min(box.height * .35, 200) - threshold);
           if (nextDistance < distance) { distance = nextDistance; nearest = element.dataset.project ?? null; }
         }
@@ -73,7 +77,7 @@ export function PortfolioHome({ articles }: { articles: Article[] }) {
             <div className="timeline-end"><span>TO BE CONTINUED</span><p>下一个故事，正在发生。</p><span aria-hidden="true">✳</span></div>
           </section>
         </div>
-        <aside className="journey-stage" aria-label="随项目变化的虚拟角色"><AvatarStage scene={project?.scene ?? "hello"} chapter={project?.title} /><div className="stage-bottom-note"><span>BUILT WITH CURIOSITY.</span><span>保持好奇 / 持续创造</span></div></aside>
+        <aside ref={stage} className={`journey-stage${project ? " has-project" : ""}`} aria-label="随项目变化的虚拟角色"><AvatarStage scene={project?.scene ?? "hello"} chapter={project?.title} /><div className="stage-bottom-note"><span>BUILT WITH CURIOSITY.</span><span>保持好奇 / 持续创造</span></div></aside>
       </div>
       <section className="portfolio-capabilities" aria-labelledby="approach-title">
         <div className="section-kicker"><span>03 / HOW I WORK</span><span>从想法到交付</span></div><h2 id="approach-title">不止让它跑起来。<br /><span>还要知道，为什么。</span></h2>
