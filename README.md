@@ -1,6 +1,6 @@
 # 黑曜石日志 (obsidian-journal)
 
-> 2026-11-04 接手说明：网站正在改为上坤的交互作品集，保留文章、小说、视频、资源和后台。下方历史版本信息较早；当前设计与开发约定见 [交互作品集改版](docs/PORTFOLIO_REDESIGN.md)、[经历内容范围](docs/PORTFOLIO_CONTENT.md)、[动漫 3D 角色 v3](docs/AVATAR_V3.md)。
+> 2026-11-04 接手说明：网站已发布上坤的交互作品集，保留文章、小说、视频、资源和后台。下方历史版本信息较早；当前进度、环境和回滚位置见 [续作交接](docs/STATUS_2026_11_04_PORTFOLIO.md)，设计与内容约定见 [交互作品集改版](docs/PORTFOLIO_REDESIGN.md)、[经历内容范围](docs/PORTFOLIO_CONTENT.md)、[动漫 3D 角色 v3](docs/AVATAR_V3.md)。
 
 > 用代码与数据说话 — HandFoot 商业帝国的个人博客平台
 
