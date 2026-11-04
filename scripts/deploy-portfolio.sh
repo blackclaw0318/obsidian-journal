@@ -112,6 +112,8 @@ magic, version, size = struct.unpack('<4sII', data[:12])
 assert magic == b'glTF' and version == 2 and size == len(data), 'Invalid v3 avatar GLB'
 PY
 [[ $(curl -s --max-time 10 -o /dev/null -w '%{http_code}' http://127.0.0.1:3098/work/not-a-real-project) == 404 ]]
+login_redirect=$(curl -sS --max-time 10 -o /dev/null -w '%{redirect_url}' http://127.0.0.1:3098/admin)
+[[ "$login_redirect" == https://www.shangkun.uk/admin/login ]]
 systemctl stop "$candidate"
 
 echo "5/5 Switching the website service to the verified release."

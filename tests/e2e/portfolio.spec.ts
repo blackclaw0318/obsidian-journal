@@ -135,4 +135,13 @@ test.describe("作品集经历与虚拟角色", () => {
     await expect(scene).toHaveClass(/scene-ready/);
     await expect(page.getByRole("button", { name: "重置角色视角" })).toBeEnabled();
   });
+
+  test("从同页项目锚点回首页时不残留加载进度条", async ({ page }) => {
+    await page.goto("/#document-quality");
+    await expect(page.locator("#document-quality")).toBeInViewport();
+    await page.getByRole("link", { name: "黑曜石日志 首页", exact: true }).click();
+    await expect(page).toHaveURL(/\/$/);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(20);
+    await expect(page.getByTestId("route-progress").locator("div")).toHaveCSS("opacity", "0");
+  });
 });

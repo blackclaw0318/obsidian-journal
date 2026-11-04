@@ -61,9 +61,12 @@ export function RouteProgress() {
       if (!target) return;
       const anchor = target.closest("a");
       if (!anchor) return;
-      // 外部链接 / 同页 hash / 修改器键 → 不显示
+      // usePathname only completes progress for a different path. Hash/query-only
+      // navigation (including returning from /#project to /) must not start it.
       const href = anchor.getAttribute("href");
-      if (!href || href.startsWith("#") || href.startsWith("http")) return;
+      if (!href || anchor.hasAttribute("download") || (anchor.target && anchor.target !== "_self")) return;
+      const destination = new URL(anchor.href);
+      if (destination.origin !== window.location.origin || destination.pathname === window.location.pathname) return;
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
       startProgress();
     };
@@ -77,6 +80,7 @@ export function RouteProgress() {
   return (
     <div
       aria-hidden="true"
+      data-testid="route-progress"
       className="pointer-events-none fixed inset-x-0 top-0 z-[100] h-[2px]"
     >
       <div

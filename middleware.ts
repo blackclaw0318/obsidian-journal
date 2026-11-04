@@ -27,6 +27,18 @@ async function verifyToken(token: string): Promise<boolean> {
   }
 }
 
+function loginUrl(req: NextRequest): URL {
+  // The proxy's internal request origin can be localhost. Only the configured
+  // production origin is trusted; forwarded host headers cannot choose redirects.
+  if (process.env.NODE_ENV === "production" && process.env.NEXT_PUBLIC_SITE_URL) {
+    try {
+      const url = new URL(LOGIN_PATH, process.env.NEXT_PUBLIC_SITE_URL);
+      if (url.protocol === "https:" || url.protocol === "http:") return url;
+    } catch { /* A missing or invalid canonical URL keeps the request origin. */ }
+  }
+  return new URL(LOGIN_PATH, req.url);
+}
+
 /**
  * v0.35.2: 板块访问监控 (Q2 = 含 admin, 老板看自己访问频率)
  * - 不记录: /api/*, /_next/*, /uploads/*, /admin/login, 静态资源
@@ -177,11 +189,11 @@ export async function middleware(req: NextRequest) {
     }
     const token = req.cookies.get(SESSION_COOKIE)?.value;
     if (!token) {
-      return NextResponse.redirect(new URL(LOGIN_PATH, req.url));
+      return NextResponse.redirect(loginUrl(req));
     }
     const valid = await verifyToken(token);
     if (!valid) {
-      const res = NextResponse.redirect(new URL(LOGIN_PATH, req.url));
+      const res = NextResponse.redirect(loginUrl(req));
       res.cookies.set({ name: SESSION_COOKIE, value: "", maxAge: 0, path: "/" });
       return res;
     }
