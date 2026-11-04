@@ -27,8 +27,8 @@
 
 ## 验证
 
-- 类型检查、Lint、192 个单元测试、现有全部集成测试通过。
-- 原 24 项首页/作品集 E2E 全通过；最终追加 WebGL 加载中断/恢复场景后，6 项作品集定向回归全部通过，共覆盖 25 个不同浏览器场景。
+- 类型检查、Lint、198 个单元测试、现有全部集成测试通过。
+- 最终 26 项首页/作品集 E2E 全部通过，覆盖真实眼球、手机联动、详情锚点返回、WebGL 加载中断/恢复、同页进度、旧栏目和登录。
 - 生产构建通过。构建数据库使用临时独立路径；初始化后的 build 设置 `SKIP_DB_INIT=1`，避免并行 worker 反复重建 FTS。
 - 当前修改不含数据库结构迁移，候选与正式服务也设置 `SKIP_DB_INIT=1`，不在启动时重建线上索引。后续若改 schema，需显式审核和执行迁移。
 - 服务器 npm 11.13 检出旧锁缺少两个跨平台 optional 依赖，现已精确补齐；其他依赖版本未变。
@@ -40,15 +40,16 @@
 - `a814313`：v3 形象、独立眼神、手机舞台与导航修复。
 - `19f9d70`：验收测试、跨平台依赖锁、部署验证与资料范围。
 - `148c62d`：WebGL 加载竞态、位图释放和构建/运行数据库隔离。
+- `bb8b5d0`：修复反向代理下后台跳转 localhost，以及同页返回首页的进度条残留；候选检查新增公网登录地址断言。
 - GitHub 仓库 `blackclaw0318/obsidian-journal`。本机默认 GitHub 凭据无该仓库权限，沿用服务器 Git 中转；服务器推送须显式使用已有 obsidian 仓库密钥，不能依赖默认身份。
 - 发布脚本 `scripts/deploy-portfolio.sh` 从已验证 Git archive 在独立 release 目录安装/构建；先备份，候选端口 3098 验证成功后只切换个人网站 unit。数据和上传仍链接到原稳定目录。
 
-已发布提交：`148c62d5a636157a732c70baf01210a9ebf59bcf`。
+最终发布提交：`bb8b5d05ef2b0da102d76178e9eba848aac37509`。首版 `148c62d` 保留为上一可回滚版本。
 
 - 公网地址：`https://www.shangkun.uk/`。
-- 当前 release：`/srv/obsidian-journal-releases/20261104T100758Z-148c62d5a636`。
-- 备份：`/var/backups/homepage/20261104T100758Z`，含通过 SQLite `quick_check` 的一致性快照、原源码、unit 配置与发布日志。
+- 当前 release：`/srv/obsidian-journal-releases/20261104T102109Z-bb8b5d05ef2b`。
+- 当前备份：`/var/backups/homepage/20261104T102109Z`，含通过 SQLite `quick_check` 的一致性快照、原源码、unit 配置、上一 release override 与发布日志。首版备份 `/var/backups/homepage/20261104T100758Z` 继续保留。
 - 发布后确认 `homepage` 身份、3003 端口；`obsidian-dev`、`gensticker`、`gensticker-worker`、`nginx`、`cloudflared` 均 active；GenSticker `/healthz` 为 `ok`、1010 个模板。
 - 线上 GLB SHA256：`4e5df82d3e47855690a6f92dfe06dcb5d84c61aa3602f2d87ef7df3195016ab0`，与验收文件一致。
 
-这次是首个 release override；回滚时将 `/etc/systemd/system/obsidian-dev.service.d/zzz-portfolio-release.conf` 移入本次备份目录（保留而不是删除），执行 `systemctl daemon-reload` 后仅重启 `obsidian-dev`。原服务配置恢复使用 `/srv/obsidian-journal`；因为没有结构迁移，不应为回滚代码而覆盖现有业务数据库。
+回滚本次导航修复时，将当前备份中的 `previous-override.conf` 复制回 `/etc/systemd/system/obsidian-dev.service.d/zzz-portfolio-release.conf`，执行 `systemctl daemon-reload` 后仅重启 `obsidian-dev`，恢复首版 `148c62d`。若需要完全恢复改版前代码，将此 override 移入备份目录（保留而不是删除），刷新 systemd 后仅重启个人网站，原配置会使用 `/srv/obsidian-journal`。没有结构迁移，不应为回滚代码而覆盖现有业务数据库。
