@@ -8,6 +8,7 @@
 // ============================================================
 import type { Metadata } from "next";
 import "./globals.css";
+import "./portfolio.css";
 import { siteConfigRepo } from "../lib/repo";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
@@ -23,6 +24,7 @@ import { absoluteUrl } from "../lib/seo";
  * - og:type 不在根 layout 设, 让子页面 metadata 决定 (article / website / book)
  */
 export const metadata: Metadata = {
+  title: { default: "上坤 · 黑曜石日志", template: "%s" },
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
   ),
@@ -103,7 +105,6 @@ export default function RootLayout({
   // v0.6.1: 从 SiteConfig 读 site_name + description, 严守 schema
   const config = siteConfigRepo.get();
   const siteName = config?.site_name ?? "黑曜石日志";
-  const siteTagline = config?.site_description ?? "用代码与数据说话";
   const defaultTheme = (config?.default_theme ?? "light") as
     | "light"
     | "dark"
@@ -125,9 +126,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" media="(prefers-color-scheme: dark)" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-        {/* 动态 title (覆盖 metadata API 默认 title) */}
-        <title>{siteName}</title>
-        <meta name="description" content={siteTagline} />
+        {/* Page-specific metadata owns title and description. */}
         {/* og:title / twitter:title 跟随 SiteConfig (与子页面 og:type 兼容)
             注意: 不写 og:type / og:site_name, 走 metadata API (与子页面 metadata merge) */}
         {/* Phase 2.4 RSS + Phase 2.3 SEO: Atom + RSS 2.0 autodiscovery link

@@ -7,11 +7,13 @@
 
 import { postRepo, novelRepo, videoRepo, siteConfigRepo } from "@/lib/repo";
 import { absoluteUrl } from "@/lib/seo";
+import { portfolioProjects } from "@/lib/portfolio";
 
 export const dynamic = "force-dynamic";
 
 const STATIC_PAGES = [
   { path: "/",        changefreq: "daily",  priority: 1.0 },
+  { path: "/resume",  changefreq: "monthly", priority: 0.8 },
   { path: "/posts",   changefreq: "daily",  priority: 0.9 },
   { path: "/novels",  changefreq: "weekly", priority: 0.8 },
   { path: "/videos",  changefreq: "weekly", priority: 0.7 },
@@ -83,6 +85,7 @@ export async function GET() {
   const xml = `<?xml version="1.0" encoding="utf-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${staticEntries}
+${portfolioProjects.map((project) => `  <url><loc>${absoluteUrl(`/work/${project.slug}`)}</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>`).join("\n")}
 ${postEntries}
 ${novelEntries}
 ${videoEntries}

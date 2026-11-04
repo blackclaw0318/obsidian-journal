@@ -30,6 +30,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/", label: "首页" },
+  { href: "/#experience", label: "经历" },
   { href: "/posts", label: "文章" },
   { href: "/novels", label: "小说" },
   { href: "/videos", label: "视频" },
@@ -67,21 +68,21 @@ export function Nav({ siteName, defaultTheme }: NavProps) {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-bg/80 backdrop-blur-md nav-safe-top">
-      <nav className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
+    <header className="site-header sticky top-0 z-40 border-b border-border bg-bg/80 backdrop-blur-md nav-safe-top">
+      <nav className="site-nav mx-auto flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
         {/* Logo */}
         <Link
           href="/"
           className="group flex items-center gap-2 text-lg font-semibold transition-opacity hover:opacity-80"
           aria-label={`${siteName} 首页`}
         >
-          <span className="inline-block h-2 w-2 rounded-full bg-accent transition-transform group-hover:scale-125" />
-          <span>{siteName}</span>
+          <span className="site-monogram" aria-hidden="true">sk<span>✳</span></span>
+          <span className="site-brand"><strong>SHANGKUN</strong><span>{siteName}</span></span>
         </Link>
 
         {/* 桌面导航 (md+) */}
         <ul className="hidden items-center gap-5 text-sm md:flex lg:gap-6">
-          {NAV_ITEMS.slice(0, 5).map((item) => (
+          {NAV_ITEMS.slice(0, 6).map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}

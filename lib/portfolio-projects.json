@@ -42,8 +42,8 @@
       "评估流程",
       "实验分析"
     ],
-    "category": "vision",
-    "scene": "motion"
+    "category": "multimodal",
+    "scene": "research"
   },
   {
     "slug": "pedestrian-events",
