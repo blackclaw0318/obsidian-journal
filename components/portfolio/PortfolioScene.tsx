@@ -48,7 +48,13 @@ export default function PortfolioScene({ scene, expression, reset, onReady }: { 
         });
       };
       const releaseResources = () => {
+        const bitmaps = new Set<ImageBitmap>();
+        textures.forEach((texture) => {
+          const source = texture.source?.data;
+          if (typeof ImageBitmap !== "undefined" && source instanceof ImageBitmap) bitmaps.add(source);
+        });
         textures.forEach((texture) => texture.dispose());
+        bitmaps.forEach((bitmap) => bitmap.close());
         geometries.forEach((geometry) => geometry.dispose());
         materials.forEach((material) => material.dispose());
         textures.clear(); geometries.clear(); materials.clear();
@@ -161,7 +167,8 @@ export default function PortfolioScene({ scene, expression, reset, onReady }: { 
           if (crease) creases.push(crease);
         }
         host.dataset.model = "avatar-v3";
-        host.classList.add("scene-ready"); onReady(true); resize();
+        if (contextAvailable) { host.classList.add("scene-ready"); onReady(true); }
+        resize();
       }, undefined, () => { if (!disposed) { host.classList.remove("scene-ready"); onReady(false); } });
 
       const animate = (time: number) => {

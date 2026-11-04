@@ -78,7 +78,7 @@ systemd-run --quiet --wait --pipe --collect --unit="homepage-build-$tag" \
   NEXT_PUBLIC_SITE_URL=https://www.shangkun.uk \
   "DATABASE_URL=file:$release/data/build.db" \
   NODE_OPTIONS=--max-old-space-size=1536 \
-  /bin/bash --noprofile --norc -c 'npm run verify:fast && npm run build' >"$backup/build.log" 2>&1
+  /bin/bash --noprofile --norc -c 'npm run verify:fast && npm run db:init && SKIP_DB_INIT=1 npm run build' >"$backup/build.log" 2>&1
 
 # Runtime data and uploads keep their existing stable locations; no live DB is used by tests/build.
 if [[ -d "$release/data" ]]; then mv "$release/data" "$release/.build-data"; fi
@@ -91,7 +91,7 @@ printf '{"commit":"%s","created_at":"%s"}\n' "$commit" "$tag" >"$release/RELEASE
 echo "4/5 Checking the release on a loopback-only candidate port."
 systemd-run --quiet --collect --unit="$candidate" -p User=homepage -p Group=homepage \
   -p "WorkingDirectory=$release" -p MemoryMax=1G -p CPUQuota=50% \
-  /usr/bin/env NODE_ENV=production NEXT_PUBLIC_SITE_URL=https://www.shangkun.uk \
+  /usr/bin/env NODE_ENV=production SKIP_DB_INIT=1 NEXT_PUBLIC_SITE_URL=https://www.shangkun.uk \
   /usr/bin/node "$release/node_modules/next/dist/bin/next" start -p 3098 -H 127.0.0.1
 ready=0
 for attempt in {1..25}; do
@@ -119,6 +119,7 @@ cat >"$override" <<EOF
 [Service]
 WorkingDirectory=$release
 Environment=NEXT_PUBLIC_SITE_URL=https://www.shangkun.uk
+Environment=SKIP_DB_INIT=1
 ExecStart=
 ExecStart=/usr/bin/node $release/node_modules/next/dist/bin/next start -p 3003 -H 127.0.0.1
 ReadWritePaths=$release/.next/cache

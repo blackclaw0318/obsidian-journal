@@ -107,4 +107,32 @@ test.describe("作品集经历与虚拟角色", () => {
     await page.locator('[data-project="delivery-standards"]').getByRole("link", { name: "展开这段经历" }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("让模型交付有章可循");
   });
+
+  test("模型加载中丢失 WebGL 时保留备用图，恢复后重新显示角色", async ({ page }) => {
+    let releaseModel!: () => void;
+    const pendingModel = new Promise<void>((resolve) => { releaseModel = resolve; });
+    await page.route("**/models/avatar-v3.glb", async (route) => { await pendingModel; await route.continue(); });
+    await page.goto("/");
+    const scene = page.locator(".portfolio-scene");
+    await expect(scene.locator("canvas")).toBeAttached();
+    await page.evaluate(async () => {
+      const canvas = document.querySelector(".portfolio-scene canvas") as HTMLCanvasElement;
+      const context = canvas.getContext("webgl2");
+      const extension = context?.getExtension("WEBGL_lose_context");
+      if (!extension) throw new Error("Test browser requires WEBGL_lose_context");
+      (window as unknown as { restoreAvatarContext: () => void }).restoreAvatarContext = () => extension.restoreContext();
+      await new Promise<void>((resolve) => {
+        canvas.addEventListener("webglcontextlost", () => resolve(), { once: true });
+        extension.loseContext();
+      });
+    });
+    releaseModel();
+    await expect(scene).toHaveAttribute("data-model", "avatar-v3");
+    await expect(scene).not.toHaveClass(/scene-ready/);
+    await expect(page.locator(".avatar-poster")).toHaveCSS("opacity", "1");
+    await expect(page.getByRole("button", { name: "重置角色视角" })).toBeDisabled();
+    await page.evaluate(() => (window as unknown as { restoreAvatarContext: () => void }).restoreAvatarContext());
+    await expect(scene).toHaveClass(/scene-ready/);
+    await expect(page.getByRole("button", { name: "重置角色视角" })).toBeEnabled();
+  });
 });
