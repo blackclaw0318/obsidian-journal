@@ -73,6 +73,16 @@ export function LenisRouteReset() {
       }
     };
     const onLocationChange = () => syncLocation();
+    const onPopState = (event: PopStateEvent) => {
+      // Native fragment history can have no App Router state. Next 14 ignores
+      // that entry even when Back changes the pathname, leaving the wrong page
+      // under the restored URL. A normal reload restores that destination.
+      if (!event.state && window.location.pathname !== pathname) {
+        window.location.reload();
+        return;
+      }
+      syncLocation();
+    };
     const onClick = (event: MouseEvent) => {
       if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       const anchor = event.target instanceof Element ? event.target.closest("a[href]") : null;
@@ -88,12 +98,12 @@ export function LenisRouteReset() {
 
     syncLocation(routeChanged);
     window.addEventListener("hashchange", onLocationChange);
-    window.addEventListener("popstate", onLocationChange);
+    window.addEventListener("popstate", onPopState);
     document.addEventListener("click", onClick, true);
     return () => {
       clearPending();
       window.removeEventListener("hashchange", onLocationChange);
-      window.removeEventListener("popstate", onLocationChange);
+      window.removeEventListener("popstate", onPopState);
       document.removeEventListener("click", onClick, true);
     };
   }, [pathname, lenis]);

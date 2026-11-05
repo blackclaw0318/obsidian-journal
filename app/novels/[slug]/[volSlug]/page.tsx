@@ -45,8 +45,8 @@ export default function VolumeDetailPage({ params }: Props) {
   const liveChapters = volume.chapters.filter((c) => c.published);
 
   return (
-    <article className="mx-auto max-w-3xl px-6 py-12">
-      <header className="mb-8">
+    <article className="sticker-page sticker-reading sticker-volume-detail mx-auto max-w-3xl px-6 py-12">
+      <header className="sticker-page-header mb-8">
         <div className="mb-3 text-sm">
           <Link href="/novels" className="text-fg-muted hover:text-fg">小说</Link>
           <span className="mx-1 text-fg-muted">/</span>
@@ -62,7 +62,7 @@ export default function VolumeDetailPage({ params }: Props) {
           本卷暂无已发布章节。
         </div>
       ) : (
-        <ol className="space-y-2">
+        <ol className="sticker-chapter-list space-y-2">
           {liveChapters.map((ch) => (
             <li key={ch.id} className="rounded border border-border bg-bg-card p-4 transition hover:border-accent/40">
               <Link href={`/chapters/${ch.slug}`} className="block">

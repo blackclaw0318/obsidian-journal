@@ -1,4 +1,5 @@
 import projectData from "./portfolio-projects.json";
+import projectAliases from "./portfolio-legacy.json";
 
 export type ProjectCategory = "vision" | "multimodal" | "engineering";
 export type CharacterScene = "hello" | "vision" | "motion" | "build" | "research";
@@ -23,13 +24,7 @@ export interface PortfolioProject {
 // Deliberately contains only edited public summaries. Evidence and raw posts live outside Git.
 export const portfolioProjects = projectData as PortfolioProject[];
 // Old detail URLs remain routable without duplicating the four public projects.
-export const legacyProjectSlugs: Record<string, string> = {
-  "delivery-skill": "delivery-standards",
-  "video-understanding-evaluation": "pedestrian-events",
-  "annotation-tool": "pedestrian-events",
-  "video-data": "pedestrian-events",
-  "multimodal-evaluation": "pedestrian-events"
-};
+export const legacyProjectSlugs: Record<string, string> = projectAliases;
 
 export function canonicalProjectSlug(slug: string) {
   return Object.prototype.hasOwnProperty.call(legacyProjectSlugs, slug) ? legacyProjectSlugs[slug] : slug;

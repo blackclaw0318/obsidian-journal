@@ -37,7 +37,6 @@ const DEFAULT_COPYRIGHT_MD = `# 版权声明
 ## 4. 联系
 
 - GitHub: <https://github.com/blackclaw0318>
-- 邮箱: (请在 admin 后台"站点设置 → 版权设置"中填入)
 `;
 
 export const dynamic = "force-dynamic";
@@ -55,8 +54,8 @@ export default function CopyrightPage() {
   const rendered = md.render(mdSource);
 
   return (
-    <article className="mx-auto max-w-3xl px-6 py-12">
-      <header className="mb-8">
+    <article className="sticker-page sticker-reading sticker-copyright mx-auto max-w-3xl px-6 py-12">
+      <header className="sticker-page-header mb-8">
         <h1 className="mb-2 text-3xl font-bold tracking-tight">版权声明</h1>
         <p className="text-sm text-fg-muted">
           Copyright · License · Disclaimer
@@ -64,7 +63,7 @@ export default function CopyrightPage() {
       </header>
 
       {/* 2 卡概览 (v0.40 去 AIGC 卡) */}
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="sticker-license mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="rounded-lg border border-border bg-bg-card p-4">
           <div className="mb-1 text-xs uppercase tracking-wide text-fg-muted">
             License

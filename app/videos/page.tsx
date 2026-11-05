@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 export function generateMetadata(): Metadata {
   return {
     title: "视频",
-    description: "黑曜石日志 视频 (v0.6.1: VideoSeries + Video 独立 model)",
+    description: "用镜头记录探索、想法和日常。上坤的视频与系列。",
     alternates: { canonical: canonical("/videos") },
     openGraph: {
       type: "website",
@@ -35,10 +35,10 @@ export default function VideosPage() {
   const seriesMap = new Map(series.map((s) => [s.id, s]));
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12">
-      <header className="mb-8">
+    <div className="sticker-page sticker-index sticker-videos mx-auto max-w-5xl px-6 py-12">
+      <header className="sticker-page-header mb-8">
         <h1 className="text-3xl font-bold">🎬 视频</h1>
-        <p className="mt-2 text-fg-muted">视频系列 + 单集 (v0.6.1 独立 model)</p>
+        <p className="mt-2 text-fg-muted">换个视角，把想法放进画面里。</p>
       </header>
 
       {/* JSON-LD: ItemList of VideoObject (schema.org) */}
@@ -65,7 +65,7 @@ export default function VideosPage() {
         {series.length === 0 ? (
           <p className="text-fg-muted">暂无视频系列。</p>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="sticker-series-list grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {series.map((s) => (
               <div
                 key={s.id}

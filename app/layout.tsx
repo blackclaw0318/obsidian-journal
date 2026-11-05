@@ -9,6 +9,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./portfolio.css";
+import "./sticker-pages.css";
+import "./avatar-world.css";
 import { siteConfigRepo } from "../lib/repo";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";

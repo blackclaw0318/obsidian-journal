@@ -85,3 +85,8 @@ public/uploads/
 # Private research, credentials, deployment bundles and local evidence
 .local/
 *.bundle
+
+# Blender/Python authoring intermediates; keep the editable .blend itself.
+__pycache__/
+*.py[cod]
+design/avatar-v4/*.blend[1-9]

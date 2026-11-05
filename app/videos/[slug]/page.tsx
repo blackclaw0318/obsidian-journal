@@ -53,10 +53,10 @@ export default function VideoDetailPage({ params }: Props) {
   const embed = detectEmbed(video.embed_url);
 
   return (
-    <article className="mx-auto max-w-4xl px-6 py-12">
+    <article className="sticker-page sticker-reading sticker-video-detail mx-auto max-w-4xl px-6 py-12">
       {ldJson && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson }} />}
 
-      <header className="mb-6">
+      <header className="sticker-page-header mb-6">
         <div className="mb-2 text-sm">
           <Link href="/videos" className="text-fg-muted hover:text-fg">← 视频列表</Link>
         </div>
@@ -72,7 +72,7 @@ export default function VideoDetailPage({ params }: Props) {
       </header>
 
       {/* embed 区域: 16:9 响应式 iframe */}
-      <div className="relative mb-6 aspect-video w-full overflow-hidden rounded border border-border bg-black">
+      <div className="sticker-video-player relative mb-6 aspect-video w-full overflow-hidden rounded border border-border bg-black">
         <iframe
           src={embed.src}
           className="absolute inset-0 h-full w-full"

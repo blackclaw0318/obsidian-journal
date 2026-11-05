@@ -39,18 +39,18 @@ export default async function PostsPage({ searchParams }: PageProps) {
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-12">
-      <header className="mb-8">
+    <div className="sticker-page sticker-index sticker-posts mx-auto max-w-6xl px-6 py-12">
+      <header className="sticker-page-header mb-8">
         <h1 className="text-3xl font-bold">
           {isSearching ? `🔍 搜索: ${q}` : `${validCat.emoji} ${validCat.name}文章`}
         </h1>
         <p className="text-fg-muted mt-2">
-          {isSearching ? `FTS5 全文检索 (Phase 2.2)` : validCat.tagline}
+          {isSearching ? "翻翻笔记，找找你感兴趣的事。" : validCat.tagline}
         </p>
       </header>
 
       {/* Phase 2.2: 搜索框 (GET /posts?q=) */}
-      <form action="/posts" method="get" className="mb-6 flex gap-2">
+      <form action="/posts" method="get" className="sticker-search mb-6 flex gap-2">
         {isSearching ? null : (
           <input type="hidden" name="cat" value={isAll ? "all" : validCat.slug} />
         )}
@@ -79,7 +79,7 @@ export default async function PostsPage({ searchParams }: PageProps) {
       </form>
 
       {/* 分类 Sidebar/Tab (v0.6.1: 只有 tech/life + all) */}
-      <nav className="mb-8 flex flex-wrap gap-2 border-b border-border pb-4">
+      <nav className="sticker-tabs mb-8 flex flex-wrap gap-2 border-b border-border pb-4">
         {CATEGORIES.map((c) => {
           const isActive = c.slug === validCat.slug;
           const count = counts[c.slug as keyof typeof counts];
@@ -88,9 +88,9 @@ export default async function PostsPage({ searchParams }: PageProps) {
               key={c.slug}
               href={c.slug === "all" ? "/posts" : `/posts?cat=${c.slug}`}
               className={
-                "px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 " +
+                "sticker-tab px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 " +
                 (isActive
-                  ? "bg-fg text-bg font-semibold"
+                  ? "is-active bg-fg text-bg font-semibold"
                   : "border border-border hover:bg-bg-muted text-fg-muted")
               }
             >
@@ -112,11 +112,11 @@ export default async function PostsPage({ searchParams }: PageProps) {
             </p>
           </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="sticker-post-list grid gap-4 md:grid-cols-2">
             {posts.map((post) => (
               <article
                 key={post.id}
-                className="rounded-lg border border-border bg-bg-card p-5 transition hover:border-strong"
+                className="sticker-entry rounded-lg border border-border bg-bg-card p-5 transition hover:border-strong"
               >
                 <div className="mb-2 flex items-center gap-2 text-xs text-fg-muted">
                   <span className="rounded bg-bg-muted px-2 py-0.5 uppercase">

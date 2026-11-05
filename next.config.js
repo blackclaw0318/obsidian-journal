@@ -1,7 +1,16 @@
+const projectAliases = require("./lib/portfolio-legacy.json");
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  async redirects() {
+    return Object.entries(projectAliases).map(([source, destination]) => ({
+      source: `/work/${source}`,
+      destination: `/work/${destination}`,
+      permanent: true
+    }));
+  },
   // sharp: 部署时由 .env 决定 SHARP_CONCURRENCY
   images: {
     remotePatterns: [

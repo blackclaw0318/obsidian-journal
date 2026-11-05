@@ -38,8 +38,8 @@ export default function PageDetailPage({ params }: Props) {
   const allowCustomHtml = site?.allow_custom_html === 1;
 
   return (
-    <article className="mx-auto max-w-3xl px-6 py-12">
-      <header className="mb-8">
+    <article className="sticker-page sticker-reading sticker-custom-page mx-auto max-w-3xl px-6 py-12">
+      <header className="sticker-page-header mb-8">
         <h1 className="mb-2 text-4xl font-bold tracking-tight">{page.title}</h1>
         {page.description && <p className="text-lg text-fg-muted">{page.description}</p>}
       </header>

@@ -98,14 +98,14 @@ export default function PostDetailPage({ params }: { params: { slug: string } })
   const readMin = readingTimeMin(post.content);
 
   return (
-    <article className="mx-auto max-w-3xl px-6 py-12">
+    <article className="sticker-page sticker-reading sticker-post-detail mx-auto max-w-3xl px-6 py-12">
       {ldJson && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: ldJson }}
         />
       )}
-      <header className="mb-8">
+      <header className="sticker-page-header mb-8">
         <div className="mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-fg-muted">
           <span className="rounded bg-bg-muted px-2 py-0.5 uppercase">
             {post.category}

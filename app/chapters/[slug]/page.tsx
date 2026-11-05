@@ -55,8 +55,8 @@ export default function ChapterDetailPage({ params }: Props) {
   const html = md.render(stripFrontmatter(chapter.content));
 
   return (
-    <article className="mx-auto max-w-3xl px-6 py-12">
-      <header className="mb-8">
+    <article className="sticker-page sticker-reading sticker-chapter-detail mx-auto max-w-3xl px-6 py-12">
+      <header className="sticker-page-header mb-8">
         <div className="mb-3 text-sm">
           <Link href="/novels" className="text-fg-muted hover:text-fg">小说</Link>
           <span className="mx-1 text-fg-muted">/</span>
@@ -84,7 +84,7 @@ export default function ChapterDetailPage({ params }: Props) {
         className="prose prose-zinc max-w-none dark:prose-invert"
       />
 
-      <nav className="mt-12 flex items-center justify-between border-t border-border pt-6">
+      <nav className="sticker-reader-nav mt-12 flex items-center justify-between border-t border-border pt-6">
         {prev ? (
           <Link href={`/chapters/${prev.slug}`} className="rounded border border-border bg-bg-card px-4 py-2 text-sm transition hover:border-accent/40">
             ← 上一章 · {prev.title}

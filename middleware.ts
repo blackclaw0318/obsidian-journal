@@ -50,8 +50,8 @@ function shouldRecord(pathname: string): boolean {
   if (pathname.startsWith("/_next")) return false;
   if (pathname.startsWith("/api")) return false;
   if (pathname.startsWith("/uploads")) return false;
-  // 静态资源后缀 (svg/png/jpg/jpeg/webp/ico/css/js/map/json/xml/txt)
-  if (/\.(svg|png|jpg|jpeg|webp|ico|css|js|map|json|xml|txt|woff2?|ttf|eot)$/i.test(pathname)) {
+  // Include the avatar binary: model fetches are assets, not page visits.
+  if (/\.(svg|png|jpg|jpeg|webp|ico|css|js|map|json|xml|txt|woff2?|ttf|eot|glb|gltf)$/i.test(pathname)) {
     return false;
   }
   return true;

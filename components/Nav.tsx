@@ -30,7 +30,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/", label: "首页" },
-  { href: "/#experience", label: "经历" },
+  { href: "/#work", label: "工作经历" },
   { href: "/posts", label: "文章" },
   { href: "/novels", label: "小说" },
   { href: "/videos", label: "视频" },

@@ -92,8 +92,8 @@ export default function ResourcesPage({ searchParams }: { searchParams: SearchPa
       : 1;
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-12">
-      <header className="mb-8">
+    <div className="sticker-page sticker-index sticker-resources mx-auto max-w-6xl px-6 py-12">
+      <header className="sticker-page-header mb-8">
         <h1 className="text-3xl font-bold">📦 资源库</h1>
         <p className="mt-2 text-fg-muted">
           共 <strong>{allCount}</strong> 个文件 · 总大小 {formatBytes(totalSize)}
@@ -108,15 +108,15 @@ export default function ResourcesPage({ searchParams }: { searchParams: SearchPa
       </header>
 
       {/* tabs (image/audio/document/all) */}
-      <form className="mb-6 flex flex-wrap items-center gap-2">
-        <div className="flex flex-wrap gap-1">
+      <form className="sticker-toolbox mb-6 flex flex-wrap items-center gap-2">
+        <div className="sticker-tabs flex flex-wrap gap-1">
           {CATEGORIES.map((c) => {
             const isActive = (c.value || "all") === (rawType || "all");
             return (
               <Link
                 key={c.value || "all"}
                 href={c.value ? `/resources?type=${c.value}` : "/resources"}
-                className={`rounded px-3 py-1.5 text-sm ${isActive ? "bg-accent text-white" : "border border-border bg-bg text-fg hover:border-accent/40"}`}
+                className={`sticker-tab rounded px-3 py-1.5 text-sm ${isActive ? "is-active bg-accent text-white" : "border border-border bg-bg text-fg hover:border-accent/40"}`}
               >
                 {c.emoji} {c.label}
               </Link>
@@ -126,7 +126,7 @@ export default function ResourcesPage({ searchParams }: { searchParams: SearchPa
         <input
           name="q"
           defaultValue={q}
-          placeholder="搜索 filename / alt..."
+          placeholder="搜索文件名或描述…"
           className="ml-auto rounded border border-border bg-bg px-3 py-1.5 text-sm"
         />
         <button type="submit" className="rounded border border-border bg-bg px-3 py-1.5 text-sm">搜索</button>

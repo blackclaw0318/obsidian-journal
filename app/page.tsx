@@ -5,7 +5,7 @@ import { formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "上坤 · 认真做技术，也做点有趣的",
+  title: "上坤 · 我有很多面，来认识一下",
   description: "上坤的个人空间：计算机视觉、多模态评测、AI 工程与项目经历，也有代码之外的故事。",
   alternates: { canonical: "/" }
 };

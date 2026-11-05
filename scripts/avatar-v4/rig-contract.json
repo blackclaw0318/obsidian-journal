@@ -1,0 +1,162 @@
+{
+  "version": 4,
+  "model": "/models/avatar-v4.glb",
+  "coordinates": {
+    "front": "+Z",
+    "up": "+Y",
+    "units": "meters",
+    "recommendedOrbitDegrees": 30
+  },
+  "root": "AvatarV4Root",
+  "nodes": {
+    "Head": "Independent head and hair geometry. Pivots at neck. Small yaw/pitch only.",
+    "Torso": "Separate cropped Polo bust, no full body or ball shoulders.",
+    "EyeLeft": "Image-left independent sclera and lids; do not rotate this for gaze.",
+    "EyeRight": "Image-right independent sclera and lids.",
+    "GazeLeft": "Independent iris/pupil assembly; rotation.y horizontal \u00b10.22, rotation.x vertical \u00b10.14.",
+    "GazeRight": "Same gaze convention as image-left.",
+    "HandLeft": "Independent image-left hand, pivot at wrist, posed around Apple.",
+    "HandRight": "Independent image-right hand, pivot at wrist, posed around Phone.",
+    "Apple": "Whole solid apple group with stem/leaf; move entire group for toss and catch.",
+    "BreadWhole": "Solid toast with crust and crumb; visible initial bread version.",
+    "BreadBitten": "Alternate solid toast with actual scalloped bite opening. Same transform and pivot as BreadWhole. Hide at load.",
+    "Phone": "Solid phone with back cameras, display and physical side thickness.",
+    "Flash": "Mesh light source, child of Phone. Hide at load; briefly show for phone-flash action.",
+    "LabelCoder": "Curved paper sticker/text CODER; child of Head.",
+    "LabelMusician": "Curved paper sticker/text MUSICIAN; child of Head.",
+    "LabelChristian": "Curved paper sticker/text CHRISTIAN; child of Head.",
+    "LabelDreamer": "Curved paper sticker/text DREAMER; child of Head.",
+    "LabelWork": "Curved paper sticker/text WORK; child of Head.",
+    "LabelVideo": "Curved physical VIDEO CREATOR sticker, child of Head",
+    "TeethUpper": "Independent warm ivory upper teeth arc, child of MouthOpen; silly/grin show, wow hide",
+    "MouthOpen": "Independent cavity/lips group, child of Head; hidden for neutral",
+    "Tongue": "Tongue mesh, child of MouthOpen; show for silly only"
+  },
+  "runtime": {
+    "initiallyHidden": [
+      "BreadBitten",
+      "Flash",
+      "MouthOpen",
+      "LidLeft",
+      "LidRight"
+    ],
+    "apple": {
+      "node": "Apple",
+      "tossHeight": 0.65,
+      "tossSeconds": 0.8,
+      "rotateTurns": 1
+    },
+    "bread": "Toggle BreadWhole/BreadBitten together after a short move towards mouth; avoid visible duplicate mesh.",
+    "flash": "Flash is a Phone child and uses emissive material; set visible=true for 80\u2013120ms.",
+    "labels": "Each Label* group is a mesh interaction anchor; text and paper remain children. Raycast group descendants and focus world-position bounds.",
+    "limitations": "Single-view inferred head, front \u00b130\u00b0 camera. No claimed full 360\u00b0 or production facial rig.",
+    "openLids": "LidLeft/Right visible=false while blink amount<.01; absolute scale.y=.001+(1-.001)*amount when closing.",
+    "breadParent": "Bread variants are Head children to preserve physical lip-corner contact."
+  },
+  "defaultCamera": {
+    "position": [
+      0,
+      1.55,
+      6.6
+    ],
+    "target": [
+      0,
+      1.55,
+      0
+    ],
+    "fov": 40
+  },
+  "measuredAnchors": {
+    "Head": [
+      0.0,
+      0.44376,
+      -0.0
+    ],
+    "Torso": [
+      0.0,
+      0.0,
+      -0.0
+    ],
+    "EyeLeft": [
+      -0.25963,
+      1.82659,
+      0.75031
+    ],
+    "EyeRight": [
+      0.31723,
+      1.82667,
+      0.74746
+    ],
+    "Apple": [
+      -0.95,
+      0.94,
+      0.77
+    ],
+    "BreadWhole": [
+      -0.34292,
+      0.96298,
+      0.78417
+    ],
+    "BreadBitten": [
+      -0.34292,
+      0.96298,
+      0.78417
+    ],
+    "Phone": [
+      0.93,
+      1.27,
+      0.61
+    ],
+    "HandLeft": [
+      -1.0,
+      0.36,
+      0.43
+    ],
+    "HandRight": [
+      1.02,
+      0.34,
+      0.36
+    ],
+    "MouthOpen": [
+      0.02691,
+      1.28716,
+      0.82522
+    ],
+    "LabelCoder": [
+      -0.01217,
+      2.16021,
+      0.85229
+    ],
+    "LabelMusician": [
+      0.39748,
+      2.15533,
+      0.7817
+    ],
+    "LabelVideo": [
+      -0.36967,
+      1.5789,
+      0.68969
+    ],
+    "LabelChristian": [
+      0.40432,
+      1.57146,
+      0.69667
+    ],
+    "LabelDreamer": [
+      -0.26015,
+      1.40396,
+      0.76411
+    ],
+    "LabelWork": [
+      0.31553,
+      1.39832,
+      0.75031
+    ]
+  },
+  "morphTargets": {
+    "Head": [
+      "Surprise",
+      "Grin"
+    ]
+  }
+}

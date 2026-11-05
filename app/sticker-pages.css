@@ -1,0 +1,260 @@
+/* Public reading rooms: the same paper, ink and cut-out accents as the home.
+   Scope every rule to these pages so the editor, home and resume keep their own layout. */
+.sticker-page {
+  --sticker-paper: #faf7ee;
+  --sticker-ink: #252320;
+  --sticker-muted: #706d66;
+  --sticker-lime: #d7f34b;
+  --sticker-coral: #ff7662;
+  --sticker-label-ink: #252320;
+  --sticker-rule: #c8c4b9;
+  position: relative;
+  padding-top: clamp(40px, 6vw, 80px);
+  padding-bottom: clamp(64px, 9vw, 120px);
+  color: var(--sticker-ink);
+}
+.dark .sticker-page {
+  --sticker-paper: #252520;
+  --sticker-ink: #f7f4e9;
+  --sticker-muted: #b5b1a6;
+  --sticker-rule: #656358;
+}
+.sticker-index { max-width: 1180px; }
+.sticker-reading { max-width: 900px; }
+.sticker-page-header {
+  position: relative;
+  margin-bottom: 38px;
+  padding: 0 105px 32px 0;
+  border-bottom: 3px solid var(--sticker-ink);
+}
+.sticker-page-header::before,
+.sticker-novels::before {
+  content: "FROM THE NOTEBOOK";
+  display: table;
+  padding: 5px 11px;
+  margin-bottom: 24px;
+  border: 2px solid var(--sticker-label-ink);
+  background: var(--sticker-lime);
+  color: var(--sticker-label-ink);
+  box-shadow: 3px 3px 0 var(--sticker-label-ink);
+  font: 700 10px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .05em;
+  transform: rotate(-2deg);
+}
+.sticker-page-header::after {
+  content: "✳";
+  position: absolute;
+  right: 6px;
+  top: 33px;
+  color: var(--sticker-coral);
+  font: 100px/.9 Georgia, serif;
+  transform: rotate(12deg);
+  pointer-events: none;
+}
+.sticker-posts .sticker-page-header::before { content: "01 / WORDS & WANDERING"; }
+.sticker-videos .sticker-page-header::before { content: "03 / PRESS PLAY"; }
+.sticker-resources .sticker-page-header::before { content: "04 / THE GOOD STUFF"; }
+.sticker-copyright .sticker-page-header::before { content: "THE FINE PRINT"; }
+.sticker-post-detail .sticker-page-header::before { content: "A PAGE FROM MY NOTEBOOK"; }
+.sticker-novel-detail .sticker-page-header::before,
+.sticker-volume-detail .sticker-page-header::before,
+.sticker-chapter-detail .sticker-page-header::before { content: "ONE MORE CHAPTER"; }
+.sticker-video-detail .sticker-page-header::before { content: "NOW SHOWING"; }
+.sticker-page-header h1,
+.sticker-page-title {
+  margin: 0 0 18px;
+  font-family: var(--sticker-display-font, "Arial Black", "PingFang SC", "Microsoft YaHei", sans-serif);
+  font-size: clamp(42px, 7vw, 80px);
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: -.065em;
+  overflow-wrap: anywhere;
+}
+.sticker-reading .sticker-page-header h1 { font-size: clamp(33px, 4.8vw, 57px); line-height: 1.3; }
+.sticker-page-header p { max-width: 60ch; margin-top: 15px; line-height: 1.85; }
+.sticker-page .text-fg-muted { color: var(--sticker-muted); }
+.sticker-page :is(input[type="text"], input[name="q"]) {
+  min-width: 0;
+  border: 2px solid var(--sticker-ink);
+  border-radius: 0;
+  background: var(--sticker-paper);
+  color: var(--sticker-ink);
+  padding: 12px 14px;
+  box-shadow: none;
+}
+.sticker-page :is(input[type="text"], input[name="q"])::placeholder { color: var(--sticker-muted); }
+.sticker-search { margin-bottom: 25px; }
+.sticker-search button,
+.sticker-toolbox > button {
+  border: 2px solid var(--sticker-label-ink);
+  border-radius: 0;
+  background: var(--sticker-ink);
+  color: var(--sticker-paper);
+  padding: 10px 22px;
+  font-weight: 750;
+  box-shadow: 3px 3px 0 var(--sticker-coral);
+}
+.sticker-page :focus-visible { outline: 3px solid var(--sticker-coral); outline-offset: 4px; }
+.sticker-tabs { gap: 10px; padding-bottom: 20px; border-bottom: 0; }
+.sticker-tabs .sticker-tab {
+  border: 2px solid var(--sticker-ink);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--sticker-ink);
+  padding: 8px 17px;
+  font-size: 12px;
+  font-weight: 650;
+}
+.sticker-tabs .sticker-tab.is-active {
+  background: var(--sticker-lime);
+  border-color: var(--sticker-label-ink);
+  color: var(--sticker-label-ink);
+  box-shadow: 2px 3px 0 var(--sticker-label-ink);
+  transform: rotate(-2deg);
+}
+.sticker-tabs .sticker-tab:hover { text-decoration: underline; text-underline-offset: 4px; }
+.sticker-post-list { display: block; counter-reset: notebook-entry; }
+.sticker-post-list .sticker-entry {
+  counter-increment: notebook-entry;
+  position: relative;
+  padding: 29px 0 32px 85px;
+  border: 0;
+  border-bottom: 2px solid var(--sticker-ink);
+  border-radius: 0;
+  background: transparent;
+}
+.sticker-entry::before {
+  content: counter(notebook-entry, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 30px;
+  color: var(--sticker-coral);
+  font: italic 800 36px/1 Georgia, serif;
+}
+.sticker-entry h2 { margin: 12px 0; font-size: clamp(22px, 3vw, 32px); line-height: 1.5; letter-spacing: -.04em; }
+.sticker-entry h2 a:hover { color: inherit; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 6px; }
+.sticker-entry p { max-width: 76ch; line-height: 1.9; }
+.sticker-entry > div:first-child > span:first-child,
+.sticker-post-detail .sticker-page-header > div:first-child > span:first-child {
+  padding: 3px 7px;
+  border: 1px solid var(--sticker-ink);
+  border-radius: 0;
+  background: transparent;
+  color: var(--sticker-ink);
+  font-size: 10px;
+}
+.sticker-novels::before { content: "02 / OTHER WORLDS"; }
+.sticker-novels::after {
+  content: "TO BE CONTINUED…";
+  position: absolute;
+  right: 30px;
+  top: 110px;
+  max-width: 150px;
+  padding: 9px 14px;
+  border: 2px solid var(--sticker-label-ink);
+  background: var(--sticker-coral);
+  color: var(--sticker-label-ink);
+  box-shadow: 4px 4px 0 var(--sticker-label-ink);
+  font: 700 12px/1.4 ui-monospace, monospace;
+  transform: rotate(6deg);
+}
+.sticker-novels > .sticker-page-intro { padding-bottom: 32px; margin-bottom: 42px; border-bottom: 3px solid var(--sticker-ink); }
+.sticker-book-list { gap: 35px; counter-reset: bookshelf; }
+.sticker-book-list .sticker-book {
+  position: relative;
+  counter-increment: bookshelf;
+  padding: 16px 25px 33px;
+  border: 0;
+  border-left: 8px solid var(--sticker-ink);
+  border-bottom: 2px solid var(--sticker-ink);
+  border-radius: 0;
+  background: transparent;
+}
+.sticker-book::before { content: "FICTION / " counter(bookshelf, decimal-leading-zero); display: block; margin-bottom: 25px; font: 700 10px ui-monospace, monospace; letter-spacing: .08em; }
+.sticker-book h2 { margin-bottom: 18px; font-size: 36px; letter-spacing: -.05em; }
+.sticker-book p { line-height: 1.9; }
+.sticker-entry h2, .sticker-book h2, .sticker-volume h2 { overflow-wrap: anywhere; }
+.sticker-book:nth-child(even) { border-left-color: var(--sticker-coral); }
+.sticker-volume { border: 0; border-top: 3px solid var(--sticker-ink); border-radius: 0; padding: 24px 0 35px; background: transparent; }
+.sticker-volume li { gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--sticker-rule); }
+.sticker-volume li > a { line-height: 1.7; }
+.sticker-volume li > span { flex-shrink: 0; }
+.sticker-chapter-list > li { margin-top: 0; padding: 20px 0; border: 0; border-bottom: 1px solid var(--sticker-ink); border-radius: 0; background: transparent; }
+.sticker-chapter-list > li:hover { background: color-mix(in srgb, var(--sticker-lime) 14%, transparent); }
+.sticker-videos > section > h2 { display: table; margin-bottom: 25px; padding-bottom: 8px; border-bottom: 3px solid var(--sticker-coral); font-size: 19px; }
+.sticker-series-list { gap: 25px; }
+.sticker-series-list > [data-testid="video-series-card"] { border: 0; border-left: 4px solid var(--sticker-coral); border-radius: 0; padding: 7px 0 7px 18px; background: transparent; }
+.sticker-videos [data-testid="videos-grid"] { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 38px 28px; }
+.sticker-videos [data-testid="video-card"] { border: 0; border-radius: 0; background: transparent; box-shadow: none; overflow: visible; }
+.sticker-videos [data-testid="video-card"] > div:first-child { border: 2px solid var(--sticker-ink); box-shadow: 5px 5px 0 var(--sticker-ink); background: var(--sticker-coral); }
+.sticker-videos [data-testid="video-card"] > div:last-child { padding: 20px 0 0; }
+.sticker-videos [data-testid="video-card"] h3 { font-size: 22px; line-height: 1.5; letter-spacing: -.035em; white-space: normal; }
+.sticker-video-player { margin-bottom: 35px; border: 3px solid var(--sticker-ink); border-radius: 0; box-shadow: 7px 7px 0 var(--sticker-coral); }
+.sticker-toolbox { margin-bottom: 35px; padding-bottom: 22px; border-bottom: 1px solid var(--sticker-ink); }
+.sticker-toolbox .sticker-tabs { padding-bottom: 0; }
+.sticker-toolbox > input { width: 225px; }
+.sticker-resources [data-testid="resources-image-grid"],
+.sticker-resources [data-testid="resources-search-grid"] { gap: 28px 23px; }
+.sticker-resources :is([data-testid="resource-card"], [data-testid="resource-search-card"]) { border: 2px solid var(--sticker-ink); border-radius: 0; padding: 7px; background: var(--sticker-paper); box-shadow: 4px 4px 0 var(--sticker-ink); }
+.sticker-resources :is([data-testid="resource-card"], [data-testid="resource-search-card"]) > div:last-child { padding: 13px 3px 4px; }
+.sticker-resources :is([data-testid="resources-list-document"], [data-testid="resources-list-audio"]) { border: 0; border-top: 2px solid var(--sticker-ink); border-bottom: 2px solid var(--sticker-ink); border-radius: 0; background: transparent; }
+.sticker-resources [data-testid="resource-list-row"] { padding: 20px 0; border-color: var(--sticker-rule); }
+.sticker-resources [data-testid="resource-download"] { border: 2px solid var(--sticker-ink); border-radius: 0; padding: 5px 9px; }
+.sticker-resources [data-testid="resources-pagination"] { margin-top: 38px; gap: 7px; }
+.sticker-resources [data-testid="resources-pagination"] > :is(a, span) { border-radius: 0; }
+.sticker-resources [data-testid="resources-pagination"] > [aria-current="page"] { border-color: var(--sticker-label-ink); background: var(--sticker-lime); color: var(--sticker-label-ink); }
+.sticker-resources [data-testid="resource-preview-content"] > :is(img, iframe) { max-height: calc(90vh - 44px); max-height: calc(90svh - 44px); }
+.sticker-resources [data-testid="resource-preview-content"] .font-medium { max-width: 100%; overflow-wrap: anywhere; }
+.sticker-resources [data-testid="resource-preview-content"] a[download] { border: 2px solid var(--sticker-label-ink); border-radius: 0; background: var(--sticker-lime); color: var(--sticker-label-ink); white-space: nowrap; }
+.sticker-page .border-dashed { border: 2px dashed var(--sticker-rule); border-radius: 0; background: transparent; }
+.sticker-reading .prose { font-size: 16px; line-height: 1.95; overflow-wrap: anywhere; }
+.sticker-reading .prose :is(h1, h2, h3) { color: var(--sticker-ink); letter-spacing: -.035em; }
+.sticker-reading .prose h2 { margin-top: 42px; font-size: 28px; }
+.sticker-reading .prose h3 { font-size: 22px; }
+.sticker-reading .prose a { color: inherit; text-decoration-color: var(--sticker-coral); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.sticker-reading .prose a:hover { background: var(--sticker-lime); color: var(--sticker-label-ink); }
+.sticker-reading .prose pre { border: 2px solid var(--sticker-ink); border-radius: 0; background: #252320; color: #f8f5e9; }
+.sticker-reading .prose blockquote { margin: 28px 0; border-left: 4px solid var(--sticker-coral); padding: 5px 0 5px 22px; color: var(--sticker-muted); }
+.sticker-reading .prose img { max-width: 100%; height: auto; border: 1px solid var(--sticker-rule); border-radius: 0; }
+.sticker-reading .prose table { display: block; max-width: 100%; overflow-x: auto; }
+.sticker-reading .prose :is(th, td) { border: 1px solid var(--sticker-rule); padding: 7px 12px; }
+.sticker-reading .prose .callout { border-radius: 0; }
+.sticker-reader-nav { gap: 20px; border-top: 2px solid var(--sticker-ink); }
+.sticker-reader-nav > a { max-width: 48%; border: 2px solid var(--sticker-ink); border-radius: 0; background: transparent; line-height: 1.7; overflow-wrap: anywhere; }
+.sticker-license { margin-bottom: 38px; gap: 25px; }
+.sticker-license > div { border: 0; border-left: 5px solid var(--sticker-coral); border-radius: 0; padding: 3px 0 3px 18px; background: transparent; }
+.sticker-license > div:first-child { border-left-color: var(--sticker-lime); }
+@media (max-width: 767px) {
+  .sticker-page { padding: 35px 23px 70px; }
+  .sticker-page-header { padding-right: 55px; margin-bottom: 30px; padding-bottom: 25px; }
+  .sticker-page-header::before, .sticker-novels::before { max-width: 100%; margin-bottom: 25px; font-size: 8px; }
+  .sticker-page-header::after { right: 0; top: 47px; font-size: 60px; }
+  .sticker-page-header h1, .sticker-page-title { font-size: clamp(38px, 10vw, 58px); letter-spacing: -.06em; }
+  .sticker-reading .sticker-page-header { padding-right: 0; }
+  .sticker-reading .sticker-page-header::after { display: none; }
+  .sticker-reading .sticker-page-header h1 { font-size: 34px; }
+  .sticker-page-header p { font-size: 13px; }
+  .sticker-search button, .sticker-toolbox > button { padding: 10px 15px; }
+  .sticker-tabs { gap: 8px; }
+  .sticker-tabs .sticker-tab { padding: 7px 12px; font-size: 11px; }
+  .sticker-post-list .sticker-entry { padding: 25px 0 28px 46px; }
+  .sticker-entry::before { top: 28px; font-size: 25px; }
+  .sticker-entry h2 { font-size: 24px; }
+  .sticker-novels::after { top: 104px; right: 25px; max-width: 117px; padding: 8px; font-size: 9px; }
+  .sticker-book-list { grid-template-columns: 1fr; gap: 30px; }
+  .sticker-book-list .sticker-book { padding-left: 20px; }
+  .sticker-book h2 { font-size: 32px; }
+  .sticker-videos [data-testid="videos-grid"] { grid-template-columns: 1fr; gap: 34px; }
+  .sticker-videos [data-testid="video-card"] h3 { font-size: 20px; }
+  .sticker-toolbox { gap: 13px 8px; }
+  .sticker-toolbox .sticker-tabs { flex-basis: 100%; }
+  .sticker-toolbox > input { flex: 1; width: 0; margin-left: 0; }
+  .sticker-resources [data-testid="resources-image-grid"], .sticker-resources [data-testid="resources-search-grid"] { gap: 22px; }
+  .sticker-reading .prose { font-size: 15px; line-height: 1.95; }
+  .sticker-reading .prose h2 { font-size: 25px; }
+  .sticker-reader-nav { gap: 12px; }
+  .sticker-reader-nav > a { padding: 10px; font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sticker-page *, .sticker-page *::before, .sticker-page *::after { transition: none; }
+}

@@ -1,0 +1,30 @@
+{
+  "version": 4,
+  "styleReferences": [
+    "https://www.pinterest.com/pin/705517097930166575/",
+    "https://www.pinterest.com/pin/704954147968857609/"
+  ],
+  "identitySource": "User-provided avatar. Reference style is used only for stickers, never for a different person's likeness.",
+  "cleanHead": {
+    "path": "public/images/avatar-v4/head-clean.png",
+    "purpose": "Unobstructed head/neck/Polo reconstruction plate; separate hands and props are restored in Blender.",
+    "prompt": "Use case: identity-preserve. Asset type: clean front-facing head-and-shoulders modeling plate for a real Blender 3D character, to be followed by expressive variants. Input image is the SOLE identity reference; do not use any other person's face. Recreate the SAME recognizable young Asian male cartoon avatar from the reference, keeping the same narrow tapered oval face, warm brown almond eyes at the original eye spacing, straight thick black eyebrows, small natural nose, warm tan skin, original short black outward-splaying tightly ridged twist braids with shaved sides and one braid on the forehead, asymmetrical silver stud/hoop and dangling cross earrings, and charcoal gray Polo collar. Preserve the appealing proportions of this reference exactly; do not make a new generic anime boy. Style: premium stylized 3D animated character with crisp graphic shapes, charming expressive face, matte skin and soft diffuse light, no oily shine, no photographic pores. Modeling plate: head, ears, normal short neck and upper chest only, straight front view, both ears visible, entire braid silhouette visible with generous padding. A small relaxed closed-lip smile so the full mouth and chin are unobstructed and can be modeled. Remove ALL hands, apple, bread, phone and bracelet for THIS modeling plate only; the final 3D assembly will restore these separate objects. No face stickers or labels in this CLEAN plate, to allow independently attached 3D labels later. No background, floor, scene, frame, border, lettering or watermark. TRUE transparent alpha background. Keep reference hairstyle, eyes, face and earring identity exceptionally faithful."
+  },
+  "expressionBasePrompt": "Use case: identity-preserve expression design for this user's personal website avatar. The two supplied images are the same character: the clean head plate and original identity/prop reference. Preserve EXACTLY his recognizable narrow tapered face, warm tan skin, brown almond eyes at the original spacing, thick straight eyebrows, black outward-splaying ridged twist braids with shaved sides and a forehead braid, asymmetrical silver earrings including dangling cross, gray Polo. Match clean head plate's premium stylized 3D animation look. Head-and-upper-chest portrait, full hair visible. No hands, apple, bread or phone in this expression study. Add SIX small tactile die-cut vinyl stickers DIRECTLY ON forehead, temples and cheeks following the skin curvature, each with white cut-edge, black bold custom lettering, slight rotations, no covering eyes or mouth. Text exactly: 'CODER', 'MUSICIAN', 'VIDEO CREATOR', 'CHRISTIAN', 'DREAMER', 'WORK'. Mix tiny chartreuse rectangular label, coral rounded label, ivory oval, cyan zigzag; amusing street sticker collage with real contact shadows. Sticker styling only from a collage aesthetic, NO other person's likeness or brand logos. Crisp silhouette, charming and mischievous, exceptionally memorable and exaggerated but attractive. True transparent alpha background, generous margin, no outside caption, no scenery or watermark. ",
+  "expressions": [
+    {
+      "path": "public/images/avatar-v4/silly.webp",
+      "prompt": "Expression: a boldly exaggerated 🤪 face, one eye cheekily squinted almost closed while the other is wide open looking up, eyebrows deliberately mismatched, a broad asymmetric open grin and tongue poking out to one side. Keep eyes at the original locations; expression comes from lids/gaze, not changed identity."
+    },
+    {
+      "path": "public/images/avatar-v4/wow.webp",
+      "prompt": "Expression: comic astonished delight, both eyebrows raised high with curved forehead, rounded wide-open sparkling eyes, tiny 'O' mouth and slightly tilted head. Funny, exuberant and friendly rather than frightened."
+    },
+    {
+      "path": "public/images/avatar-v4/grin.webp",
+      "prompt": "Expression: huge contagious open toothy laugh, one eyebrow playfully arched, cheeks lifted and nose subtly scrunched, slight head tilt. Warm cheeky energy as if he has just made a very good bad joke."
+    }
+  ],
+  "webFallback": "public/images/avatar-v4/poster.webp is rendered from the final assembled GLB, not an expression study.",
+  "limitations": "Expressions are 2D design references. Runtime expressions use independent gaze/lids and a small 3D morph/prop rig; they are not represented as a full production facial rig."
+}

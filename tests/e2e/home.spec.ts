@@ -3,14 +3,13 @@ import { test, expect } from "@playwright/test";
 test.describe("个人作品集首页", () => {
   test("应该能访问首页", async ({ page }) => {
     await page.goto("/");
-    await expect(page).toHaveTitle(/上坤.*认真做技术/);
+    await expect(page).toHaveTitle(/上坤/);
   });
 
   test("首页展示个人介绍与描述", async ({ page }) => {
     await page.goto("/");
     await expect(page.locator("h1").first()).toBeVisible({ timeout: 10000 });
-    await expect(page.locator("h1").first()).toContainText("认真做技术");
-    await expect(page.locator("h1").first()).toContainText("有趣的");
+    await expect(page.locator("h1").first()).toHaveText("我有很多面，来认识一下。");
     // tagline 验证: 任一 description meta 含内容即可
     const descs = await page.locator('meta[name="description"]').all();
     expect(descs.length).toBeGreaterThan(0);
@@ -21,19 +20,60 @@ test.describe("个人作品集首页", () => {
 
   test("首页应该列出 seed 数据中的文章", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { name: "工作之外，也有自己的宇宙。" })).toBeVisible();
     await expect(page.getByRole("link", { name: /你好, 黑曜石日志/ })).toBeVisible();
   });
 
   test("首页应该显示导航", async ({ page }) => {
     await page.goto("/");
-    // v0.20 Nav client component, 等 hydration 完成
-    await page.waitForLoadState("networkidle");
+    // Readiness is the usable navigation; background 3D assets may still be loading.
     // v0.18 Nav "管理" link 带 ⚙ emoji 前缀, 用 name 包含而非 exact
     await expect(page.getByRole("link", { name: /^[^\s]*首页$/, exact: false }).first()).toBeVisible({ timeout: 10000 });
+    const workLink = page.locator("nav").getByRole("link", { name: "工作经历", exact: true });
+    await expect(workLink).toBeVisible();
+    await expect(workLink).toHaveAttribute("href", /^(?:\/)?#work$/);
     await expect(page.locator('nav a[href="/posts"]').first()).toBeVisible();
     await expect(page.locator('nav a[href="/novels"]').first()).toBeVisible();
     await expect(page.locator('nav a[href="/admin"]').first()).toBeVisible();
+  });
+
+  test("公开内页在手机亮色与深色模式下可读且无横向溢出", async ({ page }, testInfo) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.addInitScript(() => {
+      if (!localStorage.getItem("obsidian-theme")) localStorage.setItem("obsidian-theme", "light");
+    });
+    for (const path of ["posts", "novels", "videos", "resources", "resume"]) {
+      await page.goto(`/${path}`);
+      const heading = page.getByRole("heading", { level: 1 }).first();
+      await expect(heading).toBeVisible();
+      await expect(heading).toBeInViewport();
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+      expect(overflow, `/${path} should fit the 390px viewport`).toBeLessThanOrEqual(1);
+      await page.screenshot({ path: testInfo.outputPath(`mobile-${path}-light.png`), fullPage: false });
+      if (path === "posts") {
+        await page.getByRole("button", { name: "打开菜单", exact: true }).click();
+        const menu = page.getByRole("dialog", { name: "导航菜单", exact: true });
+        await expect(menu).toBeInViewport({ ratio: 1 });
+        const backdrop = page.locator('header > div[aria-hidden="true"]');
+        await expect.poll(async () => {
+          const box = await backdrop.boundingBox();
+          return box && { x: box.x, y: box.y, width: box.width, height: box.height };
+        }).toEqual({ x: 0, y: 0, width: 390, height: 844 });
+        await page.screenshot({ path: testInfo.outputPath("mobile-navigation-overlay.png"), fullPage: false });
+        await page.mouse.click(195, 820);
+        await expect(menu).toBeHidden();
+        await expect(page.getByRole("button", { name: "打开菜单", exact: true })).toBeVisible();
+        await expect.poll(() => page.evaluate(() => document.body.style.overflow)).not.toBe("hidden");
+      }
+    }
+    await page.evaluate(() => localStorage.setItem("obsidian-theme", "dark"));
+    for (const path of ["posts", "resources"]) {
+      await page.goto(`/${path}`);
+      await expect(page.locator("html")).toHaveClass(/\bdark\b/);
+      await expect(page.getByRole("heading", { level: 1 }).first()).toBeInViewport();
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+      expect(overflow, `/${path} in dark mode should fit the 390px viewport`).toBeLessThanOrEqual(1);
+      await page.screenshot({ path: testInfo.outputPath(`mobile-${path}-dark.png`), fullPage: false });
+    }
   });
 });
 

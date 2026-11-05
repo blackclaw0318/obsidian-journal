@@ -99,17 +99,24 @@ for attempt in {1..25}; do
   sleep 1
 done
 [[ $ready == 1 ]]
-grep -q '认真做技术' "$backup/candidate-home.html"
+grep -q '我有很多面' "$backup/candidate-home.html"
 for path in /resume /work/document-quality /posts /novels /videos /resources /admin/login; do
   curl -fsS --max-time 20 "http://127.0.0.1:3098$path" -o /dev/null
 done
-curl -fsS --max-time 20 http://127.0.0.1:3098/models/avatar-v3.glb -o "$backup/avatar-v3.glb"
-python3 - "$backup/avatar-v3.glb" <<'PY'
+curl -fsS --max-time 20 http://127.0.0.1:3098/models/avatar-v4.glb -o "$backup/avatar-v4.glb"
+python3 - "$backup/avatar-v4.glb" <<'PY'
 import pathlib, struct, sys
 data = pathlib.Path(sys.argv[1]).read_bytes()
 assert len(data) >= 28, 'Avatar model is empty or truncated'
 magic, version, size = struct.unpack('<4sII', data[:12])
-assert magic == b'glTF' and version == 2 and size == len(data), 'Invalid v3 avatar GLB'
+assert magic == b'glTF' and version == 2 and size == len(data), 'Invalid v4 avatar GLB'
+assert size < 3_500_000, 'Avatar exceeds the reviewed mobile asset budget'
+import json
+length, kind = struct.unpack('<I4s', data[12:20])
+assert kind == b'JSON'
+document = json.loads(data[20:20 + length])
+nodes = {node.get('name') for node in document['nodes']}
+assert {'Head','GazeLeft','GazeRight','Apple','BreadWhole','BreadBitten','Phone','Flash','HandLeft','HandRight','LabelCoder','LabelMusician','LabelVideo','LabelChristian','LabelDreamer','LabelWork'} <= nodes, 'Avatar is missing independently controlled parts'
 PY
 [[ $(curl -s --max-time 10 -o /dev/null -w '%{http_code}' http://127.0.0.1:3098/work/not-a-real-project) == 404 ]]
 login_redirect=$(curl -sS --max-time 10 -o /dev/null -w '%{redirect_url}' http://127.0.0.1:3098/admin)
@@ -135,7 +142,7 @@ for attempt in {1..20}; do
   sleep 1
 done
 [[ $ready == 1 ]]
-grep -q '认真做技术' "$backup/live-home.html"
+grep -q '我有很多面' "$backup/live-home.html"
 systemctl is-active --quiet obsidian-dev
 trap - ERR
 echo "Deployed commit $commit"

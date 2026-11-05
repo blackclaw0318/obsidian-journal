@@ -53,10 +53,10 @@ export default function NovelDetailPage({ params }: Props) {
   const totalViews = novel.volumes.reduce((s, v) => s + v.chapters.reduce((cs, c) => cs + c.view_count, 0), 0);
 
   return (
-    <article className="mx-auto max-w-3xl px-6 py-12">
+    <article className="sticker-page sticker-reading sticker-novel-detail mx-auto max-w-3xl px-6 py-12">
       {ldJson && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldJson }} />}
 
-      <header className="mb-10">
+      <header className="sticker-page-header mb-10">
         <div className="mb-3 flex items-center gap-2 text-sm">
           <Link href="/novels" className="text-fg-muted hover:text-fg">← 小说列表</Link>
         </div>
@@ -79,7 +79,7 @@ export default function NovelDetailPage({ params }: Props) {
           {novel.volumes.map((vol) => {
             const liveChapters = vol.chapters.filter((c) => c.published);
             return (
-              <section key={vol.id} className="rounded-lg border border-border bg-bg-card p-5">
+              <section key={vol.id} className="sticker-volume rounded-lg border border-border bg-bg-card p-5">
                 <div className="mb-3 flex items-center justify-between">
                   <div>
                     <h2 className="text-xl font-semibold">

@@ -1,52 +1,45 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
-import { RotateCcw, Smile, MoveUpRight } from "lucide-react";
-import { characterScenes, type CharacterScene } from "@/lib/portfolio";
+import { useRef, useState } from "react";
+import { Apple, Camera, Cookie, RotateCcw, Smile } from "lucide-react";
+import { avatarExpressions, type AvatarAction, type AvatarDomain } from "@/lib/avatar-world";
 
 const PortfolioScene = dynamic(() => import("./PortfolioScene"), { ssr: false });
-const expressions = ["自然", "眨眼", "思考"] as const;
-const portrait = "/images/avatar-v3-concept.webp";
+const expressionNames = ["自然", "搞怪", "哇哦", "大笑"];
 
-export function AvatarStage({ scene = "hello", chapter = "" }: { scene?: CharacterScene; chapter?: string }) {
+export function AvatarStage({ focus: controlledFocus, onFocus }: { focus?: AvatarDomain; onFocus?: (domain: AvatarDomain) => void }) {
+  const [localFocus, setLocalFocus] = useState<AvatarDomain>("all");
+  const focus = controlledFocus ?? localFocus;
+  const changeFocus = (domain: AvatarDomain) => { setLocalFocus(domain); onFocus?.(domain); };
   const [expression, setExpression] = useState(0);
   const [reset, setReset] = useState(0);
   const [ready, setReady] = useState(false);
-  const state = characterScenes[scene];
-  useEffect(() => {
-    setExpression(scene === "research" || scene === "vision" ? 2 : scene === "motion" ? 1 : 0);
-  }, [scene]);
-  return (
-    <div className="avatar-stage" data-scene={scene} onPointerMove={(event) => {
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      const rect = event.currentTarget.getBoundingClientRect();
-      event.currentTarget.style.setProperty("--portrait-x", `${((event.clientX - rect.left) / rect.width - .5) * 9}px`);
-      event.currentTarget.style.setProperty("--portrait-y", `${((event.clientY - rect.top) / rect.height - .5) * 6}px`);
-    }} onPointerLeave={(event) => { event.currentTarget.style.setProperty("--portrait-x", "0px"); event.currentTarget.style.setProperty("--portrait-y", "0px"); }}>
-      <div className="avatar-orbit orbit-one" aria-hidden="true" />
-      <div className="avatar-orbit orbit-two" aria-hidden="true" />
-      <span className="stage-cross cross-one" aria-hidden="true">+</span>
-      <span className="stage-cross cross-two" aria-hidden="true">+</span>
-      <div className="avatar-back-word" aria-hidden="true">SK.</div>
-      <span className="stage-coordinate" aria-hidden="true">PERSONAL SPACE / 01</span>
-      <div className="avatar-canvas-wrap">
-        {/* Poster is also the usable non-WebGL fallback, not an indefinite spinner. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="avatar-poster" src={portrait} alt="上坤的动漫虚拟形象：辫发、耳饰、灰色 Polo 衫，拿着苹果和手机" />
-        <PortfolioScene scene={scene} expression={expression} reset={reset} onReady={setReady} />
-      </div>
-      <div className="avatar-sticker sticker-top"><span className="live-dot" />{state.label}<MoveUpRight size={13} /></div>
-      <div className="avatar-sticker sticker-bottom" aria-hidden="true">{state.word}</div>
-      <div className="avatar-speech" aria-live="polite"><span>SK SAYS</span><p>{state.caption}</p></div>
-      <div className="avatar-toolbar">
-        <span className="avatar-hint">{ready ? "眼神跟随你 · 拖动转一转" : "形象预览"}</span>
-        <div>
-          <button type="button" disabled={!ready} onClick={() => setExpression((value) => (value + 1) % expressions.length)} aria-label={`切换角色表情，当前${expressions[expression]}`} title={ready ? "换个表情" : "三维角色加载后可切换表情"}><Smile size={17} /><span>{expressions[expression]}</span></button>
-          <button type="button" disabled={!ready} onClick={() => { setReset((value) => value + 1); setExpression(0); }} aria-label="重置角色视角" title="重置视角"><RotateCcw size={17} /></button>
-        </div>
-      </div>
-      {chapter && <p className="avatar-chapter">正在探索 <span>{chapter}</span></p>}
+  const [actions, setActions] = useState<{ kind: AvatarAction; nonce: number }[]>([]);
+  const actionSequence = useRef(0);
+  const [announcement, setAnnouncement] = useState("");
+  const act = (kind: AvatarAction) => {
+    if (kind === "bread") setExpression(0);
+    const nonce = ++actionSequence.current;
+    setActions(value => [...value.slice(-31), { kind, nonce }]);
+    setAnnouncement(kind === "apple" ? "接住！苹果抛起来了。" : kind === "bread" ? "面包咬一口，再点可以换回整片。" : "咔嚓，闪光灯亮了。" );
+  };
+  return <div className="avatar-world" data-testid="avatar-world" data-ready={ready} data-focus={focus}>
+    <div className="world-disc" aria-hidden="true" /><span className="world-doodle doodle-a" aria-hidden="true">✳</span><span className="world-doodle doodle-b" aria-hidden="true">↗</span>
+    <div className="world-canvas-wrap">
+      {/* A small, immediate fallback remains available when WebGL is unavailable. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img className="world-poster" data-testid="avatar-poster" src="/images/avatar-v4/poster.webp" alt="上坤的虚拟形象，辫发、灰色 Polo，脸上贴着身份标签，拿着苹果、面包和手机" fetchPriority="high" />
+      <PortfolioScene focus={focus} onFocus={changeFocus} expression={expression} actions={actions} onAction={act} reset={reset} onReady={setReady} />
     </div>
-  );
+    <div className="world-caption"><span className="world-live-dot" />{ready ? "眼神跟随你 · 标签与道具都能点" : "嘿，很高兴认识你。"}</div>
+    <div className="world-actions" role="group" aria-label="角色互动">
+      <button type="button" disabled={!ready} onClick={() => act("apple")} aria-label="抛一下苹果" title="抛一下苹果"><Apple size={17} /><span>抛苹果</span></button>
+      <button type="button" disabled={!ready} onClick={() => act("bread")} aria-label="咬一口面包" title="咬一口面包"><Cookie size={17} /><span>咬一口</span></button>
+      <button type="button" disabled={!ready} onClick={() => act("flash")} aria-label="手机闪光灯" title="手机闪光灯"><Camera size={17} /><span>闪一下</span></button>
+      <button type="button" disabled={!ready} onClick={() => setExpression(value => (value + 1) % avatarExpressions.length)} aria-label="换个搞怪表情" title={`当前${expressionNames[expression]}，点此换表情`}><Smile size={17} /><span>{expressionNames[expression]}</span></button>
+      <button type="button" onClick={() => { setReset(value => value + 1); setExpression(0); changeFocus("all"); setAnnouncement("已回到初始视角。"); }} aria-label="重置角色视角" title="回到全貌"><RotateCcw size={17} /></button>
+    </div>
+    <p className="sr-only" aria-live="polite">{announcement}</p>
+  </div>;
 }

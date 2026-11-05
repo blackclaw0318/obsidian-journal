@@ -1,0 +1,16 @@
+{
+  "name": "avatar-v4-build-tools",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Build-only, lossless Meshopt packing for the articulated avatar.",
+  "scripts": {
+    "optimize": "node meshopt-lossless.mjs"
+  },
+  "dependencies": {
+    "meshoptimizer": "1.1.1"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
