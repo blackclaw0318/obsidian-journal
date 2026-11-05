@@ -33,7 +33,29 @@ test.describe("个人作品集首页", () => {
     await expect(workLink).toHaveAttribute("href", /^(?:\/)?#work$/);
     await expect(page.locator('nav a[href="/posts"]').first()).toBeVisible();
     await expect(page.locator('nav a[href="/novels"]').first()).toBeVisible();
+    await expect(page.locator('nav a[href="/videos"]').first()).toBeVisible();
+    await expect(page.locator('nav a[href="/resources"]').first()).toBeVisible();
     await expect(page.locator('nav a[href="/admin"]').first()).toBeVisible();
+  });
+
+  test("模型延迟下载时首页介绍和内容导航已可使用", async ({ page }) => {
+    let releaseModel!: () => void;
+    const pendingModel = new Promise<void>(resolve => { releaseModel = resolve; });
+    await page.route(/\/models\/[^/?]+\.glb(?:\?.*)?$/, async route => {
+      await pendingModel;
+      await route.continue().catch(() => { /* Navigation may cancel the deliberately delayed asset. */ });
+    });
+    try {
+      await page.goto("/", { waitUntil: "domcontentloaded" });
+      await expect(page.getByRole("heading", { level: 1 }).first()).toHaveText("我有很多面，来认识一下。");
+      await expect(page.getByTestId("avatar-poster")).toBeVisible();
+      await expect(page.getByRole("button", { name: "探索程序员", exact: true })).toBeEnabled();
+      await page.locator('nav a[href="/posts"]').first().click();
+      await expect(page).toHaveURL(/\/posts$/);
+      await expect(page.getByRole("heading", { name: /全部文章/ })).toBeVisible();
+    } finally {
+      releaseModel();
+    }
   });
 
   test("公开内页在手机亮色与深色模式下可读且无横向溢出", async ({ page }, testInfo) => {

@@ -2,7 +2,24 @@ import { test, expect, type Locator } from "@playwright/test";
 import { portfolioProjects, projectCategories } from "../../lib/portfolio";
 
 async function sceneNumber(scene: Locator, attribute: string) {
-  return Number(await scene.getAttribute(attribute));
+  return Number((await scene.getAttribute(attribute)) ?? "NaN");
+}
+
+const cameraAttributes = ["data-camera-x", "data-camera-y", "data-camera-z"] as const;
+const cameraPosition = (scene: Locator) => Promise.all(cameraAttributes.map(attribute => sceneNumber(scene, attribute)));
+const cameraDistance = (a: number[], b: number[]) => Math.hypot(...a.map((value, index) => value - b[index]));
+
+async function stableCameraPosition(scene: Locator) {
+  for (const attribute of cameraAttributes) await expect(scene).toHaveAttribute(attribute, /-?\d/);
+  let previous = await cameraPosition(scene);
+  let settled = 0;
+  await expect.poll(async () => {
+    const current = await cameraPosition(scene);
+    settled = cameraDistance(current, previous) < .006 ? settled + 1 : 0;
+    previous = current;
+    return settled;
+  }, { intervals: [150], timeout: 10000 }).toBeGreaterThanOrEqual(3);
+  return previous;
 }
 
 test.describe("工作项目与多面虚拟角色", () => {
@@ -81,7 +98,7 @@ test.describe("工作项目与多面虚拟角色", () => {
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("证件图像质量检测");
   });
 
-  test("六个脸部标签可选择领域，三维镜头随选择改变", async ({ page }, testInfo) => {
+  test("六个领域入口滚动到对应故事，三维镜头随选择改变", async ({ page }, testInfo) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/");
     const world = page.getByTestId("avatar-world");
@@ -90,24 +107,67 @@ test.describe("工作项目与多面虚拟角色", () => {
     await expect(scene).toHaveClass(/scene-ready/, { timeout: 20000 });
     await expect(scene).toHaveAttribute("data-focus", "all");
     await world.screenshot({ path: testInfo.outputPath("avatar-main-desktop.png") });
-    const cameraAttributes = ["data-camera-x", "data-camera-y", "data-camera-z"];
     for (const attribute of cameraAttributes) await expect(scene).toHaveAttribute(attribute, /-?\d/);
     const initialCamera = await Promise.all(cameraAttributes.map((attribute) => sceneNumber(scene, attribute)));
     await page.getByRole("button", { name: "探索程序员", exact: true }).click();
     await expect(scene).toHaveAttribute("data-focus", "coder");
+    await expect(page.locator("#domain-coder")).toBeInViewport();
     await expect.poll(async () => {
       const camera = await Promise.all(cameraAttributes.map((attribute) => sceneNumber(scene, attribute)));
       return Math.hypot(...camera.map((value, index) => value - initialCamera[index]));
     }).toBeGreaterThan(.05);
-    for (const [label, focus] of [
-      ["音乐人", "musician"], ["视频创作者", "video"], ["基督徒", "christian"],
-      ["梦想家", "dreamer"], ["工作经历", "work"]
+    for (const [label, focus, destination] of [
+      ["音乐人", "musician", "#domain-musician"], ["视频创作者", "video", "#domain-video"], ["基督徒", "christian", "#domain-christian"],
+      ["梦想家", "dreamer", "#domain-dreamer"], ["工作经历", "work", "#work"]
     ]) {
       await page.getByRole("button", { name: `探索${label}`, exact: true }).click();
       await expect(scene).toHaveAttribute("data-focus", focus);
+      await expect(page.locator(destination)).toBeInViewport();
     }
-    await page.getByTestId("domain-story").getByRole("link").click();
     await expect(page.locator("#work").getByRole("heading").first()).toBeInViewport();
+  });
+
+  test("角色占据满视口，实际模型投影足够大", async ({ page }, testInfo) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+    const world = page.getByTestId("avatar-world");
+    const scene = page.getByTestId("avatar-scene");
+    await expect(world).toHaveCount(1);
+    await expect(scene.locator("canvas")).toHaveCount(1);
+    await expect(scene).toHaveClass(/scene-ready/, { timeout: 30000 });
+    const box = await world.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.width).toBeGreaterThanOrEqual(1440 * .98);
+    expect(box!.height).toBeGreaterThanOrEqual(900 * .95);
+    expect(Math.abs(box!.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(box!.y)).toBeLessThanOrEqual(1);
+    await expect.poll(() => sceneNumber(scene, "data-model-viewport-height")).toBeGreaterThanOrEqual(.7);
+    await expect.poll(() => sceneNumber(scene, "data-model-screen-height")).toBeGreaterThanOrEqual(900 * .7);
+    await page.screenshot({ path: testInfo.outputPath("cinematic-desktop-opening.png"), fullPage: false });
+  });
+
+  test("只滚动就改变真实相机，并能反向回到首镜头", async ({ page }, testInfo) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.goto("/");
+    const scene = page.getByTestId("avatar-scene");
+    await expect(scene).toHaveClass(/scene-ready/, { timeout: 30000 });
+    await expect(scene).toHaveAttribute("data-shot", /\S+/);
+    await expect(page.locator("[data-cinema-frame]")).not.toHaveCount(0);
+    const viewport = page.viewportSize()!;
+    await page.mouse.move(viewport.width * .96, viewport.height * .9);
+    const opening = await stableCameraPosition(scene);
+    const openingShot = await scene.getAttribute("data-shot");
+    const openingProgress = await sceneNumber(scene, "data-scroll-progress");
+    await page.mouse.wheel(0, Math.round(viewport.height * 1.1));
+    await expect.poll(() => sceneNumber(scene, "data-scroll-progress"), { timeout: 10000 }).toBeGreaterThan(openingProgress + .02);
+    await expect(scene).not.toHaveAttribute("data-shot", openingShot!);
+    const next = await stableCameraPosition(scene);
+    expect(cameraDistance(next, opening)).toBeGreaterThan(.1);
+    await page.screenshot({ path: testInfo.outputPath("cinematic-after-scroll.png"), fullPage: false });
+    await page.mouse.wheel(0, -Math.round(viewport.height * 3));
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(5);
+    await expect(scene).toHaveAttribute("data-shot", openingShot!);
+    await expect.poll(async () => cameraDistance(await cameraPosition(scene), opening), { timeout: 10000 }).toBeLessThan(.05);
   });
 
   test("道具与搞怪表情可以通过可访问按钮触发", async ({ page }) => {
@@ -174,7 +234,6 @@ test.describe("工作项目与多面虚拟角色", () => {
     await expect(scene).toHaveAttribute("data-focus", "coder");
     await page.getByRole("button", { name: "探索工作经历", exact: true }).click();
     await expect(scene).toHaveAttribute("data-focus", "work");
-    await page.getByTestId("domain-story").getByRole("link").click();
     await expect(page.locator("#work").getByRole("heading").first()).toBeInViewport();
   });
 
@@ -185,10 +244,14 @@ test.describe("工作项目与多面虚拟角色", () => {
     await expect(world).toBeVisible();
     await expect(page.getByTestId("avatar-scene")).toHaveCount(1);
     await expect(page.getByTestId("avatar-scene")).toHaveClass(/scene-ready/, { timeout: 20000 });
+    const box = await world.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.width).toBeGreaterThanOrEqual(390 * .98);
+    expect(box!.height).toBeGreaterThanOrEqual(844 * .95);
+    await expect.poll(() => sceneNumber(page.getByTestId("avatar-scene"), "data-model-viewport-height")).toBeGreaterThanOrEqual(.7);
     await world.scrollIntoViewIfNeeded();
     await page.screenshot({ path: testInfo.outputPath("avatar-mobile.png"), fullPage: false });
     await page.getByRole("button", { name: "探索工作经历", exact: true }).click();
-    await page.getByTestId("domain-story").getByRole("link").click();
     await expect(page.locator("#work").getByRole("heading").first()).toBeInViewport();
     for (const project of portfolioProjects) {
       const chapter = page.locator(`[data-project="${project.slug}"]`);
@@ -233,6 +296,7 @@ test.describe("工作项目与多面虚拟角色", () => {
   });
 
   test("无 WebGL 时展示静态形象，仍可阅读与打开项目", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript(() => {
       const original = HTMLCanvasElement.prototype.getContext;
       HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement, type: string, ...args: unknown[]) {
@@ -254,17 +318,32 @@ test.describe("工作项目与多面虚拟角色", () => {
     await world.getByRole("button", { name: "重置角色视角", exact: true }).click();
     await expect(page.getByTestId("avatar-scene")).toHaveAttribute("data-focus", "all");
     await page.getByRole("button", { name: "探索工作经历", exact: true }).click();
-    await page.getByTestId("domain-story").getByRole("link").click();
     await expect(page.locator("#work").getByRole("heading").first()).toBeInViewport();
     await expect(page.locator("article[data-project]")).toHaveCount(4);
     await page.locator('[data-project="delivery-standards"] a[href="/work/delivery-standards"]').last().click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("AI 交付规范与检查工作流");
   });
 
+  test("模型下载失败时手机仍可通过领域入口阅读工作项目", async ({ page }, testInfo) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.route(/\/models\/[^/?]+\.glb(?:\?.*)?$/, route => route.abort("failed"));
+    await page.goto("/");
+    const world = page.getByTestId("avatar-world");
+    await expect(world).toHaveAttribute("data-ready", "false");
+    await expect(page.getByTestId("avatar-poster")).toBeVisible();
+    await expect.poll(() => page.getByTestId("avatar-poster").evaluate(element => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    await expect(world.getByRole("button", { name: "抛一下苹果", exact: true })).toBeDisabled();
+    await page.getByRole("button", { name: "探索工作经历", exact: true }).click();
+    await expect(page.locator("#work").getByRole("heading").first()).toBeInViewport();
+    await expect(page.locator("article[data-project]")).toHaveCount(4);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(1);
+    await page.screenshot({ path: testInfo.outputPath("cinematic-mobile-model-failure.png"), fullPage: false });
+  });
+
   test("模型加载中丢失 WebGL 时保留备用图，恢复后重新显示角色", async ({ page }) => {
     let releaseModel!: () => void;
     const pendingModel = new Promise<void>((resolve) => { releaseModel = resolve; });
-    await page.route("**/models/avatar-v4.glb", async (route) => { await pendingModel; await route.continue(); });
+    await page.route(/\/models\/[^/?]+\.glb(?:\?.*)?$/, async (route) => { await pendingModel; await route.continue(); });
     await page.goto("/");
     const scene = page.getByTestId("avatar-scene");
     await expect(scene.locator("canvas")).toBeAttached();

@@ -3,12 +3,12 @@
 import dynamic from "next/dynamic";
 import { useRef, useState } from "react";
 import { Apple, Camera, Cookie, RotateCcw, Smile } from "lucide-react";
-import { avatarExpressions, type AvatarAction, type AvatarDomain } from "@/lib/avatar-world";
+import { avatarAsset, avatarExpressions, type AvatarAction, type AvatarDomain, type AvatarScrollSource } from "@/lib/avatar-world";
 
 const PortfolioScene = dynamic(() => import("./PortfolioScene"), { ssr: false });
 const expressionNames = ["自然", "搞怪", "哇哦", "大笑"];
 
-export function AvatarStage({ focus: controlledFocus, onFocus }: { focus?: AvatarDomain; onFocus?: (domain: AvatarDomain) => void }) {
+export function AvatarStage({ focus: controlledFocus, onFocus, cinematic = false, scrollSource }: { focus?: AvatarDomain; onFocus?: (domain: AvatarDomain) => void; cinematic?: boolean; scrollSource?: AvatarScrollSource }) {
   const [localFocus, setLocalFocus] = useState<AvatarDomain>("all");
   const focus = controlledFocus ?? localFocus;
   const changeFocus = (domain: AvatarDomain) => { setLocalFocus(domain); onFocus?.(domain); };
@@ -24,13 +24,12 @@ export function AvatarStage({ focus: controlledFocus, onFocus }: { focus?: Avata
     setActions(value => [...value.slice(-31), { kind, nonce }]);
     setAnnouncement(kind === "apple" ? "接住！苹果抛起来了。" : kind === "bread" ? "面包咬一口，再点可以换回整片。" : "咔嚓，闪光灯亮了。" );
   };
-  return <div className="avatar-world" data-testid="avatar-world" data-ready={ready} data-focus={focus}>
-    <div className="world-disc" aria-hidden="true" /><span className="world-doodle doodle-a" aria-hidden="true">✳</span><span className="world-doodle doodle-b" aria-hidden="true">↗</span>
+  return <div className={`avatar-world${cinematic ? " cinema-stage" : ""}`} data-testid="avatar-world" data-ready={ready} data-focus={focus}>
     <div className="world-canvas-wrap">
       {/* A small, immediate fallback remains available when WebGL is unavailable. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className="world-poster" data-testid="avatar-poster" src="/images/avatar-v4/poster.webp" alt="上坤的虚拟形象，辫发、灰色 Polo，脸上贴着身份标签，拿着苹果、面包和手机" fetchPriority="high" />
-      <PortfolioScene focus={focus} onFocus={changeFocus} expression={expression} actions={actions} onAction={act} reset={reset} onReady={setReady} />
+      <img className="world-poster" data-testid="avatar-poster" src={avatarAsset.poster} alt="上坤的虚拟形象，脸上贴着身份标签，拿着苹果、面包和手机" fetchPriority="high" />
+      <PortfolioScene focus={focus} onFocus={changeFocus} cinematic={cinematic} scrollSource={scrollSource} expression={expression} actions={actions} onAction={act} reset={reset} onReady={setReady} />
     </div>
     <div className="world-caption"><span className="world-live-dot" />{ready ? "眼神跟随你 · 标签与道具都能点" : "嘿，很高兴认识你。"}</div>
     <div className="world-actions" role="group" aria-label="角色互动">

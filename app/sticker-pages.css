@@ -1,23 +1,23 @@
-/* Public reading rooms: the same paper, ink and cut-out accents as the home.
+/* Public reading rooms: warm paper and muted sage echo the cinematic home.
    Scope every rule to these pages so the editor, home and resume keep their own layout. */
 .sticker-page {
-  --sticker-paper: #faf7ee;
-  --sticker-ink: #252320;
-  --sticker-muted: #706d66;
-  --sticker-lime: #d7f34b;
-  --sticker-coral: #ff7662;
-  --sticker-label-ink: #252320;
-  --sticker-rule: #c8c4b9;
+  --sticker-paper: #f4f3e9;
+  --sticker-ink: #2d3b34;
+  --sticker-muted: #66746a;
+  --sticker-lime: #d7e3b3;
+  --sticker-coral: #b36e56;
+  --sticker-label-ink: #2d3b34;
+  --sticker-rule: #c0c9bc;
   position: relative;
   padding-top: clamp(40px, 6vw, 80px);
   padding-bottom: clamp(64px, 9vw, 120px);
   color: var(--sticker-ink);
 }
 .dark .sticker-page {
-  --sticker-paper: #252520;
-  --sticker-ink: #f7f4e9;
-  --sticker-muted: #b5b1a6;
-  --sticker-rule: #656358;
+  --sticker-paper: #202c27;
+  --sticker-ink: #f3f1e4;
+  --sticker-muted: #b9c5b8;
+  --sticker-rule: #596b5d;
 }
 .sticker-index { max-width: 1180px; }
 .sticker-reading { max-width: 900px; }
@@ -258,3 +258,13 @@
 @media (prefers-reduced-motion: reduce) {
   .sticker-page *, .sticker-page *::before, .sticker-page *::after { transition: none; }
 }
+
+/* The cinematic homepage keeps its own lighting; reading pages use a quiet,
+   untextured surface so long text and small mobile controls stay legible. */
+.sticker-page-header { border-bottom-width: 1px; }
+.sticker-page-header h1, .sticker-page-title { letter-spacing: -.045em; font-weight: 750; }
+.sticker-page-header::before, .sticker-novels::before { box-shadow: 2px 2px 0 var(--sticker-label-ink); }
+.sticker-page .sticker-entry { border-bottom-width: 1px; }
+.sticker-page .sticker-entry::before { color: var(--sticker-muted); }
+.sticker-book-list .sticker-book { border-left-width: 3px; border-bottom-width: 1px; }
+.sticker-reading .prose a { text-decoration-color: var(--sticker-coral); }

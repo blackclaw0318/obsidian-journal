@@ -11,6 +11,7 @@ import "./globals.css";
 import "./portfolio.css";
 import "./sticker-pages.css";
 import "./avatar-world.css";
+import "./cinema-shell.css";
 import { siteConfigRepo } from "../lib/repo";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";

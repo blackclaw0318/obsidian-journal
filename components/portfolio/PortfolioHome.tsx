@@ -1,65 +1,98 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useState } from "react";
-import { ArrowDown, ArrowUpRight, Code2, FileText, Github, ScanEye, Shapes } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
+import { useLenis } from "lenis/react";
+import { ArrowDown, ArrowUpRight, FileText, Github } from "lucide-react";
 import { AvatarStage } from "./AvatarStage";
+import { useAvatarStory } from "./useAvatarStory";
 import { portfolioProjects, projectCategories, legacyProjectSlugs, type ProjectCategory } from "@/lib/portfolio";
-import { avatarDomains, type AvatarDomain } from "@/lib/avatar-world";
+import { avatarDomains, initialAvatarScrollPose, type AvatarDomain, type AvatarShot } from "@/lib/avatar-world";
 
 interface Article { slug: string; title: string; category: string; date: string; }
+const projectShots: AvatarShot[] = ["delivery", "videoWork", "document", "vision"];
 
 export function PortfolioHome({ articles }: { articles: Article[] }) {
+  const root = useRef<HTMLDivElement>(null);
+  const scrollSource = useRef({ ...initialAvatarScrollPose });
+  const lenis = useLenis();
   const [filter, setFilter] = useState<"all" | ProjectCategory>("all");
   const [focus, setFocus] = useState<AvatarDomain>("all");
-  const selectDomain = useCallback((domain: AvatarDomain) => setFocus(domain), []);
-  const domain = avatarDomains.find(item => item.id === focus);
+  const [chapter, setChapter] = useState(0);
+  const trackChapter = useCallback((domain: AvatarDomain, index: number) => { setFocus(domain); setChapter(index); }, []);
+  useAvatarStory(root, scrollSource, trackChapter, filter);
+  const selectDomain = useCallback((domain: AvatarDomain) => {
+    setFocus(domain);
+    const target = document.getElementById(domain === "all" ? "explore" : domain === "work" ? "work-intro" : `domain-${domain}`);
+    if (!target) return;
+    const top = window.scrollY + target.getBoundingClientRect().top;
+    const destination = Math.max(0, top - Math.max(0, (window.innerHeight - target.offsetHeight) / 2));
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (lenis) lenis.scrollTo(destination, { immediate: reduced, duration: .95 });
+    else window.scrollTo({ top: destination, behavior: reduced ? "instant" : "smooth" });
+  }, [lenis]);
   const projects = portfolioProjects.filter(project => filter === "all" || project.category === filter);
-  return <div className="portfolio-page sticker-world-page">
-    <div className="world-topline"><span>SHANGKUN’S LITTLE UNIVERSE</span><span>一个人，当然不止一个标签 <span aria-hidden="true">↗</span></span></div>
-    <section className="world-hero" id="explore" aria-labelledby="intro-heading">
-      <div className="world-hero-copy">
-        <p className="eyebrow"><span className="tiny-square" />HEY, I’M SHANGKUN.</p>
-        <h1 id="intro-heading">我有很多面，<br /><span>来认识一下。</span></h1>
-        <p className="world-intro">认真写代码，也认真对世界好奇。<br />选一张贴纸，换个角度认识我。</p>
-        <div className="domain-picker" role="group" aria-label="探索我的不同领域">
-          {avatarDomains.map((item, index) => <button key={item.id} type="button" className={`domain-chip domain-${item.id}`} aria-label={`探索${item.label}`} aria-pressed={focus === item.id} onClick={() => selectDomain(item.id)}><span>{String(index + 1).padStart(2, "0")}</span>{item.word}<ArrowUpRight size={13} /></button>)}
+  return <div ref={root} className="portfolio-page cinema-home" data-chapter={chapter}>
+    <AvatarStage cinematic scrollSource={scrollSource} focus={focus} onFocus={selectDomain} />
+    <div className="cinema-grain" aria-hidden="true" />
+    <nav className="cinema-domains" aria-label="探索我的不同领域">
+      {avatarDomains.map((item, index) => <button key={item.id} type="button" aria-label={`探索${item.label}`} aria-pressed={focus === item.id} onClick={() => selectDomain(item.id)}><span className="cinema-domain-number">0{index + 1}</span><span className="cinema-domain-word">{item.word}</span><span className="cinema-domain-label">{item.label}</span></button>)}
+    </nav>
+    <div className="cinema-scroll-story">
+      <section id="explore" className="cinema-frame cinema-intro" data-cinema-frame data-shot="portrait" aria-labelledby="intro-heading">
+        <div className="cinema-intro-copy">
+          <p className="cinema-eyebrow">HEY, I’M SHANGKUN.</p>
+          <h1 id="intro-heading">我有很多面，来认识一下。</h1>
+          <p>认真写代码，也认真对世界好奇。</p>
+          <Link href="#domain-coder" className="cinema-scroll-invitation">往下滚动，换个角度认识我<ArrowDown size={15} /></Link>
         </div>
-        <div className={`domain-story${domain ? " is-selected" : ""}`} aria-live="polite" data-testid="domain-story">
-          <p className="domain-story-kicker">{domain ? `${domain.word} / ${domain.label}` : "PICK A STICKER. MEET ANOTHER SIDE."}</p>
-          <h2>{domain?.title ?? "标签只是入口，故事在后面。"}</h2>
-          <p>{domain?.description ?? "脸上的贴纸可以点，手里的道具也有小机关。你负责好奇，我负责接住。"}</p>
-          {domain ? <Link className="text-link" href={domain.href}>{domain.link}<ArrowUpRight size={16} /></Link> : <Link className="text-link" href="#work">先看看工作经历<ArrowDown size={16} /></Link>}
+        <span className="cinema-edition" aria-hidden="true">A PORTRAIT IN MANY PARTS / 2026</span>
+      </section>
+      <section id="domain-coder" className="cinema-frame" data-cinema-frame data-shot="coder" aria-labelledby="coder-title">
+        <div className="cinema-story-panel">
+          <p className="cinema-eyebrow">01 / CODER</p><h2 id="coder-title">用代码，<br />把想法变成现实。</h2>
+          <p>计算机视觉、多模态评测、AI 工程。关心一个方法是否有效，也关心它能不能真正用起来。</p>
+          <p className="cinema-small-note">从数据准备与实验评测，到服务开发和交付，把问题一步步做扎实。</p>
+          <Link href="#work" className="cinema-link">看看我做过的项目<ArrowDown size={16} /></Link>
         </div>
-      </div>
-      <AvatarStage focus={focus} onFocus={selectDomain} />
-      <div className="world-hero-footer"><span>NOT JUST ONE LABEL.</span><Link href="#work">继续往下，进入工作现场<ArrowDown size={16} /></Link><span aria-hidden="true">SCROLL TO EXPLORE</span></div>
-    </section>
-    <section id="work" className="work-overview" aria-labelledby="work-title">
-      <span id="experience" className="hash-alias" aria-hidden="true" />
-      <div className="section-kicker"><span>01 / SELECTED WORK</span><Link href="/resume">简历视图<FileText size={14} /></Link></div>
-      <div className="work-heading"><h2 id="work-title">工作经历<span className="work-heading-star" aria-hidden="true">✳</span></h2><p>从问题出发，把方法做成能用的东西。<br />四个重点项目，看看我在其中做了什么。</p></div>
-      <div className="project-filters" role="group" aria-label="筛选工作项目">{projectCategories.map(item => <button key={item.id} type="button" aria-pressed={filter === item.id} onClick={() => setFilter(item.id)}>{item.label}</button>)}</div>
-      <div className="work-project-list">
+      </section>
+      <section id="work" className="cinema-work" aria-labelledby="work-title">
+        <span id="experience" className="hash-alias" aria-hidden="true" />
+        <div id="work-intro" className="cinema-frame cinema-work-intro" data-cinema-frame data-shot="work">
+          <div className="cinema-story-panel">
+            <p className="cinema-eyebrow">02 / SELECTED WORK</p><h2 id="work-title">工作经历</h2>
+            <p>从问题出发，把方法做成能用的东西。四个重点项目，看看我在其中做了什么。</p>
+            <Link className="cinema-link" href="/resume">简历视图<FileText size={15} /></Link>
+            <div className="project-filters" role="group" aria-label="筛选工作项目">{projectCategories.map(item => <button key={item.id} type="button" aria-pressed={filter === item.id} onClick={() => setFilter(item.id)}>{item.label}</button>)}</div>
+            <p className="cinema-small-note">以项目为线索，记录数据、实验与交付。持续更新中。</p>
+          </div>
+        </div>
         {projects.map(item => {
           const index = portfolioProjects.findIndex(candidate => candidate.slug === item.slug);
-          const Icon = item.category === "vision" ? ScanEye : item.category === "multimodal" ? Shapes : Code2;
-          return <article key={item.slug} id={item.slug} className="work-project" data-project={item.slug}>
+          return <article key={item.slug} id={item.slug} className="cinema-frame cinema-project" data-project={item.slug} data-cinema-frame data-shot={projectShots[index]}>
             {Object.entries(legacyProjectSlugs).filter(([, target]) => target === item.slug).map(([slug]) => <span key={slug} id={slug} className="hash-alias" aria-hidden="true" />)}
-            <div className="work-project-index"><span>{String(index + 1).padStart(2, "0")}</span><Icon size={25} strokeWidth={1.5} /></div>
-            <div className="work-project-main"><p className="work-project-meta">{item.subtitle}<span> / </span><time dateTime={item.date}>{item.period.replace(/-/g, ".")}</time></p><h3><Link href={`/work/${item.slug}`}>{item.title}</Link></h3><p className="work-project-summary">{item.summary}</p><div className="work-contribution"><span>我做了什么</span><p>{item.contributions[0]}</p></div><div className="chapter-tags">{item.tags.slice(0, 3).map(tag => <span key={tag}>{tag}</span>)}</div></div>
-            <Link className="work-project-open" href={`/work/${item.slug}`} aria-label={`展开${item.title}`}><span>查看项目</span><ArrowUpRight size={24} /></Link>
+            <div className="cinema-story-panel">
+              <p className="cinema-eyebrow">WORK / {String(index + 1).padStart(2, "0")}</p>
+              <p className="cinema-project-period"><time dateTime={item.date}>{item.period.replace(/-/g, ".")}</time><span>{item.subtitle}</span></p>
+              <h3><Link href={`/work/${item.slug}`}>{item.title}</Link></h3>
+              <p>{item.summary}</p>
+              <div className="cinema-contributions"><span>我做了什么</span><ul>{item.contributions.slice(0, 3).map(contribution => <li key={contribution}>{contribution}</li>)}</ul></div>
+              <p className="cinema-project-status">{item.status}</p>
+              <Link className="cinema-link" href={`/work/${item.slug}`} aria-label={`展开${item.title}`}>查看项目<ArrowUpRight size={16} /></Link>
+            </div>
           </article>;
         })}
-      </div>
-      <p className="work-source-note">以项目为线索，记录数据、实验与交付。持续更新中。</p>
-    </section>
-    <section className="world-journal" aria-labelledby="journal-title">
-      <div className="section-kicker"><span>02 / OUTSIDE THE BRACKETS</span><Link href="/posts">所有文章<ArrowUpRight size={15} /></Link></div>
-      <div className="world-section-heading"><h2 id="journal-title">不写代码的时候<span aria-hidden="true">↗</span></h2><p>把生活里的小事，也认真收好。</p></div>
-      <div className="journal-entries">{articles.length ? articles.map(article => <Link key={article.slug} href={`/posts/${article.slug}`}><span>{article.category === "tech" ? "技术笔记" : "生活随笔"}</span><h3>{article.title}</h3><time>{article.date}</time><ArrowUpRight size={21} /></Link>) : <Link href="/posts"><span>JOURNAL</span><h3>想法、探索与日常记录</h3><ArrowUpRight size={21} /></Link>}</div>
-      <div className="world-doorways"><Link href="/novels"><span>LET’S IMAGINE.</span><h3>故事还没完<span>↗</span></h3><p>小说与想象力</p></Link><Link href="/videos"><span>PRESS PLAY.</span><h3>换一种表达<span>↗</span></h3><p>视频与影像</p></Link><Link href="/resources"><span>GOOD STUFF.</span><h3>好东西共享<span>↗</span></h3><p>资源与收藏</p></Link></div>
-    </section>
-    <section className="world-outro"><span className="outro-label">STAY CURIOUS.</span><h2>很高兴，<br />我们在这里遇见。</h2><a className="button-ink" href="https://github.com/blackclaw0318" target="_blank" rel="noopener noreferrer"><Github size={18} />在 GitHub 找到我<ArrowUpRight size={17} /></a><div className="world-wordmark" aria-hidden="true">SHANGKUN<span>✳</span></div></section>
+      </section>
+      {avatarDomains.filter(item => item.id !== "coder" && item.id !== "work").map((item, index) => <section key={item.id} id={`domain-${item.id}`} className="cinema-frame cinema-personal" data-cinema-frame data-shot={item.id} aria-labelledby={`${item.id}-title`}>
+        <div className="cinema-story-panel"><p className="cinema-eyebrow">0{index + 3} / {item.word}</p><h2 id={`${item.id}-title`}>{item.title}</h2><p>{item.description}</p><Link className="cinema-link" href={item.href}>{item.link}<ArrowUpRight size={16} /></Link></div>
+      </section>)}
+      <section className="cinema-frame cinema-farewell" data-cinema-frame data-shot="farewell" aria-labelledby="journal-title">
+        <div className="cinema-story-panel"><p className="cinema-eyebrow">STAY CURIOUS.</p><h2 id="journal-title">很高兴，<br />我们在这里遇见。</h2>
+          <div className="cinema-journal">{articles.length ? articles.map(article => <Link key={article.slug} href={`/posts/${article.slug}`}><span>{article.category === "tech" ? "技术笔记" : "生活随笔"}</span><h3>{article.title}</h3><ArrowUpRight size={15} /></Link>) : <Link href="/posts">想法、探索与日常记录<ArrowUpRight size={15} /></Link>}</div>
+          <div className="cinema-doorways"><Link href="/posts">文章</Link><Link href="/novels">小说</Link><Link href="/videos">视频</Link><Link href="/resources">资源与收藏</Link></div>
+          <a className="cinema-link" href="https://github.com/blackclaw0318" target="_blank" rel="noopener noreferrer"><Github size={16} />在 GitHub 找到我<ArrowUpRight size={15} /></a>
+        </div>
+      </section>
+    </div>
   </div>;
 }

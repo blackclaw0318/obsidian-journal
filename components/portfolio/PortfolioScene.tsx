@@ -2,13 +2,14 @@
 
 import { useEffect, useRef } from "react";
 import type * as THREE from "three";
-import { avatarDomains, avatarExpressions, type AvatarAction, type AvatarDomain } from "@/lib/avatar-world";
+import { avatarAsset, avatarCameraShots, avatarDomains, avatarExpressions, type AvatarAction, type AvatarDomain, type AvatarScrollSource } from "@/lib/avatar-world";
 
 interface SceneProps {
   focus: AvatarDomain; onFocus: (domain: AvatarDomain) => void;
   expression: number; reset: number;
   actions: { kind: AvatarAction; nonce: number }[]; onAction: (kind: AvatarAction) => void;
   onReady: (ready: boolean) => void;
+  cinematic?: boolean; scrollSource?: AvatarScrollSource;
 }
 
 export default function PortfolioScene(props: SceneProps) {
@@ -73,7 +74,7 @@ export default function PortfolioScene(props: SceneProps) {
         if (disposed || !host.clientWidth || !host.clientHeight) return;
         renderer.setSize(host.clientWidth, host.clientHeight); camera.aspect = host.clientWidth / host.clientHeight;
         const tan = Math.tan(T.MathUtils.degToRad(camera.fov / 2));
-        fitDistance = Math.max(modelHeight / 2 / tan, modelWidth / 2 / (tan * camera.aspect)) * 1.13;
+        fitDistance = state.current.cinematic ? modelHeight / 2 / tan : Math.max(modelHeight / 2 / tan, modelWidth / 2 / (tan * camera.aspect)) * 1.13;
         if (!model || !lastTime) { camera.position.set(0, 1.55, fitDistance); camera.lookAt(look); }
         camera.updateProjectionMatrix(); render();
       };
@@ -145,7 +146,7 @@ export default function PortfolioScene(props: SceneProps) {
         release(); renderer.dispose(); renderer.domElement.remove(); host.classList.remove("scene-ready");
       };
       resize();
-      new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load("/models/avatar-v4.glb", gltf => {
+      new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(avatarAsset.url, gltf => {
         collect(gltf.scene); if (disposed) { release(); return; }
         model = gltf.scene;
         const bounds = new T.Box3().setFromObject(model); const size = bounds.getSize(new T.Vector3()); const center = bounds.getCenter(new T.Vector3());
@@ -157,7 +158,7 @@ export default function PortfolioScene(props: SceneProps) {
         }
         model.traverse(node => { const mesh = node as THREE.Mesh; if (mesh.isMesh && mesh.morphTargetDictionary && mesh.morphTargetInfluences) morphs.push(mesh); });
         for (const name of ["BreadBitten", "Flash", "MouthOpen", "LidLeft", "LidRight", "WinkCreaseLeft", "WinkCreaseRight"]) if (nodes[name]) nodes[name].visible = false;
-        host.dataset.model = "avatar-v4";
+        host.dataset.model = avatarAsset.id;
         if (contextAvailable) { host.classList.add("scene-ready"); onReady(true); }
         resize();
       }, undefined, () => { if (!disposed) { host.classList.remove("scene-ready"); onReady(false); } });
@@ -179,14 +180,39 @@ export default function PortfolioScene(props: SceneProps) {
           if (action.kind === "flash") flashStart = time;
         }
         const domain = avatarDomains.find(item => item.id === current.focus);
-        wantedLook.set(0, 1.55, 0); let zoom = 1; let angle = pointer.yaw;
-        if (domain) {
+        wantedLook.set(0, 1.55, 0); let zoom = 1; let angle = pointer.yaw; let elevation = .005;
+        const pose = current.scrollSource?.current;
+        if (current.cinematic && pose) {
+          const from = avatarCameraShots[pose.from]; const to = avatarCameraShots[pose.to];
+          const mix = pose.mix;
+          const target = (shot: typeof from) => {
+            const point = new T.Vector3(...shot.look as [number, number, number]);
+            const label = avatarDomains.find(item => item.id === shot.domain);
+            const anchor = label && nodes[label.node];
+            if (anchor) point.lerp(new T.Box3().setFromObject(anchor).getCenter(new T.Vector3()), shot.anchor);
+            return point;
+          };
+          wantedLook.copy(target(from)).lerp(target(to), mix);
+          zoom = T.MathUtils.lerp(from.zoom, to.zoom, mix);
+          angle += T.MathUtils.lerp(from.angle, to.angle, mix);
+          elevation = T.MathUtils.lerp(from.elevation, to.elevation, mix);
+          // On a narrow screen the portrait remains large, with space below the
+          // eyes for text. Fitting the complete model width would shrink it.
+          if (camera.aspect < .8) {
+            const portraitWeight = (pose.from === "portrait" ? 1 - mix : 0) + (pose.to === "portrait" ? mix : 0);
+            wantedLook.x *= .12; wantedLook.y -= .10; zoom *= T.MathUtils.lerp(1.10, 1, portraitWeight);
+          }
+          host.dataset.scrollProgress = pose.progress.toFixed(4);
+          host.dataset.shot = mix < .5 ? pose.from : pose.to;
+          host.dataset.storyIndex = String(pose.index);
+        } else if (domain) {
           const anchor = nodes[domain.node];
           if (anchor) { const center = new T.Box3().setFromObject(anchor).getCenter(new T.Vector3()); wantedLook.lerp(center, .54); }
           zoom = .82; angle += domain.angle;
         }
-        angle = T.MathUtils.clamp(angle, -.52, .52);
-        wantedCamera.set(Math.sin(angle) * fitDistance * zoom, wantedLook.y + .025, Math.cos(angle) * fitDistance * zoom);
+        angle = T.MathUtils.clamp(angle, -.72, .72);
+        const distance = fitDistance * zoom;
+        wantedCamera.set(wantedLook.x + Math.sin(angle) * distance, wantedLook.y + elevation * distance, wantedLook.z + Math.cos(angle) * distance);
         if (reduced.matches) { camera.position.copy(wantedCamera); look.copy(wantedLook); }
         else { camera.position.lerp(wantedCamera, ease * .65); look.lerp(wantedLook, ease * .65); }
         camera.lookAt(look);
@@ -249,6 +275,19 @@ export default function PortfolioScene(props: SceneProps) {
           host.dataset.gazeLeft = gaze("GazeLeft", "y").toFixed(4); host.dataset.gazeRight = gaze("GazeRight", "y").toFixed(4); host.dataset.viewYaw = pointer.yaw.toFixed(4);
           host.dataset.cameraX = camera.position.x.toFixed(4); host.dataset.cameraY = camera.position.y.toFixed(4); host.dataset.cameraZ = camera.position.z.toFixed(4);
           host.dataset.cameraTargetX = look.x.toFixed(4); host.dataset.cameraTargetY = look.y.toFixed(4); host.dataset.cameraTargetZ = look.z.toFixed(4); lastTelemetry = time;
+          // Measure the actual loaded model after projecting through the current
+          // Three camera; a viewport-sized canvas alone is not a large portrait.
+          character.updateMatrixWorld(true); camera.updateMatrixWorld(true);
+          const box = new T.Box3().setFromObject(character);
+          let minX = Infinity; let minY = Infinity; let maxX = -Infinity; let maxY = -Infinity;
+          for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) {
+            const point = new T.Vector3(x, y, z).project(camera);
+            minX = Math.min(minX, point.x); maxX = Math.max(maxX, point.x); minY = Math.min(minY, point.y); maxY = Math.max(maxY, point.y);
+          }
+          host.dataset.modelScreenWidth = ((maxX - minX) / 2 * host.clientWidth).toFixed(1);
+          host.dataset.modelScreenHeight = ((maxY - minY) / 2 * host.clientHeight).toFixed(1);
+          host.dataset.modelViewportWidth = (Math.max(0, Math.min(1, maxX) - Math.max(-1, minX)) / 2).toFixed(4);
+          host.dataset.modelViewportHeight = (Math.max(0, Math.min(1, maxY) - Math.max(-1, minY)) / 2).toFixed(4);
         }
         render();
       };

@@ -1,0 +1,77 @@
+/* A quiet reading surface and a transparent frame around the full-screen film. */
+body:has(.sticker-page, .project-detail, .resume-page) {
+  --color-bg: #f4f3e9;
+  --color-bg-muted: #e7ebdf;
+  --color-bg-card: #faf9f1;
+  --color-fg: #2d3b34;
+  --color-fg-muted: #66746a;
+  --color-border: #cbd3c4;
+  --color-accent: #50674e;
+  --world-lime: #d7e3b3;
+  --world-coral: #b36e56;
+}
+.dark body:has(.sticker-page, .project-detail, .resume-page) {
+  --color-bg: #202c27;
+  --color-bg-muted: #2c3b32;
+  --color-bg-card: #26352d;
+  --color-fg: #f3f1e4;
+  --color-fg-muted: #b9c5b8;
+  --color-border: #49614f;
+  --color-accent: #d7e3b3;
+}
+body:has(.cinema-home) {
+  --color-bg: #657963;
+  --color-fg: #fbf8eb;
+  --color-fg-muted: #e5e8db;
+  --color-border: #e8eadb40;
+  background: #657963;
+}
+body:has(.cinema-home) .site-header {
+  position: fixed;
+  inset: 0 0 auto;
+  border: 0;
+  background: linear-gradient(#283e3445, transparent);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+body:has(.cinema-home) .site-nav { max-width: none; }
+body:has(.cinema-home) .site-nav > ul > li > a { text-shadow: 0 1px 12px #233d3340; }
+body:has(.cinema-home) .site-monogram {
+  color: #f8f5e8;
+  background: transparent;
+  border-color: #f8f5e8aa;
+}
+body:has(.cinema-home) .site-monogram > span { background: #657963; }
+body:has(.cinema-home) .site-brand > span { color: #e5e8db; }
+body:has(.cinema-home) .site-header [role="dialog"] {
+  --color-bg: #f4f3e9;
+  --color-bg-muted: #e7ebdf;
+  --color-fg: #2d3b34;
+  --color-fg-muted: #66746a;
+  --color-border: #cbd3c4;
+  color: #2d3b34;
+  background: #f4f3e9;
+}
+body:has(.cinema-home) .site-footer {
+  position: relative;
+  z-index: 10;
+  background: #344c3f;
+  color: #e5e8db;
+  border-color: #e5e8db33;
+}
+body:has(.cinema-home) .site-footer .text-fg-muted { color: #e5e8db; }
+.project-detail .detail-hero .eyebrow { background: #d7e3b3; color: #2d3b34; }
+.project-detail .detail-hero h1 { font-weight: 700; }
+.resume-header { border-bottom-width: 1px; }
+@media (max-width: 767px) {
+  body:has(.cinema-home) .site-nav { min-height: 70px; padding: 12px 20px; }
+}
+@media print {
+  body:has(.resume-page), .dark body:has(.resume-page) {
+    --color-bg: #fff;
+    --color-fg: #111;
+    --color-fg-muted: #555;
+    --color-border: #ddd;
+    --color-bg-muted: #f3f3f3;
+  }
+}

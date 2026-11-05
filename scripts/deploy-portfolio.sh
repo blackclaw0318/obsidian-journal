@@ -100,6 +100,7 @@ for attempt in {1..25}; do
 done
 [[ $ready == 1 ]]
 grep -q '我有很多面' "$backup/candidate-home.html"
+grep -q 'cinema-home' "$backup/candidate-home.html"
 for path in /resume /work/document-quality /posts /novels /videos /resources /admin/login; do
   curl -fsS --max-time 20 "http://127.0.0.1:3098$path" -o /dev/null
 done
@@ -143,6 +144,7 @@ for attempt in {1..20}; do
 done
 [[ $ready == 1 ]]
 grep -q '我有很多面' "$backup/live-home.html"
+grep -q 'cinema-home' "$backup/live-home.html"
 systemctl is-active --quiet obsidian-dev
 trap - ERR
 echo "Deployed commit $commit"

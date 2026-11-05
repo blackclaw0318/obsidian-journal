@@ -17,7 +17,7 @@ export function Footer() {
   const copyrightHolder = config?.copyright_holder ?? "上坤";
 
   return (
-    <footer className="border-t border-border bg-bg-muted/50">
+    <footer className="site-footer border-t border-border bg-bg-muted/50">
       <div className="mx-auto max-w-5xl px-6 py-10 text-sm text-fg-muted">
         {/* License + 版权（居中） */}
         <p className="text-center text-xs">
