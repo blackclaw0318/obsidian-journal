@@ -1,0 +1,45 @@
+{
+  "version": 5,
+  "status": "contract_only_no_meshy_model_imported",
+  "coordinates": {"runtime_front": "+Z", "runtime_up": "+Y", "blender_front": "-Y", "blender_up": "+Z", "units": "meters", "camera_orbit_degrees": 30, "body_side_names": "Subject anatomical left/right, not viewer left/right", "axis_conversion": "Exactly once, Blender glTF export_yup=True: [x,y,z] -> [x,z,-y]"},
+  "normalization": {"reference_height_m": 3.1, "base_runtime_y": 0, "horizontal_center_x": 0, "depth_center_z": 0, "measure": "Actual primary imported bust bbox after explicit source orientation; apply one uniform scale to all assemblies", "camera_runtime": {"position": [0,1.55,6.6], "target": [0,1.55,0], "fov_degrees": 40, "fit": "Fit actual combined bbox including props/hands; never assume source dimensions"}},
+  "root": "AvatarV5Root",
+  "semantic_binding": "Prefer the v4 canonical object names. For an existing skin rig preserve hierarchy and expose runtimeBindings mapping semantic names to actual unique glTF bone/node names; the runtime must resolve these aliases.",
+  "required_nodes": ["Head", "Torso", "EyeLeft", "EyeRight", "GazeLeft", "GazeRight", "HandLeft", "HandRight", "Apple", "Phone", "BreadWhole", "BreadBitten", "Flash", "LabelCoder", "LabelMusician", "LabelVideo", "LabelChristian", "LabelDreamer", "LabelWork"],
+  "optional_nodes": ["TeethUpper", "TeethLower", "Tongue", "Jaw", "UpperLidLeft", "UpperLidRight", "LowerLidLeft", "LowerLidRight"],
+  "parents": {"EyeLeft": "Head", "EyeRight": "Head", "GazeLeft": "EyeLeft", "GazeRight": "EyeRight", "BreadWhole": "Head", "BreadBitten": "Head", "Flash": "Phone", "LabelCoder": "Head", "LabelMusician": "Head", "LabelVideo": "Head", "LabelChristian": "Head", "LabelDreamer": "Head", "LabelWork": "Head"},
+  "eyes": {
+    "geometry": "Each Gaze group contains a complete curved eyeball with iris/pupil appearance on the globe or co-spherical surfaces. The pivot is the actual eyeball center. No planar iris on top of painted face eyes.",
+    "yaw_radians": 0.15,
+    "pitch_radians": 0.10,
+    "closure": "Use actual eyelid skin bones or measured BlinkLeft/BlinkRight morphs. Do not reuse v4 scale-y cover patches.",
+    "tests": ["neutral", "yaw_plus_minus_0.15", "pitch_plus_minus_0.10", "combined_yaw_pitch_corners", "blink_0_0.5_1", "one_eye_wink", "side_views_30_degrees"]
+  },
+  "hands": {
+    "geometry": "Real downloaded Meshy hand geometry, five distinct anatomical fingers and a connected palm/wrist; no old procedural hand substitution.",
+    "left_action": "Natural grip -> release fingers -> apple flight -> catch -> close grip. Finger motion must come from weighted bones or actual blendshapes.",
+    "right_action": "Phone stays seated against thumb/fingers and palm; preserve visible natural finger lengths.",
+    "required_controls": ["LeftGrip"],
+    "grip_binding": "Map actual weighted bones for all five fingers, or a real hand morph affecting all five. Record grip, half-open, open and catch evidence.",
+    "optional_clips": ["Idle", "AppleReleaseCatch", "BreadBite", "PhoneFlash", "FaceSilly", "FaceGrin"]
+  },
+  "contacts": {
+    "apple": ["GripApple", "AppleGripOrigin"],
+    "phone": ["GripPhone", "PhoneGripOrigin"],
+    "bread": ["MouthBreadContact", "BreadCornerContact"],
+    "runtime_tolerance_m": 0.005,
+    "note": "Set these anchors on observed actual surfaces after import. Empty anchors without measurements are not evidence of contact."
+  },
+  "face": {
+    "required_controls": ["BlinkLeft", "BlinkRight", "JawOpen", "Smile", "TongueOut"],
+    "implementation": "Actual morphs or weighted facial bones; record object/bone/key/range and validation evidence. Names alone are insufficient.",
+    "geometry": "Teeth and tongue remain behind the real lip opening. Neutral mouth texture must not show through or above the open mouth.",
+    "labels": "Small thick paper decals or curved meshes with readable fitted text; no unexplained floating signs or baked-only interaction text."
+  },
+  "required_actions": {"AppleReleaseCatch": {"phases": ["held", "release", "flight", "catch", "held"], "implementation": "Existing clip or explicit runtime driver, with measured release/catch times and five-finger deformation; preserve world pose across detach/reattach"}, "BreadBite": {"phases": ["lip_contact", "bite", "whole_to_bitten", "held"], "implementation": "Actual lip/jaw movement and bread contact, not only visibility switching"}, "PhoneFlash": {"implementation": "Flash appears at actual phone LED; phone stays in natural grip"}, "FaceSilly": {"implementation": "Real open lips, tongue and independent wink"}, "FaceGrin": {"implementation": "Real smile/open lips and teeth behind lip rim"}, "BlinkLeft": {"implementation": "Independent flesh lid deformation at 0, 0.5, 1"}, "BlinkRight": {"implementation": "Independent flesh lid deformation at 0, 0.5, 1"}},
+  "implementation_status": "pending_real_meshy_download_and_rigging",
+  "initially_hidden": ["BreadBitten", "Flash"],
+  "label_texts": {"LabelCoder":"CODER","LabelMusician":"MUSICIAN","LabelVideo":"VIDEO CREATOR","LabelChristian":"CHRISTIAN","LabelDreamer":"DREAMER","LabelWork":"WORK"},
+  "initial_visibility_note": "glTF does not preserve Blender hide_render. Runtime must explicitly apply initial visibility; verify startup after load.",
+  "budget": {"target_transport_bytes": 3500000, "geometry_first": "Preserve face/hands/grips before simplification", "initial_meshopt": "Lossless only, preserve source bytes after decode", "texture_changes": "Explicit per-image plan after original PBR visual review; no global v4 material overrides"}
+}

@@ -1,0 +1,35 @@
+{
+  "version": 5,
+  "status": "awaiting_authorized_meshy_download_subscription_gate",
+  "source_state": {"downloaded": false, "imported": false, "ui_reported_components": 42, "ui_texture_operation": "N1_failed", "note": "UI report only; no model bytes or textures inspected. User is handling normal download account access."},
+  "reference": "Original user-approved portrait and Meshy generations; no v4 hand or accessory geometry",
+  "assets": [],
+  "normalization": {"reference_asset": "bust", "height_m": 3.1},
+  "asset_schema_example": {
+    "id": "hand_apple",
+    "source": "REPLACE_WITH_REAL_DOWNLOADED_GLB_PATH",
+    "provider": "Meshy",
+    "generation_id": "RECORD_FROM_DOWNLOAD_WHEN_AVAILABLE",
+    "download_provenance": null,
+    "sha256": null,
+    "role": "hand_and_apple_grip_assembly",
+    "import_transform": {
+      "rotate_euler_degrees": [0, 0, 0],
+      "uniform_scale": 1,
+      "translate": [0, 0, 0]
+    }
+  },
+  "parts": {},
+  "anchors": {},
+  "facial_controls": {},
+  "hand_controls": {},
+  "contact_pairs": [],
+  "action_bindings": {},
+  "qa_poses": {},
+  "review": {
+    "hands_five_fingers": "pending_real_asset",
+    "grips_and_mouth_contact": "pending_real_asset",
+    "eyes_are_true_rotating_globes": "pending_real_asset",
+    "side_view_quality": "pending_real_asset"
+  }
+}

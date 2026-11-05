@@ -11,9 +11,9 @@
 
 本轮前端工程证据（临时 v4 资产）：本机 `http://127.0.0.1:3099` 的 `home.spec.ts` 与 `portfolio.spec.ts` 共 36 项通过（1.9 分钟）。随后按实际预览反馈拉远首屏镜头、下移标题、放大正文与贡献文字，满视口模型投影、滚动相机往返、390px 手机阅读三项定向复测通过；最终类型检查与 lint 通过。截图保存在 `.local/qa-cinema/`，其中 `desktop-intro-1272-final.png`、`desktop-work-1272-final.png`、`mobile-intro-final.png`、`mobile-work-final.png` 是该轮调整后的实拍。以上只证明前端实现与回归；本清单的 Meshy 资产、最终近景美术及最终模型视觉验收仍保持待验。
 
-## 1. Meshy 高质量角色资产 — 待交付 / 待验
+## 1. Meshy 预览参考与 Blender 独立复刻 — 开发中 / 待验
 
-- [ ] 交付可定位的 Meshy 生成/导出结果及来源记录；记录版本、文件哈希、三角面/材质/贴图数量，不能把旧 TripoSR 模型改名后当成 Meshy 结果。
+- [ ] 依用户最新方案，参考 Meshy 可见多角度预览，在 Blender 制作独立可编辑模型；记录来源、文件哈希、三角面/材质/贴图数量，明确区分复刻、沿用部分和新建部分，不宣称 Meshy 文件导入成功。
 - [ ] 保留用户角色的辫发、耳饰、灰色 Polo、苹果、面包、手机及本人形象辨识点；只借鉴参考贴纸视觉，不借用参考人物。
 - [ ] 正面、左右三分之四、侧面及本次镜头会展示的后方具有可信体积；检查眼眶、眼距、嘴、发辫、耳饰、手指、道具接触与遮挡，避免穿面、贴图投射拉伸、漂浮或明显接缝。
 - [ ] 检查实际网页近景的脸部清晰度、材质、alpha、粗糙度与打光；文件尺寸或网格密度不是美术质量的替代证据。
@@ -82,6 +82,13 @@
 - 实际截图：`.local/qa-v5/cinematic-intro-local.png`、`.local/qa-cinema/desktop-work-1272-final.png`、`mobile-intro-final.png`、`mobile-work-final.png`。极近景仍暴露 v4 眼部边缘和手部的质量问题，**新模型美术未通过，不能标整项完成**。
 - 用户指定的 Meshy 浏览器中，原头像任务已尝试智能拓扑 15,000 面和 N1 2K 基础色。可查看一个 **42 分部件几何预览**，贴图任务显示失败，余额仍显示 500；未声称贴图或文件导出成功。
 - 当前账户标为 **FREE**。实际选择 GLB 并点击下载后，UI 弹出“订阅以下载 / 订阅后可下载全部格式”。证据：`.local/qa-v5/meshy-download-plan-required.png`；几何预览：`meshy-geometry-preview.png`。未购买订阅，未绕过下载限制。
-- 已请用户亲自开通或切换可下载账户。取得正规导出之前，不能继续真实资产的 Blender 导入、动画/贴图制作与网站模型替换。`scripts/avatar-v5/` 只完成导入/分件/rig/导出/回导验证工具链准备，`design/avatar-v5/` 无最终模型，不把空清单或旧模型冒充 Meshy 交付。
+- 用户随后明确改用“参考 Meshy 当中已经建好的可见模型，在 Blender 复刻”。已采集正面、左右三分之四、左右侧面五个可见角度，保存于 `.local/meshy-reference/`，继续独立 Blender 建模。`scripts/avatar-v5/` 的正规导入工具链保留为备选；实际复刻在 `scripts/avatar-v6/` 与 `design/avatar-v6/` 开发，不以旧模型改名或隐藏提取冒充 Meshy 导出。
 
-当前结论：滚动网页与既有功能回归已完成；Meshy 正规下载、Blender 新模型制作与最终模型替换仍待完成。
+当前结论：滚动网页与既有功能回归已完成；已按用户新方案开始参考 Meshy 预览进行 Blender 独立复刻，新模型、动作、最终替换与美术验收仍在进行。
+
+
+## 滚动页面阶段发布
+
+网页阶段提交 `be8d65563ea60f9ff5eb011853ad1de7a52104d8` 已推 GitHub 并发布，临时仍使用 v4。发布目录 `/srv/obsidian-journal-releases/20261105T124328Z-be8d65563ea6`，回滚备份 `/var/backups/homepage/20261105T124328Z`。候选检查、正式 3003 返回 200；网站、Nginx、Cloudflare 隧道、GenSticker API/worker 均 active，GenSticker 仍是 3001，1010 模板。公网浏览器确认 `.cinema-home`、`data-ready=true`、`data-model=avatar-v4`；证明截图 `.local/qa-v5/cinematic-intro-live.png`。
+
+随后按用户新方案继续 Blender 独立复刻 v6，并增加真实眼睑形变及苹果张掌驱动。新模型仍需近景、多角度、表情与网页回导验收，不因网页先发布而将建模要求关闭。
