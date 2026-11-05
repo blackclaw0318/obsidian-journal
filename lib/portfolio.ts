@@ -9,9 +9,12 @@ export interface PortfolioProject {
   title: string;
   subtitle: string;
   summary: string;
+  context: string;
   contributions: string[];
+  phases: { period: string; title: string; summary: string }[];
   outcome: string;
   status: string;
+  scope: string;
   tags: string[];
   category: ProjectCategory;
   scene: CharacterScene;
@@ -19,15 +22,27 @@ export interface PortfolioProject {
 
 // Deliberately contains only edited public summaries. Evidence and raw posts live outside Git.
 export const portfolioProjects = projectData as PortfolioProject[];
+// Old detail URLs remain routable without duplicating the four public projects.
+export const legacyProjectSlugs: Record<string, string> = {
+  "delivery-skill": "delivery-standards",
+  "video-understanding-evaluation": "pedestrian-events",
+  "annotation-tool": "pedestrian-events",
+  "video-data": "pedestrian-events",
+  "multimodal-evaluation": "pedestrian-events"
+};
+
+export function canonicalProjectSlug(slug: string) {
+  return Object.prototype.hasOwnProperty.call(legacyProjectSlugs, slug) ? legacyProjectSlugs[slug] : slug;
+}
 export const projectCategories: { id: "all" | ProjectCategory; label: string }[] = [
-  { id: "all", label: "全部经历" },
+  { id: "all", label: "全部项目" },
   { id: "vision", label: "计算机视觉" },
-  { id: "multimodal", label: "多模态与评测" },
+  { id: "multimodal", label: "视频与多模态" },
   { id: "engineering", label: "工程与工具" }
 ];
 
 export function projectBySlug(slug: string) {
-  return portfolioProjects.find((project) => project.slug === slug);
+  return portfolioProjects.find((project) => project.slug === canonicalProjectSlug(slug));
 }
 
 export function projectYear(date: string) {
