@@ -1,0 +1,40 @@
+{
+  "status": "downloaded; Blender adaptation in progress; not released",
+  "provider": "Meshy",
+  "download_method": "User-authorized account, workspace viewer, Download > glb",
+  "generation_date_local": "2026-11-06",
+  "reference": "User-supplied original illustrated avatar; sole character identity reference",
+  "settings_observed": {
+    "geometry": "Meshy 7.1 - Flagship",
+    "detail": "High detail, ultra 2K",
+    "native_texture": "Meshy 7, 2K",
+    "pose": "original reference pose",
+    "license_visibility": "private"
+  },
+  "downloaded_filename": "Meshy_AI_Snack_Selfie_1106014205_texture.glb",
+  "original_bytes": 50633504,
+  "original_sha256": "692955345bb830e46779c5dd2a2b48f8243b6681bb9e7445c8f5800705866375",
+  "original_inventory": {
+    "triangles": 1496882,
+    "nodes": 1,
+    "meshes": 1,
+    "materials": 1,
+    "embedded_images": 3,
+    "skins": 0,
+    "animations": 0,
+    "morph_targets": 0
+  },
+  "original_local_copy": ".local/meshy-v7/source/meshy-snack-selfie-original.glb",
+  "visual_evidence_local": ".local/meshy-v7/generated-front.png",
+  "provider_generation_id": null,
+  "provider_generation_id_note": "Not exposed in the observed workspace UI; do not infer from generator metadata.",
+  "required_blender_corrections": [
+    "Keep real Meshy head, hair, hands, clothing, props, UV and source texture appearance",
+    "Replace baked eyes locally with two independently rotatable complete eyeballs; animate eyelids",
+    "Make inward-facing phone surface a screen, outward-facing surface a camera back; do not duplicate camera backs",
+    "Add face-conforming English die-cut identity labels",
+    "Separate actual Meshy apple, bread and phone for interactions; retain grip and contact",
+    "Create editable expression and prop animations; optimize and visually compare before release"
+  ],
+  "rejected_prototype": "avatar-v6 is historical, rejected by user, and must not be deployed as the new Meshy model"
+}
