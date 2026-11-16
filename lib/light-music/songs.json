@@ -1,0 +1,3402 @@
+[
+  {
+    "id": "light-32034042b1bc",
+    "title": "你比这一切更美丽",
+    "artist": "小羊诗歌",
+    "category": "爱慕",
+    "categoryReason": "以基督胜过万有的荣美为主题，表达爱慕与渴望。",
+    "originalKey": "G",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-32034042b1bc-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/gXg03BP3",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      },
+      {
+        "id": "light-32034042b1bc-pdf-0",
+        "label": "小羊诗歌 · 旋律和弦谱",
+        "instrument": "unknown",
+        "kind": "pdf",
+        "url": "https://w247.net/files/songs/%E7%A5%A2%E6%AF%94%E9%80%99%E4%B8%80%E5%88%87%E6%9B%B4%E7%BE%8E%E9%BA%97%E5%96%AE%E9%A0%81%E8%AD%9C.pdf",
+        "sourceName": "小羊诗歌官网"
+      },
+      {
+        "id": "light-32034042b1bc-pdf-1",
+        "label": "小羊诗歌 · 和声谱",
+        "instrument": "unknown",
+        "kind": "pdf",
+        "url": "https://w247.net/files/songs/%E7%A5%A2%E6%AF%94%E9%80%99%E4%B8%80%E5%88%87%E6%9B%B4%E7%BE%8E%E9%BA%97%E5%92%8C%E8%81%B2%E8%AD%9C.pdf",
+        "sourceName": "小羊诗歌官网"
+      }
+    ],
+    "listeningUrl": "https://w247.net/songs/ni-bi-zhe-yi-qie-geng-mei-li/",
+    "searchUrl": "https://yopu.co/explore#q=%E4%BD%A0%E6%AF%94%E8%BF%99%E4%B8%80%E5%88%87%E6%9B%B4%E7%BE%8E%E4%B8%BD",
+    "audio": {
+      "url": "https://w247.net/files/songs/%E7%A5%A2%E6%AF%94%E9%80%99%E4%B8%80%E5%88%87%E6%9B%B4%E7%BE%8E%E9%BA%97.mp3",
+      "sourceUrl": "https://w247.net/songs/ni-bi-zhe-yi-qie-geng-mei-li/",
+      "label": "官方原唱 · 小羊诗歌",
+      "verifiedAt": "2026-11-16",
+      "verification": "source-page"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Em]  [C]  [D]  [G]  [Am7]  [B7]  [Am]  [D7] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-5a020700d2d0",
+    "title": "常常喜乐",
+    "artist": "赞美之泉",
+    "category": "激励",
+    "categoryReason": "以常常喜乐、不住祷告和凡事谢恩勉励信徒。",
+    "originalKey": "G",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-5a020700d2d0-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/a17Jg8wp",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%B8%B8%E5%B8%B8%E5%96%9C%E4%B9%90",
+    "searchUrl": "https://yopu.co/explore#q=%E5%B8%B8%E5%B8%B8%E5%96%9C%E4%B9%90",
+    "audio": {
+      "url": "https://www.bmbcweb.com/wp-content/uploads/2020/02/3.mp3",
+      "sourceUrl": "https://www.bmbcweb.com/2020/02/10/33815/",
+      "label": "公开音源 · 伯灵顿差传浸信会",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[C]  [G]  [Am]  [Em]  [D]  [D7]  [Am7]  [Fmaj7] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-bc5a128190bf",
+    "title": "永活盼望",
+    "artist": "Light 团契收藏",
+    "category": "福音性",
+    "categoryReason": "述说十架、赦罪与复活带来的救恩盼望。",
+    "originalKey": "C",
+    "archivedSheetCount": 5,
+    "sheets": [
+      {
+        "id": "light-bc5a128190bf-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/aXYJLkPZ",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%B0%B8%E6%B4%BB%E7%9B%BC%E6%9C%9B",
+    "searchUrl": "https://yopu.co/explore#q=%E6%B0%B8%E6%B4%BB%E7%9B%BC%E6%9C%9B",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/45392.mp3",
+      "sourceUrl": "https://www.cbann.com/?type=song&s=%E6%B0%B8%E6%B4%BB%E7%9B%BC%E6%9C%9B",
+      "label": "公开音源 · 经典单曲 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Am]  [G]  [C]  [F]  [Am7]  [F/A]  [G/B]  [C/G] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-200171dd4e0b",
+    "title": "脚步",
+    "artist": "盛晓玫",
+    "category": "奉献",
+    "categoryReason": "回应主的带领，愿意信靠、顺服并跟随。",
+    "originalKey": "C",
+    "timeSignature": "4/4",
+    "archivedSheetCount": 4,
+    "sheets": [
+      {
+        "id": "light-200171dd4e0b-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/21V7xjXG",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E8%84%9A%E6%AD%A5",
+    "searchUrl": "https://yopu.co/explore#q=%E8%84%9A%E6%AD%A5",
+    "audio": {
+      "url": "https://www.bmbcweb.com/wp-content/uploads/2020/02/4.mp3",
+      "sourceUrl": "https://www.bmbcweb.com/2020/02/10/33815/",
+      "label": "公开音源 · 伯灵顿差传浸信会",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "lead",
+      "credit": "词曲：盛晓玫 / 泥土音乐。依已存曲谱整理的轻简和弦伴奏，保留原作署名。",
+      "sections": [
+        {
+          "label": "主歌",
+          "lines": [
+            "[C]祢的脚步带着[Am7]我的脚步，[Dm7]一步一步都有[G]祝福。",
+            "[C]每个脚步我要[Am7]紧紧跟随，[Dm7]走在蒙福的道[G]路。"
+          ]
+        },
+        {
+          "label": "副歌 · 简化伴奏",
+          "lines": [
+            "[C]求给我更多的勇气，[G]给我更多的信心，",
+            "[F]让我勇敢踏出跟随祢的[C]脚步。",
+            "[Am]跟祢行在水面上，[Em]跟祢走在旷野地，",
+            "[F]曲曲折折我也不在[G]乎。",
+            "[C]我只要更多信靠祢，[G]只要更多顺服祢，",
+            "[F]凡是出于祢的我就默然不[C]语。",
+            "[Am]就算经过黑暗谷，[Dm]就算遇到暴风雨，",
+            "[F]在祢手中都将变成[G]祝[C]福。"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-f333ba0718ab",
+    "title": "你的爱不离不弃",
+    "artist": "Light 团契收藏",
+    "category": "感恩",
+    "categoryReason": "感谢神不变的慈爱、供应与守约。",
+    "originalKey": "A",
+    "archivedSheetCount": 3,
+    "sheets": [
+      {
+        "id": "light-f333ba0718ab-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/b1vyERp2",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E4%BD%A0%E7%9A%84%E7%88%B1%E4%B8%8D%E7%A6%BB%E4%B8%8D%E5%BC%83",
+    "searchUrl": "https://yopu.co/explore#q=%E4%BD%A0%E7%9A%84%E7%88%B1%E4%B8%8D%E7%A6%BB%E4%B8%8D%E5%BC%83",
+    "audio": {
+      "url": "https://www.bmbcweb.com/wp-content/uploads/2020/02/48.mp3",
+      "sourceUrl": "https://www.bmbcweb.com/2020/02/10/33815/",
+      "label": "公开音源 · 伯灵顿差传浸信会",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    }
+  },
+  {
+    "id": "light-f01d65da6243",
+    "title": "全然向你",
+    "artist": "赞美之泉",
+    "category": "奉献",
+    "categoryReason": "将身心和生命全然献给主。",
+    "originalKey": "D",
+    "archivedSheetCount": 2,
+    "sheets": [
+      {
+        "id": "light-f01d65da6243-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/21VV0Nk1",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%85%A8%E7%84%B6%E5%90%91%E4%BD%A0",
+    "searchUrl": "https://yopu.co/explore#q=%E5%85%A8%E7%84%B6%E5%90%91%E4%BD%A0",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[G]  [Bm]  [D]  [A7]  [Bm7]  [F#m]  [Em] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-2fa862bdc2eb",
+    "title": "恩典之路",
+    "artist": "Light 团契收藏",
+    "category": "感恩",
+    "categoryReason": "回顾主在生命道路上的信实与恩典。",
+    "originalKey": "C",
+    "archivedSheetCount": 2,
+    "sheets": [
+      {
+        "id": "light-2fa862bdc2eb-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/aPexROXb",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%81%A9%E5%85%B8%E4%B9%8B%E8%B7%AF",
+    "searchUrl": "https://yopu.co/explore#q=%E6%81%A9%E5%85%B8%E4%B9%8B%E8%B7%AF",
+    "audio": {
+      "url": "https://gojes.us/china/resources/Music/%E6%81%A9%E5%85%B8%E4%B9%8B%E8%B7%AF%20The%20Path%20of%20Grace.mp3",
+      "sourceUrl": "https://gojes.us/china/resources/?blank=true&dir=Music",
+      "label": "公开音源 · GoJesus",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Fmaj7]  [Am]  [C]  [G] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-7ca71b72d778",
+    "title": "如果",
+    "artist": "小羊诗歌",
+    "category": "福音性",
+    "categoryReason": "以人与耶稣的对话回答生命意义与真爱，传达舍命救赎的信息。",
+    "originalKey": "G",
+    "archivedSheetCount": 3,
+    "sheets": [
+      {
+        "id": "light-7ca71b72d778-pdf-0",
+        "label": "小羊诗歌 · 旋律和弦谱",
+        "instrument": "unknown",
+        "kind": "pdf",
+        "url": "https://w247.net/files/songs/%E5%A6%82%E6%9E%9C%E5%96%AE%E9%A0%81%E8%AD%9C.pdf",
+        "sourceName": "小羊诗歌官网"
+      },
+      {
+        "id": "light-7ca71b72d778-pdf-1",
+        "label": "小羊诗歌 · 钢琴谱",
+        "instrument": "piano",
+        "kind": "pdf",
+        "url": "https://w247.net/files/songs/%E5%A6%82%E6%9E%9C%E5%92%8C%E8%81%B2%E9%8B%BC%E7%90%B4%E8%AD%9C.pdf",
+        "sourceName": "小羊诗歌官网"
+      }
+    ],
+    "listeningUrl": "https://w247.net/songs/ru-guo/",
+    "searchUrl": "https://yopu.co/explore#q=%E5%A6%82%E6%9E%9C",
+    "audio": {
+      "url": "https://w247.net/files/songs/%E5%A6%82%E6%9E%9C.mp3",
+      "sourceUrl": "https://w247.net/songs/ru-guo/",
+      "label": "官方原唱 · 小羊诗歌",
+      "verifiedAt": "2026-11-16",
+      "verification": "source-page"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[D9]  [Em]  [C]  [D]  [Am]  [G]  [D7]  [C9] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-df3ab946c704",
+    "title": "每一次我赞美主",
+    "artist": "Light 团契收藏",
+    "category": "颂赞",
+    "categoryReason": "直接表达对主的赞美与敬拜。",
+    "originalKey": "G",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-df3ab946c704-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/BXjDmEgp",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%AF%8F%E4%B8%80%E6%AC%A1%E6%88%91%E8%B5%9E%E7%BE%8E%E4%B8%BB",
+    "searchUrl": "https://yopu.co/explore#q=%E6%AF%8F%E4%B8%80%E6%AC%A1%E6%88%91%E8%B5%9E%E7%BE%8E%E4%B8%BB",
+    "audio": {
+      "url": "https://gojes.us/china/resources/Music/%E6%AF%8F%E4%B8%80%E6%AC%A1%E6%88%91%E8%AE%9A%E7%BE%8E%E4%B8%BB%20Every%20Time%20I%20Praise%20the%20Lord%E7%94%9F%E5%91%BD%E6%B2%B3%E6%95%AC%E6%8B%9C%E8%AE%9A%E7%BE%8E%E7%B3%BB%E5%88%97%208Shekinah%E6%A6%AE%E8%80%80%E5%90%8C%E5%9C%A8%20%E5%B0%8F%E7%B5%84%E6%95%AC%E6%8B%9C%E7%94%A8.mp3",
+      "sourceUrl": "https://gojes.us/china/resources/?blank=true&dir=Music",
+      "label": "公开音源 · GoJesus",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[D]  [Em]  [C]  [C/D]  [Am]  [G]  [B]  [Bm] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-bad900e65d53",
+    "title": "以便以谢",
+    "artist": "Light 团契收藏",
+    "category": "感恩",
+    "categoryReason": "记念神直到如今的帮助与恩惠。",
+    "originalKey": "F",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-bad900e65d53-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/wXmJgzPQ",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E4%BB%A5%E4%BE%BF%E4%BB%A5%E8%B0%A2",
+    "searchUrl": "https://yopu.co/explore#q=%E4%BB%A5%E4%BE%BF%E4%BB%A5%E8%B0%A2",
+    "audio": {
+      "url": "https://www.bmbcweb.com/wp-content/uploads/2020/02/94.mp3",
+      "sourceUrl": "https://www.bmbcweb.com/2020/02/10/33815/",
+      "label": "公开音源 · 伯灵顿差传浸信会",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Bb]  [Dm]  [Dm/C]  [C]  [G]  [F]  [F/A] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-05a215fdb60f",
+    "title": "我神真伟大",
+    "artist": "约书亚乐团",
+    "category": "颂赞",
+    "categoryReason": "宣扬神的伟大、威严和至高圣名。",
+    "originalKey": "A",
+    "archivedSheetCount": 2,
+    "sheets": [
+      {
+        "id": "light-05a215fdb60f-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/xXAZAGPD",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%88%91%E7%A5%9E%E7%9C%9F%E4%BC%9F%E5%A4%A7",
+    "searchUrl": "https://yopu.co/explore#q=%E6%88%91%E7%A5%9E%E7%9C%9F%E4%BC%9F%E5%A4%A7",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/7952.mp3",
+      "sourceUrl": "https://www.cbann.com/?type=song&s=%E6%88%91%E7%A5%9E%E7%9C%9F%E4%BC%9F%E5%A4%A7",
+      "label": "公开音源 · 约书亚乐团 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[A2]  [F#m7]  [D2] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-9760b844a7b8",
+    "title": "耶稣！耶稣！",
+    "artist": "小羊诗歌",
+    "category": "颂赞",
+    "categoryReason": "高举耶稣圣名与救主的荣耀。",
+    "originalKey": "Bm",
+    "timeSignature": "4/4",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-9760b844a7b8-pdf-0",
+        "label": "小羊诗歌 · 旋律和弦谱",
+        "instrument": "unknown",
+        "kind": "pdf",
+        "url": "https://w247.net/files/songs/%E8%80%B6%E7%A9%8C%21%E8%80%B6%E7%A9%8C%21%E5%96%AE%E9%A0%81%E8%AD%9C.pdf",
+        "sourceName": "小羊诗歌官网"
+      },
+      {
+        "id": "light-9760b844a7b8-pdf-1",
+        "label": "小羊诗歌 · 钢琴谱",
+        "instrument": "piano",
+        "kind": "pdf",
+        "url": "https://w247.net/files/songs/%E8%80%B6%E7%A9%8C%21%E8%80%B6%E7%A9%8C%21%E5%92%8C%E8%81%B2%E9%8B%BC%E7%90%B4%E8%AD%9C.pdf",
+        "sourceName": "小羊诗歌官网"
+      }
+    ],
+    "listeningUrl": "https://w247.net/songs/ye-su-ye-su/",
+    "searchUrl": "https://yopu.co/explore#q=%E8%80%B6%E7%A8%A3%EF%BC%81%E8%80%B6%E7%A8%A3%EF%BC%81",
+    "audio": {
+      "url": "https://w247.net/files/songs/%E8%80%B6%E7%A9%8C%21%E8%80%B6%E7%A9%8C%21.mp3",
+      "sourceUrl": "https://w247.net/songs/ye-su-ye-su/",
+      "label": "官方原唱 · 小羊诗歌",
+      "verifiedAt": "2026-11-16",
+      "verification": "source-page"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[F#sus4]  [F#]  [Em7]  [F#7] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-6c9fc3832253",
+    "title": "将天敞开",
+    "artist": "赞美之泉",
+    "category": "祷告祈求",
+    "categoryReason": "祈求神显明荣耀、使天敞开并临在。",
+    "originalKey": "G",
+    "archivedSheetCount": 2,
+    "sheets": [
+      {
+        "id": "light-6c9fc3832253-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/a15yEVB1",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%B0%86%E5%A4%A9%E6%95%9E%E5%BC%80",
+    "searchUrl": "https://yopu.co/explore#q=%E5%B0%86%E5%A4%A9%E6%95%9E%E5%BC%80",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[C/E]  [G/D]  [D/F#]  [G]  [G/B]  [C]  [Am]  [D]  [C/G]  [Cm/Eb]  [Dm/F]  [C/D]  [Bm]  [Em]  [A/C#] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-8a1ffa7203e2",
+    "title": "充满我",
+    "artist": "生命河灵粮堂",
+    "category": "祷告祈求",
+    "categoryReason": "祈求神的灵充满、洁净、更新与塑造生命。",
+    "originalKey": "D",
+    "timeSignature": "4/4",
+    "archivedSheetCount": 4,
+    "sheets": [
+      {
+        "id": "light-8a1ffa7203e2-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/6PMZW8p9",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%85%85%E6%BB%A1%E6%88%91",
+    "searchUrl": "https://yopu.co/explore#q=%E5%85%85%E6%BB%A1%E6%88%91",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/28952.mp3",
+      "sourceUrl": "https://www.cbann.com/?type=song&s=%E5%85%85%E6%BB%A1%E6%88%91",
+      "label": "公开音源 · 生命河灵粮堂 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "lead",
+      "credit": "词曲：吴文琛 / 生命河灵粮堂。依已存谱本整理的轻简和弦伴奏。",
+      "sections": [
+        {
+          "label": "主歌 · 简化伴奏",
+          "lines": [
+            "[D]我的心惟有祢，[Bm]我的灵渴慕祢，",
+            "[G]我全人[A]献给祢。",
+            "[D]以敬畏爱慕的心，[Bm]来亲近祢，",
+            "[G]以赞美全心[A]尊崇祢。",
+            "[Em7]用祢的话[A]语，[F#m7]使我心[Bm7]更新，",
+            "[G]以慈爱[A]吸引我[D]。"
+          ]
+        },
+        {
+          "label": "副歌 · 简化伴奏",
+          "lines": [
+            "[Gmaj7]充满我，[F#m7]浇灌我，[Em7]使我灵得满[A]溢。",
+            "[Gmaj7]充满我，[F#m7]洁净我，[Em7]更新我，[A]完美我[D]。"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-ce76ebd34b72",
+    "title": "宝座",
+    "artist": "小羊诗歌",
+    "category": "颂赞",
+    "categoryReason": "围绕神的宝座、荣耀和君王权柄敬拜。",
+    "originalKey": "G",
+    "archivedSheetCount": 2,
+    "sheets": [
+      {
+        "id": "light-ce76ebd34b72-pdf-0",
+        "label": "小羊诗歌 · 旋律和弦谱",
+        "instrument": "unknown",
+        "kind": "pdf",
+        "url": "https://w247.net/files/songs/%E5%AF%B6%E5%BA%A7%E5%96%AE%E9%A0%81%E8%AD%9C.pdf",
+        "sourceName": "小羊诗歌官网"
+      }
+    ],
+    "listeningUrl": "https://w247.net/songs/bao-zuo/",
+    "searchUrl": "https://yopu.co/explore#q=%E5%AE%9D%E5%BA%A7",
+    "audio": {
+      "url": "https://w247.net/files/songs/%E5%AF%B6%E5%BA%A7.mp3",
+      "sourceUrl": "https://w247.net/songs/bao-zuo/",
+      "label": "官方原唱 · 小羊诗歌",
+      "verifiedAt": "2026-11-16",
+      "verification": "source-page"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[D]  [G]  [Em]  [C]  [Am] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-b7b858066c93",
+    "title": "和散那",
+    "artist": "Carl Tuttle",
+    "category": "颂赞",
+    "categoryReason": "高声尊崇并颂赞至高神与万王之王。",
+    "originalKey": "G",
+    "archivedSheetCount": 2,
+    "sheets": [
+      {
+        "id": "light-b7b858066c93-external-0",
+        "url": "https://www.cccc.org.uk/resources/scores/scores/hesanna.jpg",
+        "label": "剑桥华人基督教会 · 旋律和弦谱",
+        "sourceName": "剑桥华人基督教会公开谱库",
+        "kind": "image",
+        "instrument": "unknown"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%92%8C%E6%95%A3%E9%82%A3",
+    "searchUrl": "https://yopu.co/explore#q=%E5%92%8C%E6%95%A3%E9%82%A3",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/11431.mp3",
+      "sourceUrl": "https://www.cbann.com/%e5%92%8c%e6%95%a3%e9%82%a3-3/",
+      "label": "公开音源 · 万国敬拜与赞美 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[C]  [D]  [Em]  [D7]  [G] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-6b48dfc267ec",
+    "title": "尽情的敬拜",
+    "artist": "生命河灵粮堂",
+    "category": "颂赞",
+    "categoryReason": "以全心敬拜和高举主名为主题。",
+    "originalKey": "A",
+    "archivedSheetCount": 2,
+    "sheets": [
+      {
+        "id": "light-6b48dfc267ec-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/rpl2nGX3",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%B0%BD%E6%83%85%E7%9A%84%E6%95%AC%E6%8B%9C",
+    "searchUrl": "https://yopu.co/explore#q=%E5%B0%BD%E6%83%85%E7%9A%84%E6%95%AC%E6%8B%9C",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/10404.mp3",
+      "sourceUrl": "https://www.cbann.com/?type=song&s=%E5%B0%BD%E6%83%85%E7%9A%84%E6%95%AC%E6%8B%9C",
+      "label": "公开音源 · 生命河灵粮堂 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[D7]  [G]  [Am7]  [Bm7]  [E7]  [A]  [Em]  [Cmaj7]  [D/F#]  [E/G#]  [F#m]  [Dsus4]  [A/C#]  [C/E]  [C]  [B/D#]  [D]  [C/D]  [Am7/G]  [D7/F#]  [E7/G#]  [Bm7/A]  [D/E]  [E] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-ed6a143619d1",
+    "title": "让赞美飞扬",
+    "artist": "Light 团契收藏",
+    "category": "颂赞",
+    "categoryReason": "邀请会众一同献上赞美。",
+    "originalKey": "G",
+    "timeSignature": "4/4",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-ed6a143619d1-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/wXm0zZ1Q",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E8%AE%A9%E8%B5%9E%E7%BE%8E%E9%A3%9E%E6%89%AC",
+    "searchUrl": "https://yopu.co/explore#q=%E8%AE%A9%E8%B5%9E%E7%BE%8E%E9%A3%9E%E6%89%AC",
+    "audio": {
+      "url": "https://gojes.us/china/resources/Music/%E8%AE%A9%E8%B5%9E%E7%BE%8E%E9%A3%9E%E6%89%AC%20%E8%AE%93%E8%AE%9A%E7%BE%8E%E9%A3%9B%E6%8F%9A%20Let%20Praise%20Arise.mp3",
+      "sourceUrl": "https://gojes.us/china/resources/?blank=true&dir=Music",
+      "label": "公开音源 · GoJesus",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    }
+  },
+  {
+    "id": "light-ad1da8baa7ec",
+    "title": "何等恩典",
+    "artist": "赞美之泉",
+    "category": "感恩",
+    "categoryReason": "因主的救赎、赦免和恩典而感恩。",
+    "originalKey": "F",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-ad1da8baa7ec-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/9Pxqdvp5",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E4%BD%95%E7%AD%89%E6%81%A9%E5%85%B8",
+    "searchUrl": "https://yopu.co/explore#q=%E4%BD%95%E7%AD%89%E6%81%A9%E5%85%B8",
+    "audio": {
+      "url": "https://gojes.us/china/resources/Music/%E4%BD%95%E7%AD%89%E6%81%A9%E5%85%B8%20How%20Could%20It%20Be.mp3",
+      "sourceUrl": "https://gojes.us/china/resources/?blank=true&dir=Music",
+      "label": "公开音源 · GoJesus",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Dm]  [F]  [Bb]  [C]  [Bb/F]  [C7]  [G/B]  [Bb/C]  [F/C]  [F/A]  [Gm]  [F7]  [Bdim]  [Csus4] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-29bab52d2f8f",
+    "title": "奇异恩典",
+    "artist": "传统圣诗 · Amazing Grace",
+    "category": "感恩",
+    "categoryReason": "见证从失丧到被寻回的救恩与恩典。",
+    "originalKey": "F",
+    "timeSignature": "3/4",
+    "archivedSheetCount": 3,
+    "sheets": [
+      {
+        "id": "light-29bab52d2f8f-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/wXmbzvPQ",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%A5%87%E5%BC%82%E6%81%A9%E5%85%B8",
+    "searchUrl": "https://yopu.co/explore#q=%E5%A5%87%E5%BC%82%E6%81%A9%E5%85%B8",
+    "audio": {
+      "url": "https://gojes.us/china/resources/Music/%E5%A5%87%E5%BC%82%E6%81%A9%E5%85%B8%20%E5%A5%87%E7%95%B0%E6%81%A9%E5%85%B8%20Amazing%20Grace.mp3",
+      "sourceUrl": "https://gojes.us/china/resources/?blank=true&dir=Music",
+      "label": "公开音源 · GoJesus",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Dm]  [F]  [Bb]  [C]  [Bb/F]  [C7]  [G/B]  [Bb/C]  [F/C]  [F/A]  [Gm]  [F7]  [Bdim]  [Csus4] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-75d2ff8798c3",
+    "title": "盟约",
+    "artist": "Light 团契收藏",
+    "category": "奉献",
+    "categoryReason": "以立约、委身和一生跟随回应主。",
+    "originalKey": "G",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-75d2ff8798c3-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/YXD8ajXv",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E7%9B%9F%E7%BA%A6",
+    "searchUrl": "https://yopu.co/explore#q=%E7%9B%9F%E7%BA%A6",
+    "audio": {
+      "url": "https://gojes.us/china/resources/Music/%E7%9B%9F%E7%B4%84%20Covenant.mp3",
+      "sourceUrl": "https://gojes.us/china/resources/?blank=true&dir=Music",
+      "label": "公开音源 · GoJesus",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Am]  [G]  [C]  [Em]  [B]  [D]  [D7] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-a7fbe82cef31",
+    "title": "我今天为你祝福",
+    "artist": "Light 团契收藏",
+    "category": "祷告祈求",
+    "categoryReason": "以代祷与祝福为中心，为他人祈求平安。",
+    "originalKey": "D",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-a7fbe82cef31-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/aPeamB8P",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%88%91%E4%BB%8A%E5%A4%A9%E4%B8%BA%E4%BD%A0%E7%A5%9D%E7%A6%8F",
+    "searchUrl": "https://yopu.co/explore#q=%E6%88%91%E4%BB%8A%E5%A4%A9%E4%B8%BA%E4%BD%A0%E7%A5%9D%E7%A6%8F",
+    "audio": {
+      "url": "https://www.bmbcweb.com/wp-content/uploads/2020/02/93.mp3",
+      "sourceUrl": "https://www.bmbcweb.com/2020/02/10/33815/",
+      "label": "公开音源 · 伯灵顿差传浸信会",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[A7]  [E7/G#]  [G]  [Bm]  [Em]  [D] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-3493593ee711",
+    "title": "有一位神",
+    "artist": "赞美之泉",
+    "category": "福音性",
+    "categoryReason": "向人介绍创造、关怀并赐生命的神。",
+    "originalKey": "C",
+    "archivedSheetCount": 3,
+    "sheets": [
+      {
+        "id": "light-3493593ee711-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/AXqB8dnP",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%9C%89%E4%B8%80%E4%BD%8D%E7%A5%9E",
+    "searchUrl": "https://yopu.co/explore#q=%E6%9C%89%E4%B8%80%E4%BD%8D%E7%A5%9E",
+    "audio": {
+      "url": "https://gojes.us/china/resources/Music/%E6%9C%89%E4%B8%80%E4%BD%8D%E7%A5%9E%20There%20Is%20A%20God.mp3",
+      "sourceUrl": "https://gojes.us/china/resources/?blank=true&dir=Music",
+      "label": "公开音源 · GoJesus",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Dm]  [C]  [Em]  [G]  [G7]  [Fmaj7]  [Am7] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-b5c484c95dd6",
+    "title": "放手，放心交给你",
+    "artist": "Light 团契收藏",
+    "category": "祷告祈求",
+    "categoryReason": "在重担中交托、信靠神的带领与旨意。",
+    "originalKey": "Bb",
+    "archivedSheetCount": 2,
+    "sheets": [
+      {
+        "id": "light-b5c484c95dd6-external-0",
+        "url": "https://www.izanmei.cc/tab/44873.html",
+        "label": "爱赞美 · 旋律谱",
+        "sourceName": "爱赞美公开歌谱",
+        "kind": "page",
+        "instrument": "unknown"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%94%BE%E6%89%8B%EF%BC%8C%E6%94%BE%E5%BF%83%E4%BA%A4%E7%BB%99%E4%BD%A0",
+    "searchUrl": "https://yopu.co/explore#q=%E6%94%BE%E6%89%8B%EF%BC%8C%E6%94%BE%E5%BF%83%E4%BA%A4%E7%BB%99%E4%BD%A0",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/51644.mp3",
+      "sourceUrl": "https://www.cbann.com/%e6%94%be%e6%89%8b%e6%94%be%e5%bf%83%e4%ba%a4%e7%bb%99%e7%a5%a2-let-go-and-surrender-to-you/",
+      "label": "公开音源 · 黄友闻、张玮 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    }
+  },
+  {
+    "id": "light-0196178ad301",
+    "title": "因他活着",
+    "artist": "William J. Gaither",
+    "category": "激励",
+    "categoryReason": "因基督复活而勇敢面对明天。",
+    "originalKey": "G",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-0196178ad301-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/3pnk92e1",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%9B%A0%E4%BB%96%E6%B4%BB%E7%9D%80",
+    "searchUrl": "https://yopu.co/explore#q=%E5%9B%A0%E4%BB%96%E6%B4%BB%E7%9D%80",
+    "audio": {
+      "url": "https://www.bmbcweb.com/wp-content/uploads/2020/02/15.mp3",
+      "sourceUrl": "https://www.bmbcweb.com/2020/02/10/33815/",
+      "label": "公开音源 · 伯灵顿差传浸信会",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[D7/F#]  [G/B]  [G]  [D7]  [Am7]  [C]  [Am]  [D]  [Em7]  [A7] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-18ca23e6970b",
+    "title": "你真伟大",
+    "artist": "传统圣诗 · How Great Thou Art",
+    "category": "颂赞",
+    "categoryReason": "从创造与救赎赞叹神的伟大。",
+    "originalKey": "A",
+    "timeSignature": "4/4",
+    "archivedSheetCount": 2,
+    "sheets": [
+      {
+        "id": "light-18ca23e6970b-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/RPOYW817",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E4%BD%A0%E7%9C%9F%E4%BC%9F%E5%A4%A7",
+    "searchUrl": "https://yopu.co/explore#q=%E4%BD%A0%E7%9C%9F%E4%BC%9F%E5%A4%A7",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/52988.mp3",
+      "sourceUrl": "https://www.cbann.com/%e4%bd%a0%e7%9c%9f%e4%bc%9f%e5%a4%a7-26/",
+      "label": "公开音源 · 分享圣乐团 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    }
+  },
+  {
+    "id": "light-bc7f02642ee3",
+    "title": "能不能",
+    "artist": "赞美之泉",
+    "category": "爱慕",
+    "categoryReason": "渴望亲近神、一生住在主的同在里。",
+    "originalKey": "C",
+    "archivedSheetCount": 2,
+    "sheets": [
+      {
+        "id": "light-bc7f02642ee3-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/6pNBn4pm",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E8%83%BD%E4%B8%8D%E8%83%BD",
+    "searchUrl": "https://yopu.co/explore#q=%E8%83%BD%E4%B8%8D%E8%83%BD"
+  },
+  {
+    "id": "light-cdf50bdd7897",
+    "title": "一生爱你",
+    "artist": "赞美之泉",
+    "category": "爱慕",
+    "categoryReason": "以一生爱主和敬拜主为回应；收藏于串烧谱。",
+    "originalKey": "G",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-cdf50bdd7897-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/813EYV3P",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E4%B8%80%E7%94%9F%E7%88%B1%E4%BD%A0",
+    "searchUrl": "https://yopu.co/explore#q=%E4%B8%80%E7%94%9F%E7%88%B1%E4%BD%A0",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[C/G]  [C6/G]  [G]  [Bm]  [Em]  [Am]  [C]  [D/F#]  [Dsus4]  [D]  [D/C]  [C/D]  [A] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-34909cf81931",
+    "title": "如鹰展翅上腾",
+    "artist": "Light 团契收藏",
+    "category": "激励",
+    "categoryReason": "鼓励人在疲乏中等候主、重新得力。",
+    "originalKey": "G",
+    "timeSignature": "4/4",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-34909cf81931-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/6PMkld19",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%A6%82%E9%B9%B0%E5%B1%95%E7%BF%85%E4%B8%8A%E8%85%BE",
+    "searchUrl": "https://yopu.co/explore#q=%E5%A6%82%E9%B9%B0%E5%B1%95%E7%BF%85%E4%B8%8A%E8%85%BE",
+    "audio": {
+      "url": "https://gojes.us/china/resources/Music/%E5%A6%82%E9%B9%B0%E5%B1%95%E7%BF%85%E4%B8%8A%E8%85%BE%20%E5%A6%82%E9%B7%B9%E5%B1%95%E7%BF%85%E4%B8%8A%E9%A8%B0%20Soar%20Like%20the%20Eagle.mp3",
+      "sourceUrl": "https://gojes.us/china/resources/?blank=true&dir=Music",
+      "label": "公开音源 · GoJesus",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Am7]  [C]  [Bm]  [Em]  [G]  [D] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-7cf72af25a58",
+    "title": "我的神我的父我的磐石",
+    "artist": "新心音乐",
+    "category": "颂赞",
+    "categoryReason": "宣认神是父、磐石、力量和救赎。",
+    "originalKey": "C",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-7cf72af25a58-external-0",
+        "url": "https://www.cccc.org.uk/resources/scores/scores/wodeshenwodefuwodepanshi.png",
+        "label": "剑桥华人基督教会 · 旋律和弦谱",
+        "sourceName": "剑桥华人基督教会公开谱库",
+        "kind": "image",
+        "instrument": "unknown"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%88%91%E7%9A%84%E7%A5%9E%E6%88%91%E7%9A%84%E7%88%B6%E6%88%91%E7%9A%84%E7%A3%90%E7%9F%B3",
+    "searchUrl": "https://yopu.co/explore#q=%E6%88%91%E7%9A%84%E7%A5%9E%E6%88%91%E7%9A%84%E7%88%B6%E6%88%91%E7%9A%84%E7%A3%90%E7%9F%B3",
+    "audio": {
+      "url": "https://www.bmbcweb.com/wp-content/uploads/2020/02/58.mp3",
+      "sourceUrl": "https://www.bmbcweb.com/2020/02/10/33815/",
+      "label": "公开音源 · 伯灵顿差传浸信会",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[C]  [Em]  [Am7]  [G]  [Dm]  [E]  [G7]  [Fmaj7] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-1233be8ab177",
+    "title": "你若相信",
+    "artist": "生命河灵粮堂",
+    "category": "激励",
+    "categoryReason": "鼓励凭信心仰望神的作为与荣耀。",
+    "originalKey": "F",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-1233be8ab177-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/a15ON63P",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E4%BD%A0%E8%8B%A5%E7%9B%B8%E4%BF%A1",
+    "searchUrl": "https://yopu.co/explore#q=%E4%BD%A0%E8%8B%A5%E7%9B%B8%E4%BF%A1",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/18359.mp3",
+      "sourceUrl": "https://www.cbann.com/?type=song&s=%E4%BD%A0%E8%8B%A5%E7%9B%B8%E4%BF%A1",
+      "label": "公开音源 · 生命河灵粮堂 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    }
+  },
+  {
+    "id": "light-60b3692f26ec",
+    "title": "我要爱慕你",
+    "artist": "Light 团契收藏",
+    "category": "爱慕",
+    "categoryReason": "向主表达爱慕，并倾倒生命。",
+    "originalKey": "E",
+    "archivedSheetCount": 3,
+    "sheets": [
+      {
+        "id": "light-60b3692f26ec-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/7pa8qmDP",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%88%91%E8%A6%81%E7%88%B1%E6%85%95%E4%BD%A0",
+    "searchUrl": "https://yopu.co/explore#q=%E6%88%91%E8%A6%81%E7%88%B1%E6%85%95%E4%BD%A0",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/37039.mp3",
+      "sourceUrl": "https://www.cbann.com/?type=song&s=%E6%88%91%E8%A6%81%E7%88%B1%E6%85%95%E4%BD%A0",
+      "label": "公开音源 · 巫启贤 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[E/G]  [Csus4]  [C] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-9123ce20488e",
+    "title": "You Are My All in All",
+    "artist": "Dennis Jernigan",
+    "category": "爱慕",
+    "categoryReason": "宣认耶稣是一切、力量和所寻求的珍宝。",
+    "originalKey": "F",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-9123ce20488e-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/AXqjMAEP",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/You%20Are%20My%20All%20in%20All",
+    "searchUrl": "https://yopu.co/explore#q=You%20Are%20My%20All%20in%20All",
+    "audio": {
+      "url": "https://gojes.us/china/resources/Music/%E7%A5%A2%E6%98%AF%E6%88%91%E7%9A%84%E4%B8%80%E5%88%87%20You%20Are%20My%20All%20In%20All%20Chinese.mp3",
+      "sourceUrl": "https://gojes.us/china/resources/?blank=true&dir=Music",
+      "label": "公开音源 · GoJesus",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[G/D]  [D/F#]  [Em]  [C/E]  [F/C]  [Dm]  [E/B]  [A]  [E7]  [B]  [E]  [D7]  [C]  [D]  [G]  [Bb]  [F]  [B/D#]  [C#m]  [A/B]  [E/G#]  [G/B]  [Bb/C]  [F/A] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-a9e3d5d98dfa",
+    "title": "超乎万名之名",
+    "artist": "Justin Rizzo",
+    "category": "颂赞",
+    "categoryReason": "高举耶稣超乎万名的圣名。",
+    "originalKey": "D",
+    "timeSignature": "4/4",
+    "archivedSheetCount": 1,
+    "sheets": [],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E8%B6%85%E4%B9%8E%E4%B8%87%E5%90%8D%E4%B9%8B%E5%90%8D",
+    "searchUrl": "https://yopu.co/explore#q=%E8%B6%85%E4%B9%8E%E4%B8%87%E5%90%8D%E4%B9%8B%E5%90%8D",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/15188.mp3",
+      "sourceUrl": "https://www.cbann.com/%e8%b6%85%e4%b9%8e%e4%b8%87%e5%90%8d%e4%b9%8b%e5%90%8d/",
+      "label": "公开音源 · 约书亚乐团 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Bm7]  [D]  [A]  [G]  [A/D]  [G/D]  [Bm] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-7746efee6627",
+    "title": "住在你里面",
+    "artist": "Light 团契收藏",
+    "category": "爱慕",
+    "categoryReason": "渴望住在主里面，与主亲密同行。",
+    "originalKey": "D",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-7746efee6627-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/7XrYY7O1",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E4%BD%8F%E5%9C%A8%E4%BD%A0%E9%87%8C%E9%9D%A2",
+    "searchUrl": "https://yopu.co/explore#q=%E4%BD%8F%E5%9C%A8%E4%BD%A0%E9%87%8C%E9%9D%A2",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[G/B]  [D/A]  [D]  [G/D]  [A/G]  [Asus4]  [Em]  [G/A]  [G]  [Bm] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-f7deb60002f4",
+    "title": "多雨的响声",
+    "artist": "生命河灵粮堂",
+    "category": "激励",
+    "categoryReason": "以应许与复兴的盼望激励会众凭信心前行。",
+    "originalKey": "G",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-f7deb60002f4-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/oX4R00Ep",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%A4%9A%E9%9B%A8%E7%9A%84%E5%93%8D%E5%A3%B0",
+    "searchUrl": "https://yopu.co/explore#q=%E5%A4%9A%E9%9B%A8%E7%9A%84%E5%93%8D%E5%A3%B0",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/49260.mp3",
+      "sourceUrl": "https://www.cbann.com/?type=song&s=%E5%A4%9A%E9%9B%A8%E7%9A%84%E5%93%8D%E5%A3%B0",
+      "label": "公开音源 · 生命河灵粮堂 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[D/F#]  [G/D]  [D]  [G]  [Bm]  [C]  [Em]  [Am]  [Em7]  [E]  [Bm7]  [A7]  [B]  [G/B] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-912bb3088ad6",
+    "title": "一颗谦卑的心",
+    "artist": "611灵粮堂",
+    "category": "悔改认罪",
+    "categoryReason": "求主赐谦卑顺服的心，愿意被改变。",
+    "originalKey": "D",
+    "timeSignature": "4/4",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-912bb3088ad6-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/rpQ49xLP",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E4%B8%80%E9%A2%97%E8%B0%A6%E5%8D%91%E7%9A%84%E5%BF%83",
+    "searchUrl": "https://yopu.co/explore#q=%E4%B8%80%E9%A2%97%E8%B0%A6%E5%8D%91%E7%9A%84%E5%BF%83",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/28155.mp3",
+      "sourceUrl": "https://www.cbann.com/?type=song&s=%E4%B8%80%E9%A2%97%E8%B0%A6%E5%8D%91%E7%9A%84%E5%BF%83",
+      "label": "公开音源 · 611灵粮堂 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[G]  [D/F#]  [Em]  [Bm]  [A7]  [Bm9]  [D]  [B7]  [A/G]  [A]  [F#m] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-100a7c92a153",
+    "title": "你扶持我",
+    "artist": "You Raise Me Up",
+    "category": "激励",
+    "categoryReason": "在软弱中得扶持与力量，勇敢越过难处。",
+    "originalKey": "C",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-100a7c92a153-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/rpQ6Ro1G",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E4%BD%A0%E6%89%B6%E6%8C%81%E6%88%91",
+    "searchUrl": "https://yopu.co/explore#q=%E4%BD%A0%E6%89%B6%E6%8C%81%E6%88%91",
+    "audio": {
+      "url": "https://gojes.us/china/resources/Music/%E7%A5%A2%E6%89%B6%E6%8C%81%E6%88%91%20You%20Raise%20Me%20Up.mp3",
+      "sourceUrl": "https://gojes.us/china/resources/?blank=true&dir=Music",
+      "label": "公开音源 · GoJesus",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[C]  [F]  [C/E]  [Am]  [G]  [G7]  [C/G] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-9295d21e7ab3",
+    "title": "开路者",
+    "artist": "Sinach · Way Maker",
+    "category": "激励",
+    "categoryReason": "宣认神开道路、守应许，在黑暗中赐盼望。",
+    "originalKey": "C",
+    "archivedSheetCount": 3,
+    "sheets": [
+      {
+        "id": "light-9295d21e7ab3-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/RPOnEdjX",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%BC%80%E8%B7%AF%E8%80%85",
+    "searchUrl": "https://yopu.co/explore#q=%E5%BC%80%E8%B7%AF%E8%80%85",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[G]  [Am]  [C]  [Bm]  [F] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-727aa1b0a955",
+    "title": "再次将我更新",
+    "artist": "小羊诗歌",
+    "category": "悔改认罪",
+    "categoryReason": "到主面前求洁净与更新，重新献上生命。",
+    "originalKey": "A",
+    "archivedSheetCount": 5,
+    "sheets": [
+      {
+        "id": "light-727aa1b0a955-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/O16O5mQX",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      },
+      {
+        "id": "light-727aa1b0a955-pdf-0",
+        "label": "小羊诗歌 · 旋律和弦谱",
+        "instrument": "unknown",
+        "kind": "pdf",
+        "url": "https://w247.net/files/songs/%E5%86%8D%E6%AC%A1%E5%B0%87%E6%88%91%E6%9B%B4%E6%96%B0%E5%96%AE%E9%A0%81%E8%AD%9C.pdf",
+        "sourceName": "小羊诗歌官网"
+      },
+      {
+        "id": "light-727aa1b0a955-pdf-1",
+        "label": "小羊诗歌 · 和声谱",
+        "instrument": "unknown",
+        "kind": "pdf",
+        "url": "https://w247.net/files/songs/%E5%86%8D%E6%AC%A1%E5%B0%87%E6%88%91%E6%9B%B4%E6%96%B0%E5%92%8C%E8%81%B2%E8%AD%9C.pdf",
+        "sourceName": "小羊诗歌官网"
+      }
+    ],
+    "listeningUrl": "https://w247.net/songs/zai-ci-jiang-wo-geng-xin/",
+    "searchUrl": "https://yopu.co/explore#q=%E5%86%8D%E6%AC%A1%E5%B0%86%E6%88%91%E6%9B%B4%E6%96%B0",
+    "audio": {
+      "url": "https://w247.net/files/songs/%E5%86%8D%E6%AC%A1%E5%B0%87%E6%88%91%E6%9B%B4%E6%96%B0.mp3",
+      "sourceUrl": "https://w247.net/songs/zai-ci-jiang-wo-geng-xin/",
+      "label": "官方原唱 · 小羊诗歌",
+      "verifiedAt": "2026-11-16",
+      "verification": "source-page"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[E7]  [C#m]  [Bm]  [Bm7]  [F#m]  [D]  [E]  [A] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-8615f8dbe793",
+    "title": "哦，主耶稣你深长的爱",
+    "artist": "Light 团契收藏",
+    "category": "爱慕",
+    "categoryReason": "赞叹并回应基督广阔深长的爱。",
+    "originalKey": "G",
+    "archivedSheetCount": 4,
+    "sheets": [
+      {
+        "id": "light-8615f8dbe793-external-0",
+        "url": "https://www.zanmei.ai/tab/22878.html",
+        "label": "爱赞美 · 旋律谱",
+        "sourceName": "爱赞美公开歌谱",
+        "kind": "page",
+        "instrument": "unknown"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%93%A6%EF%BC%8C%E4%B8%BB%E8%80%B6%E7%A8%A3%E4%BD%A0%E6%B7%B1%E9%95%BF%E7%9A%84%E7%88%B1",
+    "searchUrl": "https://yopu.co/explore#q=%E5%93%A6%EF%BC%8C%E4%B8%BB%E8%80%B6%E7%A8%A3%E4%BD%A0%E6%B7%B1%E9%95%BF%E7%9A%84%E7%88%B1",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/1086.mp3",
+      "sourceUrl": "https://www.cbann.com/?type=song&s=%E5%93%A6%EF%BC%8C%E4%B8%BB%E8%80%B6%E7%A8%A3%E4%BD%A0%E6%B7%B1%E9%95%BF%E7%9A%84%E7%88%B1",
+      "label": "公开音源 · 新心音乐 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[G]  [Em]  [D7/C]  [Bm]  [C]  [D/F#]  [Dsus4]  [Am]  [A7]  [D] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-deb3cd2ec0a0",
+    "title": "以色列的圣者",
+    "artist": "Light 团契收藏",
+    "category": "颂赞",
+    "categoryReason": "宣认神为以色列的圣者、救赎主和牧者。",
+    "originalKey": "G",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-deb3cd2ec0a0-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/g10kyWrp",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E4%BB%A5%E8%89%B2%E5%88%97%E7%9A%84%E5%9C%A3%E8%80%85",
+    "searchUrl": "https://yopu.co/explore#q=%E4%BB%A5%E8%89%B2%E5%88%97%E7%9A%84%E5%9C%A3%E8%80%85",
+    "audio": {
+      "url": "https://gojes.us/china/resources/Music/%E4%BB%A5%E8%89%B2%E5%88%97%E7%9A%84%E5%9C%A3%E8%80%85%20%E4%BB%A5%E8%89%B2%E5%88%97%E7%9A%84%E8%81%96%E8%80%85%20Holy%20One%20of%20Israel.mp3",
+      "sourceUrl": "https://gojes.us/china/resources/?blank=true&dir=Music",
+      "label": "公开音源 · GoJesus",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Am]  [Bm]  [D]  [Em]  [C]  [G] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-6a8113b406b9",
+    "title": "我的心你要称颂耶和华",
+    "artist": "Light 团契收藏",
+    "category": "感恩",
+    "categoryReason": "依据诗篇一百零三篇记念赦免、医治与慈爱。",
+    "originalKey": "C",
+    "archivedSheetCount": 4,
+    "sheets": [
+      {
+        "id": "light-6a8113b406b9-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/rpQ2DrK1",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%88%91%E7%9A%84%E5%BF%83%E4%BD%A0%E8%A6%81%E7%A7%B0%E9%A2%82%E8%80%B6%E5%92%8C%E5%8D%8E",
+    "searchUrl": "https://yopu.co/explore#q=%E6%88%91%E7%9A%84%E5%BF%83%E4%BD%A0%E8%A6%81%E7%A7%B0%E9%A2%82%E8%80%B6%E5%92%8C%E5%8D%8E",
+    "audio": {
+      "url": "https://gojes.us/china/resources/Music/%E6%88%91%E7%9A%84%E5%BF%83%20%E4%BD%A0%E8%A6%81%E7%A7%B0%E9%A2%82%E8%80%B6%E5%92%8C%E5%8D%8E%20%E6%88%91%E7%9A%84%E5%BF%83%E4%BD%A0%E8%A6%81%E7%A8%B1%E9%A0%8C%E8%80%B6%E5%92%8C%E8%8F%AF%20Praise%20the%20Lord%20O%20my%20soul.mp3",
+      "sourceUrl": "https://gojes.us/china/resources/?blank=true&dir=Music",
+      "label": "公开音源 · GoJesus",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[G]  [Fm]  [Dm]  [Em]  [F]  [Am] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-41260c845805",
+    "title": "你爱永不变",
+    "artist": "有情天音乐",
+    "category": "感恩",
+    "categoryReason": "感谢神永不改变的爱与信实。",
+    "originalKey": "F",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-41260c845805-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/0PzZ9LP8",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E4%BD%A0%E7%88%B1%E6%B0%B8%E4%B8%8D%E5%8F%98",
+    "searchUrl": "https://yopu.co/explore#q=%E4%BD%A0%E7%88%B1%E6%B0%B8%E4%B8%8D%E5%8F%98",
+    "audio": {
+      "url": "https://www.bmbcweb.com/wp-content/uploads/2020/02/6.mp3",
+      "sourceUrl": "https://www.bmbcweb.com/2020/02/10/33815/",
+      "label": "公开音源 · 伯灵顿差传浸信会",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    }
+  },
+  {
+    "id": "light-22c0fa6d6e26",
+    "title": "满有能力",
+    "artist": "Light 团契收藏",
+    "category": "激励",
+    "categoryReason": "宣告基督在心里赐平安、盼望与能力。",
+    "originalKey": "C",
+    "timeSignature": "4/4",
+    "archivedSheetCount": 2,
+    "sheets": [
+      {
+        "id": "light-22c0fa6d6e26-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/O16J5xG1",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%BB%A1%E6%9C%89%E8%83%BD%E5%8A%9B",
+    "searchUrl": "https://yopu.co/explore#q=%E6%BB%A1%E6%9C%89%E8%83%BD%E5%8A%9B",
+    "audio": {
+      "url": "https://gojes.us/china/resources/Music/%E6%BB%A1%E6%9C%89%E8%83%BD%E5%8A%9B%20%E6%BB%BF%E6%9C%89%E8%83%BD%E5%8A%9B%20I%20Am%20Strengthened%20In%20Him.mp3",
+      "sourceUrl": "https://gojes.us/china/resources/?blank=true&dir=Music",
+      "label": "公开音源 · GoJesus",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Gadd2]  [C]  [F]  [D]  [C/E]  [G] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-a3d006db8f37",
+    "title": "从这代到那代",
+    "artist": "赞美之泉",
+    "category": "颂赞",
+    "categoryReason": "世世代代传扬并称颂神的荣耀。",
+    "originalKey": "E",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-a3d006db8f37-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/epKV73Pq",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E4%BB%8E%E8%BF%99%E4%BB%A3%E5%88%B0%E9%82%A3%E4%BB%A3",
+    "searchUrl": "https://yopu.co/explore#q=%E4%BB%8E%E8%BF%99%E4%BB%A3%E5%88%B0%E9%82%A3%E4%BB%A3",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[B]  [A]  [Bsus4] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-5ba8f1bd8eb2",
+    "title": "耶稣掌权",
+    "artist": "盛晓玫",
+    "category": "颂赞",
+    "categoryReason": "宣扬耶稣的主权并尊崇其圣名。",
+    "originalKey": "A",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-5ba8f1bd8eb2-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/b19QzQ10",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E8%80%B6%E7%A8%A3%E6%8E%8C%E6%9D%83",
+    "searchUrl": "https://yopu.co/explore#q=%E8%80%B6%E7%A8%A3%E6%8E%8C%E6%9D%83",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/11324.mp3",
+      "sourceUrl": "https://www.cbann.com/?type=song&s=%E8%80%B6%E7%A8%A3%E6%8E%8C%E6%9D%83",
+      "label": "公开音源 · 盛晓玫 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[A]  [D]  [E]  [Dm]  [Bm]  [F#m]  [C#m]  [F#]  [D#dim] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-0ad716655803",
+    "title": "从亘古到永远",
+    "artist": "Light 团契收藏",
+    "category": "颂赞",
+    "categoryReason": "赞美神永恒的国度、能力与不变信实。",
+    "originalKey": "C",
+    "archivedSheetCount": 2,
+    "sheets": [
+      {
+        "id": "light-0ad716655803-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/0XRM4kW1",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E4%BB%8E%E4%BA%98%E5%8F%A4%E5%88%B0%E6%B0%B8%E8%BF%9C",
+    "searchUrl": "https://yopu.co/explore#q=%E4%BB%8E%E4%BA%98%E5%8F%A4%E5%88%B0%E6%B0%B8%E8%BF%9C",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/18347.mp3",
+      "sourceUrl": "https://www.cbann.com/?type=song&s=%E4%BB%8E%E4%BA%98%E5%8F%A4%E5%88%B0%E6%B0%B8%E8%BF%9C",
+      "label": "公开音源 · 生命河灵粮堂 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[G]  [F]  [C]  [Am]  [Dm] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-581c1d0d23fb",
+    "title": "是为了爱",
+    "artist": "赞美之泉",
+    "category": "节期",
+    "categoryReason": "记念耶稣道成肉身与降生，适合圣诞节期。",
+    "originalKey": "F",
+    "archivedSheetCount": 2,
+    "sheets": [
+      {
+        "id": "light-581c1d0d23fb-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/3pnkJWM1",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%98%AF%E4%B8%BA%E4%BA%86%E7%88%B1",
+    "searchUrl": "https://yopu.co/explore#q=%E6%98%AF%E4%B8%BA%E4%BA%86%E7%88%B1",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Bb/F]  [Bb]  [F]  [Dm]  [Gm]  [C]  [F/C]  [F/A] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-4a893b097f1a",
+    "title": "一同齐声宣扬",
+    "artist": "赞美之泉",
+    "category": "节期",
+    "categoryReason": "宣扬救主降生与天使报喜的信息。",
+    "originalKey": "A",
+    "archivedSheetCount": 2,
+    "sheets": [
+      {
+        "id": "light-4a893b097f1a-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/epKrDa3P",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E4%B8%80%E5%90%8C%E9%BD%90%E5%A3%B0%E5%AE%A3%E6%89%AC",
+    "searchUrl": "https://yopu.co/explore#q=%E4%B8%80%E5%90%8C%E9%BD%90%E5%A3%B0%E5%AE%A3%E6%89%AC",
+    "audio": {
+      "url": "https://hland.toutiaoweb.com/prod/20231101-064556.1116.mp3",
+      "sourceUrl": "https://www.toutiaoweb.com/p/1971013.html",
+      "label": "公开音源 · 赞美之泉圣诞特别单曲",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[A]  [D/A]  [D]  [E]  [C#]  [F#m] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-37c8d058b619",
+    "title": "到各山岭去传扬",
+    "artist": "Light 团契收藏",
+    "category": "节期",
+    "categoryReason": "传扬耶稣降生的圣诞喜讯。",
+    "originalKey": "A",
+    "archivedSheetCount": 2,
+    "sheets": [
+      {
+        "id": "light-37c8d058b619-external-0",
+        "url": "https://www.endianjiaohui.com/dangan/886",
+        "label": "恩典材料 · 旋律谱下载页",
+        "sourceName": "恩典材料公开歌谱",
+        "kind": "page",
+        "instrument": "unknown"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%88%B0%E5%90%84%E5%B1%B1%E5%B2%AD%E5%8E%BB%E4%BC%A0%E6%89%AC",
+    "searchUrl": "https://yopu.co/explore#q=%E5%88%B0%E5%90%84%E5%B1%B1%E5%B2%AD%E5%8E%BB%E4%BC%A0%E6%89%AC",
+    "audio": {
+      "url": "https://www.endianjiaohui.com/wp-content/uploads/2020/02/0040%E5%88%B0%E5%90%84%E5%B1%B1%E5%B2%AD%E5%8E%BB%E4%BC%A0%E6%89%AC%EF%BC%88%E5%9C%A3%E8%AF%9E%E8%8A%82%EF%BC%89.mp3",
+      "sourceUrl": "https://www.endianjiaohui.com/dangan/886",
+      "label": "公开音源 · 恩典材料",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[A7]  [E]  [A]  [E/G#]  [D]  [A/E]  [F#m7] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-ed0551d0c05b",
+    "title": "我们欢迎君王降临",
+    "artist": "赞美之泉",
+    "category": "颂赞",
+    "categoryReason": "欢迎君王同在、尊崇荣耀之王。",
+    "originalKey": "F",
+    "archivedSheetCount": 4,
+    "sheets": [
+      {
+        "id": "light-ed0551d0c05b-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/vXyq6krX",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%88%91%E4%BB%AC%E6%AC%A2%E8%BF%8E%E5%90%9B%E7%8E%8B%E9%99%8D%E4%B8%B4",
+    "searchUrl": "https://yopu.co/explore#q=%E6%88%91%E4%BB%AC%E6%AC%A2%E8%BF%8E%E5%90%9B%E7%8E%8B%E9%99%8D%E4%B8%B4",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Dm7]  [Csus4]  [Bbmaj7]  [F]  [Bb]  [Fadd9]  [Bb/C]  [C/Bb]  [Am7]  [Gm7]  [C/E]  [D]  [Fsus4]  [C] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-ba03e2a4b5cb",
+    "title": "声合为一",
+    "artist": "小羊诗歌",
+    "category": "祷告祈求",
+    "categoryReason": "祈求同心合意的敬拜与彼此合一。",
+    "originalKey": "Bb",
+    "archivedSheetCount": 2,
+    "sheets": [
+      {
+        "id": "light-ba03e2a4b5cb-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/KpGED78X",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      },
+      {
+        "id": "light-ba03e2a4b5cb-pdf-0",
+        "label": "小羊诗歌 · 旋律和弦谱",
+        "instrument": "unknown",
+        "kind": "pdf",
+        "url": "https://w247.net/files/songs/%E8%81%B2%E5%90%88%E7%82%BA%E4%B8%80%E5%96%AE%E9%A0%81%E8%AD%9C.pdf",
+        "sourceName": "小羊诗歌官网"
+      }
+    ],
+    "listeningUrl": "https://w247.net/songs/sheng-he-wei-yi/",
+    "searchUrl": "https://yopu.co/explore#q=%E5%A3%B0%E5%90%88%E4%B8%BA%E4%B8%80",
+    "audio": {
+      "url": "https://w247.net/files/songs/%E8%81%B2%E5%90%88%E7%82%BA%E4%B8%80.mp3",
+      "sourceUrl": "https://w247.net/songs/sheng-he-wei-yi/",
+      "label": "官方原唱 · 小羊诗歌",
+      "verifiedAt": "2026-11-16",
+      "verification": "source-page"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Dm]  [Eb]  [F]  [Gm]  [Bb]  [F7]  [Cm7] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-84e4607147da",
+    "title": "渴望复兴的火",
+    "artist": "生命河灵粮堂",
+    "category": "祷告祈求",
+    "categoryReason": "呼求圣灵复兴、点燃生命。",
+    "originalKey": "Bb",
+    "archivedSheetCount": 1,
+    "sheets": [],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%B8%B4%E6%9C%9B%E5%A4%8D%E5%85%B4%E7%9A%84%E7%81%AB",
+    "searchUrl": "https://yopu.co/explore#q=%E6%B8%B4%E6%9C%9B%E5%A4%8D%E5%85%B4%E7%9A%84%E7%81%AB",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/14723.mp3",
+      "sourceUrl": "https://www.cbann.com/?type=song&s=%E6%B8%B4%E6%9C%9B%E5%A4%8D%E5%85%B4%E7%9A%84%E7%81%AB",
+      "label": "公开音源 · 生命河灵粮堂 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Gm/Bb]  [Gm]  [Bb]  [Cm]  [F/A]  [Eb/F]  [F]  [C/E]  [Dm]  [Ebmaj7]  [F7]  [Eb] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-28ac42cd0dfa",
+    "title": "只愿得着你",
+    "artist": "生命河灵粮堂",
+    "category": "爱慕",
+    "categoryReason": "以得着基督、亲近主为唯一渴望。",
+    "originalKey": "G",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-28ac42cd0dfa-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/rp8jVAXL",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%8F%AA%E6%84%BF%E5%BE%97%E7%9D%80%E4%BD%A0",
+    "searchUrl": "https://yopu.co/explore#q=%E5%8F%AA%E6%84%BF%E5%BE%97%E7%9D%80%E4%BD%A0",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/18358.mp3",
+      "sourceUrl": "https://www.cbann.com/?type=song&s=%E5%8F%AA%E6%84%BF%E5%BE%97%E7%9D%80%E4%BD%A0",
+      "label": "公开音源 · 生命河灵粮堂 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[D]  [Em]  [C]  [B7/F#]  [G]  [D/F#]  [Am] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-a8986fe0f093",
+    "title": "恳求圣灵来",
+    "artist": "新心音乐",
+    "category": "祷告祈求",
+    "categoryReason": "恳求圣灵浇灌、开启并塑造生命。",
+    "originalKey": "F",
+    "timeSignature": "3/4",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-a8986fe0f093-external-0",
+        "url": "https://www.cccc.org.uk/resources/scores/scores/kenqiushenglinglai.jpg",
+        "label": "剑桥华人基督教会 · 旋律和弦谱",
+        "sourceName": "剑桥华人基督教会公开谱库",
+        "kind": "image",
+        "instrument": "unknown"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%81%B3%E6%B1%82%E5%9C%A3%E7%81%B5%E6%9D%A5",
+    "searchUrl": "https://yopu.co/explore#q=%E6%81%B3%E6%B1%82%E5%9C%A3%E7%81%B5%E6%9D%A5",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/15402.mp3",
+      "sourceUrl": "https://www.cbann.com/?type=song&s=%E6%81%B3%E6%B1%82%E5%9C%A3%E7%81%B5%E6%9D%A5",
+      "label": "公开音源 · 新心音乐 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Am]  [Dm]  [Am7]  [F]  [Bbmaj7]  [Ebmaj7]  [A]  [C]  [G]  [Bb]  [F7] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-25f38ef7ea34",
+    "title": "因着信",
+    "artist": "角声使团",
+    "category": "激励",
+    "categoryReason": "以信心面对困境，相信神的应许与带领。",
+    "originalKey": "C",
+    "archivedSheetCount": 2,
+    "sheets": [
+      {
+        "id": "light-25f38ef7ea34-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/gXg82bNP",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%9B%A0%E7%9D%80%E4%BF%A1",
+    "searchUrl": "https://yopu.co/explore#q=%E5%9B%A0%E7%9D%80%E4%BF%A1",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/26618.mp3",
+      "sourceUrl": "https://www.cbann.com/?type=song&s=%E5%9B%A0%E7%9D%80%E4%BF%A1",
+      "label": "公开音源 · 角声使团 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Dm]  [Em]  [Bb]  [G]  [Am]  [A]  [F]  [C/E]  [C]  [C/G]  [E/B]  [F#m7b5]  [D/F#]  [Fm] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-d86c15255d28",
+    "title": "宝贵十架",
+    "artist": "赞美之泉",
+    "category": "纪念",
+    "categoryReason": "记念主在十字架上的舍命与救赎。",
+    "originalKey": "A",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-d86c15255d28-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/aPemwbPb",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%AE%9D%E8%B4%B5%E5%8D%81%E6%9E%B6",
+    "searchUrl": "https://yopu.co/explore#q=%E5%AE%9D%E8%B4%B5%E5%8D%81%E6%9E%B6",
+    "audio": {
+      "url": "https://gojes.us/china/resources/Music/%E5%AE%9D%E8%B4%B5%E5%8D%81%E6%9E%B6%20%E5%AF%B6%E8%B2%B4%E5%8D%81%E6%9E%B6%20Precious%20Cross.mp3",
+      "sourceUrl": "https://gojes.us/china/resources/?blank=true&dir=Music",
+      "label": "公开音源 · GoJesus",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[D]  [C#/G#]  [F#m]  [B7]  [A7/E]  [E]  [A7/C#]  [A]  [D/E]  [Bm]  [B]  [A/C#]  [B7/D#]  [A/E]  [E7] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-44cd2865b629",
+    "title": "奔跑不放弃",
+    "artist": "赞美之泉",
+    "category": "激励",
+    "categoryReason": "在风暴和低谷中倚靠主、持续奔跑。",
+    "originalKey": "F",
+    "archivedSheetCount": 2,
+    "sheets": [
+      {
+        "id": "light-44cd2865b629-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/RPOEVk17",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%A5%94%E8%B7%91%E4%B8%8D%E6%94%BE%E5%BC%83",
+    "searchUrl": "https://yopu.co/explore#q=%E5%A5%94%E8%B7%91%E4%B8%8D%E6%94%BE%E5%BC%83",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[C/E]  [Bb/C]  [Gm]  [E]  [C]  [F/A]  [Bb] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-dcbc4cb2ee77",
+    "title": "新的异象，新的方向",
+    "artist": "赞美之泉",
+    "category": "奉献",
+    "categoryReason": "回应神的异象与呼召，愿意向新方向前行。",
+    "originalKey": "A",
+    "archivedSheetCount": 3,
+    "sheets": [
+      {
+        "id": "light-dcbc4cb2ee77-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/b1va8bkp",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%96%B0%E7%9A%84%E5%BC%82%E8%B1%A1%EF%BC%8C%E6%96%B0%E7%9A%84%E6%96%B9%E5%90%91",
+    "searchUrl": "https://yopu.co/explore#q=%E6%96%B0%E7%9A%84%E5%BC%82%E8%B1%A1%EF%BC%8C%E6%96%B0%E7%9A%84%E6%96%B9%E5%90%91",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Cm]  [Fm]  [E/A]  [Bm] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-e6fcdb0cae2d",
+    "title": "圣哉全能主",
+    "artist": "小羊诗歌",
+    "category": "颂赞",
+    "categoryReason": "围绕神的圣洁、全能与配得敬拜。",
+    "originalKey": "G",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-e6fcdb0cae2d-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/41WEalvP",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      },
+      {
+        "id": "light-e6fcdb0cae2d-pdf-0",
+        "label": "小羊诗歌 · 旋律和弦谱",
+        "instrument": "unknown",
+        "kind": "pdf",
+        "url": "https://w247.net/files/songs/%E8%81%96%E5%93%89%E5%85%A8%E8%83%BD%E4%B8%BB%E6%AD%8C%E8%AD%9C.pdf",
+        "sourceName": "小羊诗歌官网"
+      },
+      {
+        "id": "light-e6fcdb0cae2d-pdf-1",
+        "label": "小羊诗歌 · 和声谱",
+        "instrument": "unknown",
+        "kind": "pdf",
+        "url": "https://w247.net/files/songs/%E8%81%96%E5%93%89%E5%85%A8%E8%83%BD%E4%B8%BB%E5%92%8C%E8%81%B2%E8%AD%9C.pdf",
+        "sourceName": "小羊诗歌官网"
+      }
+    ],
+    "listeningUrl": "https://w247.net/songs/sheng-zai-quan-neng-zhu/",
+    "searchUrl": "https://yopu.co/explore#q=%E5%9C%A3%E5%93%89%E5%85%A8%E8%83%BD%E4%B8%BB",
+    "audio": {
+      "url": "https://w247.net/files/songs/%E8%81%96%E5%93%89%E5%85%A8%E8%83%BD%E4%B8%BB.mp3",
+      "sourceUrl": "https://w247.net/songs/sheng-zai-quan-neng-zhu/",
+      "label": "官方原唱 · 小羊诗歌",
+      "verifiedAt": "2026-11-16",
+      "verification": "source-page"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Cmaj7]  [D]  [Em]  [Am]  [C]  [G]  [B7]  [B] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-5f15b7f696cf",
+    "title": "所以我不问为什么",
+    "artist": "Light 团契收藏",
+    "category": "奉献",
+    "categoryReason": "在不明白的境遇中仍选择信靠、顺服。",
+    "originalKey": "F",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-5f15b7f696cf-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/9Pxykvgp",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%89%80%E4%BB%A5%E6%88%91%E4%B8%8D%E9%97%AE%E4%B8%BA%E4%BB%80%E4%B9%88",
+    "searchUrl": "https://yopu.co/explore#q=%E6%89%80%E4%BB%A5%E6%88%91%E4%B8%8D%E9%97%AE%E4%B8%BA%E4%BB%80%E4%B9%88",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/52282.mp3",
+      "sourceUrl": "https://www.cbann.com/%e6%89%80%e4%bb%a5%e6%88%91%e4%b8%8d%e9%97%ae%e4%b8%ba%e4%bb%80%e4%b9%88/",
+      "label": "公开音源 · 经典单曲 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[C]  [Fmaj7]  [Gm7]  [F/A] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-d91a231188d2",
+    "title": "从心合一",
+    "artist": "Light 团契收藏",
+    "category": "祷告祈求",
+    "categoryReason": "求在主里同心、彼此相爱并合一敬拜。",
+    "originalKey": "F",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-d91a231188d2-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/rp8okGkP",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E4%BB%8E%E5%BF%83%E5%90%88%E4%B8%80",
+    "searchUrl": "https://yopu.co/explore#q=%E4%BB%8E%E5%BF%83%E5%90%88%E4%B8%80",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Dm]  [F]  [Gm]  [C]  [Am] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-dd7e0c8c5aed",
+    "title": "充满在这里",
+    "artist": "赞美之泉",
+    "category": "祷告祈求",
+    "categoryReason": "邀请神的荣耀和能力充满聚集之处。",
+    "originalKey": "A",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-dd7e0c8c5aed-external-0",
+        "url": "https://chord4.com/tabs/36796",
+        "label": "Chord4 · 吉他和弦谱",
+        "sourceName": "Chord4 公开和弦谱",
+        "kind": "page",
+        "instrument": "guitar"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%85%85%E6%BB%A1%E5%9C%A8%E8%BF%99%E9%87%8C",
+    "searchUrl": "https://yopu.co/explore#q=%E5%85%85%E6%BB%A1%E5%9C%A8%E8%BF%99%E9%87%8C",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[C#m7]  [C#]  [E/D]  [Bm7]  [B/D#]  [A]  [D]  [D/E]  [E]  [F#] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-61506bae8532",
+    "title": "进入你的同在",
+    "artist": "赞美之泉",
+    "category": "爱慕",
+    "categoryReason": "渴望亲近主、进入同在，单单敬拜耶稣。",
+    "originalKey": "C",
+    "timeSignature": "4/4",
+    "archivedSheetCount": 3,
+    "sheets": [
+      {
+        "id": "light-61506bae8532-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/KpGLdv14",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E8%BF%9B%E5%85%A5%E4%BD%A0%E7%9A%84%E5%90%8C%E5%9C%A8",
+    "searchUrl": "https://yopu.co/explore#q=%E8%BF%9B%E5%85%A5%E4%BD%A0%E7%9A%84%E5%90%8C%E5%9C%A8",
+    "chart": {
+      "kind": "lead",
+      "credit": "赞美之泉版权所有。依已存谱本整理的轻简和弦伴奏。",
+      "sections": [
+        {
+          "label": "主歌 A1",
+          "lines": [
+            "[C]让我进入主祢的[Cmaj7]同在，",
+            "[F]我与众天使[Dm]围绕宝座[G7]敬拜。",
+            "[C]哦，让我进入主祢的[Cmaj7]同在，",
+            "我要[Dm]单单[G7]敬拜祢[C]耶稣。"
+          ]
+        },
+        {
+          "label": "副歌 B1",
+          "lines": [
+            "我要[F]敬[G7]拜，[Em]敬[Am7]拜，[Dm]敬拜[G7]我的[C]主。",
+            "我要[F]敬[G7]拜，[Em]敬[Am7]拜，[F]敬拜[G7]我的[C]主。",
+            "我要[F]跪[G7]下，[Em]跪[Am7]下，[Dm]在祢[G7]宝座[C]前。",
+            "我要[F]跪[G7]下，[Em]跪[Am7]下，[F]在祢[G7]宝座[C]前。"
+          ]
+        },
+        {
+          "label": "主歌 A2",
+          "lines": [
+            "[C]让我进入主祢的[Cmaj7]荣耀，",
+            "[F]我在祢圣洁[Dm]光中被祢[G7]得着。",
+            "[C]哦，让我进入主祢的[Cmaj7]荣耀，",
+            "我要[Dm]单单[G7]为主而[C]活。"
+          ]
+        },
+        {
+          "label": "副歌 B2",
+          "lines": [
+            "颂赞[F]荣[G7]耀，[Em]荣[Am7]耀，[Dm]荣耀[G7]归羔[C]羊。",
+            "颂赞[F]荣[G7]耀，[Em]荣[Am7]耀，[F]荣耀[G7]归羔[C]羊。",
+            "颂赞[F]圣[G7]洁，[Em]圣[Am7]洁，[Dm]圣洁[G7]的真[C]神。",
+            "颂赞[F]圣[G7]洁，[Em]圣[Am7]洁，[F]圣洁[G7]的真[C]神。"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-c0d36d49e6bc",
+    "title": "这世代",
+    "artist": "赞美之泉",
+    "category": "激励",
+    "categoryReason": "呼召这世代预备迎见主、盼望神的复兴。",
+    "originalKey": "G",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-c0d36d49e6bc-external-0",
+        "url": "https://chord4.com/tabs/38570",
+        "label": "Chord4 · 吉他和弦谱",
+        "sourceName": "Chord4 公开和弦谱",
+        "kind": "page",
+        "instrument": "guitar"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E8%BF%99%E4%B8%96%E4%BB%A3",
+    "searchUrl": "https://yopu.co/explore#q=%E8%BF%99%E4%B8%96%E4%BB%A3",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[D]  [Em]  [G]  [C]  [Bm]  [D/F#] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-64369e812694",
+    "title": "靠主常喜乐",
+    "artist": "新歌颂扬 · Russell Lowe",
+    "category": "激励",
+    "categoryReason": "勉励会众靠主常常喜乐。",
+    "originalKey": "G",
+    "archivedSheetCount": 1,
+    "sheets": [],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E9%9D%A0%E4%B8%BB%E5%B8%B8%E5%96%9C%E4%B9%90",
+    "searchUrl": "https://yopu.co/explore#q=%E9%9D%A0%E4%B8%BB%E5%B8%B8%E5%96%9C%E4%B9%90",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/1118.mp3",
+      "sourceUrl": "https://www.cbann.com/?type=song&s=%E9%9D%A0%E4%B8%BB%E5%B8%B8%E5%96%9C%E4%B9%90",
+      "label": "公开音源 · 新歌颂扬 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[G]  [B7]  [D] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-04403982ac17",
+    "title": "安静",
+    "artist": "约书亚乐团",
+    "category": "祷告祈求",
+    "categoryReason": "在风浪中安静、交托并认识神。",
+    "originalKey": "C",
+    "timeSignature": "4/4",
+    "archivedSheetCount": 2,
+    "sheets": [
+      {
+        "id": "light-04403982ac17-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/rpQzOQ1G",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%AE%89%E9%9D%99",
+    "searchUrl": "https://yopu.co/explore#q=%E5%AE%89%E9%9D%99",
+    "audio": {
+      "url": "https://gojes.us/china/resources/Music/Still%20English%20%20Mandarin.mp3",
+      "sourceUrl": "https://gojes.us/china/resources/?blank=true&dir=Music",
+      "label": "公开音源 · GoJesus",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "lead",
+      "credit": "词曲：Reuben Morgan / Hillsong；中译：周巽光。依已存谱本整理的轻简和弦伴奏。",
+      "sections": [
+        {
+          "label": "主歌 · 简化伴奏",
+          "lines": [
+            "[C]隐藏我，在[G/B]祢翅[Am]膀[G]底下，",
+            "[F]遮盖我，[Dm7]在祢大能[G]手中。"
+          ]
+        },
+        {
+          "label": "副歌",
+          "lines": [
+            "[F]当大海翻[G]腾，波涛汹[C]涌，",
+            "[F]我与祢展[G]翅，暴风[Am]上空。",
+            "[F]父祢仍作[G]王，在洪[C]水中，",
+            "[F]我要安[G]静，知祢是[C]神。"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-c8e001753bcd",
+    "title": "今生跟随主耶稣",
+    "artist": "Light 团契收藏",
+    "category": "奉献",
+    "categoryReason": "将一生交给主，跟随并事奉耶稣。",
+    "originalKey": "D",
+    "timeSignature": "4/4",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-c8e001753bcd-external-0",
+        "url": "https://www.izanmei.com/tab/35697.html",
+        "label": "爱赞美 · 旋律谱",
+        "sourceName": "爱赞美公开歌谱",
+        "kind": "page",
+        "instrument": "unknown"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E4%BB%8A%E7%94%9F%E8%B7%9F%E9%9A%8F%E4%B8%BB%E8%80%B6%E7%A8%A3",
+    "searchUrl": "https://yopu.co/explore#q=%E4%BB%8A%E7%94%9F%E8%B7%9F%E9%9A%8F%E4%B8%BB%E8%80%B6%E7%A8%A3",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/24514.mp3",
+      "sourceUrl": "https://www.cbann.com/?type=song&s=%E4%BB%8A%E7%94%9F%E8%B7%9F%E9%9A%8F%E4%B8%BB%E8%80%B6%E7%A8%A3",
+      "label": "公开音源 · 经典单曲 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    }
+  },
+  {
+    "id": "light-9ac5bb4c6b9c",
+    "title": "同路人",
+    "artist": "迦南诗歌 · 小敏",
+    "category": "激励",
+    "categoryReason": "鼓励同行者彼此扶持、共同奔走天路。",
+    "originalKey": "F",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-9ac5bb4c6b9c-external-0",
+        "url": "https://chord4.com/tabs/25393",
+        "label": "Chord4 · 吉他和弦谱",
+        "sourceName": "Chord4 公开和弦谱",
+        "kind": "page",
+        "instrument": "guitar"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%90%8C%E8%B7%AF%E4%BA%BA",
+    "searchUrl": "https://yopu.co/explore#q=%E5%90%8C%E8%B7%AF%E4%BA%BA",
+    "audio": {
+      "url": "https://www.bmbcweb.com/wp-content/uploads/2020/02/33.mp3",
+      "sourceUrl": "https://www.bmbcweb.com/2020/02/10/33815/",
+      "label": "公开音源 · 伯灵顿差传浸信会",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[F]  [C]  [Bb]  [C7]  [F/C]  [Bb6] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-a13866247d13",
+    "title": "得胜的宣告",
+    "artist": "赞美之泉",
+    "category": "激励",
+    "categoryReason": "以神的拯救与同在宣告得胜。",
+    "originalKey": "D",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-a13866247d13-external-0",
+        "url": "https://cm.clachinese.org/files/pdf/P26.pdf",
+        "label": "CLA 教会 · 和弦伴奏谱",
+        "sourceName": "CLA 教会公开歌谱",
+        "kind": "pdf",
+        "instrument": "guitar"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%BE%97%E8%83%9C%E7%9A%84%E5%AE%A3%E5%91%8A",
+    "searchUrl": "https://yopu.co/explore#q=%E5%BE%97%E8%83%9C%E7%9A%84%E5%AE%A3%E5%91%8A",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[G/A]  [B]  [A]  [D]  [Em]  [Bm] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-273bf08eb7d6",
+    "title": "我的神真美",
+    "artist": "WT 团队 / 小羊诗歌",
+    "category": "颂赞",
+    "categoryReason": "赞美神的荣美、尊贵与圣洁。",
+    "originalKey": "D",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-273bf08eb7d6-pdf-0",
+        "label": "小羊诗歌 · 旋律和弦谱",
+        "instrument": "unknown",
+        "kind": "pdf",
+        "url": "https://w247.net/files/songs/%E6%88%91%E7%9A%84%E7%A5%9E%E7%9C%9F%E7%BE%8E%E5%96%AE%E9%A0%81%E8%AD%9C.pdf",
+        "sourceName": "小羊诗歌官网"
+      }
+    ],
+    "listeningUrl": "https://w247.net/songs/wo-de-shen-zhen-mei/",
+    "searchUrl": "https://yopu.co/explore#q=%E6%88%91%E7%9A%84%E7%A5%9E%E7%9C%9F%E7%BE%8E",
+    "audio": {
+      "url": "https://w247.net/files/songs/%E6%88%91%E7%9A%84%E7%A5%9E%E7%9C%9F%E7%BE%8E.mp3",
+      "sourceUrl": "https://w247.net/songs/wo-de-shen-zhen-mei/",
+      "label": "官方原唱 · 小羊诗歌",
+      "verifiedAt": "2026-11-16",
+      "verification": "source-page"
+    }
+  },
+  {
+    "id": "light-67f5be7765f7",
+    "title": "谢谢你拣选",
+    "artist": "赞美之泉",
+    "category": "感恩",
+    "categoryReason": "感谢神的拣选、接纳与恩典。",
+    "originalKey": "D",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-67f5be7765f7-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/xXALo01D",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E8%B0%A2%E8%B0%A2%E4%BD%A0%E6%8B%A3%E9%80%89",
+    "searchUrl": "https://yopu.co/explore#q=%E8%B0%A2%E8%B0%A2%E4%BD%A0%E6%8B%A3%E9%80%89",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[A]  [D]  [G]  [Em]  [Asus4]  [D/A]  [D/F#]  [G/A]  [A7] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-16d8f50748ba",
+    "title": "我们爱让世界不一样",
+    "artist": "赞美之泉",
+    "category": "奉献",
+    "categoryReason": "回应神的爱，以实际行动彼此相爱。",
+    "originalKey": "D",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-16d8f50748ba-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/g10krRAp",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%88%91%E4%BB%AC%E7%88%B1%E8%AE%A9%E4%B8%96%E7%95%8C%E4%B8%8D%E4%B8%80%E6%A0%B7",
+    "searchUrl": "https://yopu.co/explore#q=%E6%88%91%E4%BB%AC%E7%88%B1%E8%AE%A9%E4%B8%96%E7%95%8C%E4%B8%8D%E4%B8%80%E6%A0%B7",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[D/F#]  [D]  [G]  [A/C#]  [Bm]  [Bm/A#]  [D/A]  [Em]  [E/G#]  [A] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-2a2b1313df5a",
+    "title": "宣教的中国",
+    "artist": "Light 团契收藏",
+    "category": "奉献",
+    "categoryReason": "回应宣教呼召，愿意奉献并传扬福音。",
+    "originalKey": "Bb",
+    "timeSignature": "4/4",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-2a2b1313df5a-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/BXjdBMpY",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%AE%A3%E6%95%99%E7%9A%84%E4%B8%AD%E5%9B%BD",
+    "searchUrl": "https://yopu.co/explore#q=%E5%AE%A3%E6%95%99%E7%9A%84%E4%B8%AD%E5%9B%BD",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/917.mp3",
+      "sourceUrl": "https://www.cbann.com/%e5%ae%a3%e6%95%99%e7%9a%84%e4%b8%ad%e5%9b%bd/",
+      "label": "公开音源 · 我心旋律 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    }
+  },
+  {
+    "id": "light-cfd8c0420a3c",
+    "title": "陪我走过春夏秋冬",
+    "artist": "小羊诗歌",
+    "category": "感恩",
+    "categoryReason": "记念主在四季与人生中的陪伴和信实。",
+    "originalKey": "D",
+    "archivedSheetCount": 2,
+    "sheets": [
+      {
+        "id": "light-cfd8c0420a3c-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/g10665PJ",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      },
+      {
+        "id": "light-cfd8c0420a3c-pdf-0",
+        "label": "小羊诗歌 · 旋律和弦谱",
+        "instrument": "unknown",
+        "kind": "pdf",
+        "url": "https://w247.net/files/songs/%E9%99%AA%E6%88%91%E8%B5%B0%E9%81%8E%E6%98%A5%E5%A4%8F%E7%A7%8B%E5%86%AC%E5%96%AE%E9%A0%81%E8%AD%9C.pdf",
+        "sourceName": "小羊诗歌官网"
+      }
+    ],
+    "listeningUrl": "https://w247.net/songs/pei-wo-zou-guo-chun-xia-qiu-dong/",
+    "searchUrl": "https://yopu.co/explore#q=%E9%99%AA%E6%88%91%E8%B5%B0%E8%BF%87%E6%98%A5%E5%A4%8F%E7%A7%8B%E5%86%AC",
+    "audio": {
+      "url": "https://w247.net/files/songs/%E9%99%AA%E6%88%91%E8%B5%B0%E9%81%8E%E6%98%A5%E5%A4%8F%E7%A7%8B%E5%86%AC.mp3",
+      "sourceUrl": "https://w247.net/songs/pei-wo-zou-guo-chun-xia-qiu-dong/",
+      "label": "官方原唱 · 小羊诗歌",
+      "verifiedAt": "2026-11-16",
+      "verification": "source-page"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[D]  [A]  [G]  [Bm]  [F#m]  [Em] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-ac3bf461d9ac",
+    "title": "好喜欢与你在一起",
+    "artist": "赞美之泉",
+    "category": "爱慕",
+    "categoryReason": "喜悦主的同在，渴望与主亲密相处。",
+    "originalKey": "Bb",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-ac3bf461d9ac-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/BXjK0Q4P",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%A5%BD%E5%96%9C%E6%AC%A2%E4%B8%8E%E4%BD%A0%E5%9C%A8%E4%B8%80%E8%B5%B7",
+    "searchUrl": "https://yopu.co/explore#q=%E5%A5%BD%E5%96%9C%E6%AC%A2%E4%B8%8E%E4%BD%A0%E5%9C%A8%E4%B8%80%E8%B5%B7",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Bb7]  [Bb]  [Eb]  [Bb/D]  [Cm]  [Gm]  [F]  [Edim]  [Bb/F]  [F/Eb]  [Dm]  [D/F#]  [Eb/F] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-8b1ca48614ef",
+    "title": "普世欢腾歌",
+    "artist": "Light 团契收藏",
+    "category": "节期",
+    "categoryReason": "普世迎接救主与君王，适合圣诞庆典。",
+    "originalKey": "C",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-8b1ca48614ef-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/YXDYgDlP",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%99%AE%E4%B8%96%E6%AC%A2%E8%85%BE%E6%AD%8C",
+    "searchUrl": "https://yopu.co/explore#q=%E6%99%AE%E4%B8%96%E6%AC%A2%E8%85%BE%E6%AD%8C",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/53975.mp3",
+      "sourceUrl": "https://www.cbann.com/%e6%99%ae%e4%b8%96%e6%ac%a2%e8%85%be%e6%ad%8c-3/",
+      "label": "公开音源 · 分享圣乐团 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Am]  [F]  [Dm]  [G]  [C]  [G7]  [C/G]  [Fmaj7]  [C/E]  [Dm7]  [Am7] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-734262532dc9",
+    "title": "深触我心",
+    "artist": "Light 团契收藏",
+    "category": "纪念",
+    "categoryReason": "默想耶稣的受苦、十架与舍身大爱。",
+    "originalKey": "G",
+    "timeSignature": "4/4",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-734262532dc9-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/NXozv741",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%B7%B1%E8%A7%A6%E6%88%91%E5%BF%83",
+    "searchUrl": "https://yopu.co/explore#q=%E6%B7%B1%E8%A7%A6%E6%88%91%E5%BF%83",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[D/F#]  [G/B]  [C]  [G]  [G/D]  [D7]  [Cm] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-45ef568a7bc1",
+    "title": "打开天窗",
+    "artist": "赞美之泉",
+    "category": "祷告祈求",
+    "categoryReason": "求神垂听祷告，彰显同在与荣耀。",
+    "originalKey": "D",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-45ef568a7bc1-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/41WNjbpw",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%89%93%E5%BC%80%E5%A4%A9%E7%AA%97",
+    "searchUrl": "https://yopu.co/explore#q=%E6%89%93%E5%BC%80%E5%A4%A9%E7%AA%97",
+    "audio": {
+      "url": "https://gojes.us/china/resources/Music/%E6%89%93%E9%96%8B%E5%A4%A9%E7%AA%97%20Open%20the%20Gates%E7%8F%BE%E5%A0%B4%E6%95%AC%E6%8B%9CMV%20Live%20Worship%20MV%20%20%E8%AE%9A%E7%BE%8E%E4%B9%8B%E6%B3%89%E6%95%AC%E6%8B%9C%E8%AE%9A%E7%BE%8E%2022.mp3",
+      "sourceUrl": "https://gojes.us/china/resources/?blank=true&dir=Music",
+      "label": "公开音源 · GoJesus",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[F#m]  [D/F#]  [G]  [Em]  [A]  [A/C#]  [Bm] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-dbec9444ab6c",
+    "title": "为我留一个位子",
+    "artist": "小羊诗歌",
+    "category": "祷告祈求",
+    "categoryReason": "在软弱、试探与争战中求主保守和代求。",
+    "originalKey": "D",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-dbec9444ab6c-pdf-0",
+        "label": "小羊诗歌 · 旋律和弦谱",
+        "instrument": "unknown",
+        "kind": "pdf",
+        "url": "https://w247.net/files/songs/%E7%82%BA%E6%88%91%E7%95%99%E4%B8%80%E5%80%8B%E4%BD%8D%E5%AD%90%E5%96%AE%E9%A0%81%E8%AD%9C.pdf",
+        "sourceName": "小羊诗歌官网"
+      }
+    ],
+    "listeningUrl": "https://w247.net/songs/wei-wo-liu-yi-ge-wei-zi/",
+    "searchUrl": "https://yopu.co/explore#q=%E4%B8%BA%E6%88%91%E7%95%99%E4%B8%80%E4%B8%AA%E4%BD%8D%E5%AD%90",
+    "audio": {
+      "url": "https://w247.net/files/songs/%E7%82%BA%E6%88%91%E7%95%99%E4%B8%80%E5%80%8B%E4%BD%8D%E5%AD%90.mp3",
+      "sourceUrl": "https://w247.net/songs/wei-wo-liu-yi-ge-wei-zi/",
+      "label": "官方原唱 · 小羊诗歌",
+      "verifiedAt": "2026-11-16",
+      "verification": "source-page"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[A7]  [Em7]  [Bm]  [Em]  [B7/A]  [G]  [D] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-02810bb23732",
+    "title": "最真实的我",
+    "artist": "Light 团契收藏",
+    "category": "悔改认罪",
+    "categoryReason": "放下伪装，将真实软弱带到神面前。",
+    "originalKey": "E",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-02810bb23732-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/41WVz9yp",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%9C%80%E7%9C%9F%E5%AE%9E%E7%9A%84%E6%88%91",
+    "searchUrl": "https://yopu.co/explore#q=%E6%9C%80%E7%9C%9F%E5%AE%9E%E7%9A%84%E6%88%91",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/45162.mp3",
+      "sourceUrl": "https://www.cbann.com/%e6%9c%80%e7%9c%9f%e5%ae%9e%e7%9a%84%e6%88%91/",
+      "label": "公开音源 · 哈吉他 / 佐佑赞美",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[A]  [E/G#]  [Eadd2]  [A/B]  [F#m7]  [Amaj7]  [Am/E]  [Bsus4]  [B/D#]  [E/B]  [Am/C]  [Aadd2]  [B]  [Eadd2/G#]  [B/A]  [C#m7]  [Bm7]  [G#m7]  [F#/A#] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-f743d591039c",
+    "title": "深不见底的爱",
+    "artist": "赞美之泉",
+    "category": "爱慕",
+    "categoryReason": "默想并回应神长阔高深的爱。",
+    "originalKey": "G",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-f743d591039c-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/AXqjWBvP",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%B7%B1%E4%B8%8D%E8%A7%81%E5%BA%95%E7%9A%84%E7%88%B1",
+    "searchUrl": "https://yopu.co/explore#q=%E6%B7%B1%E4%B8%8D%E8%A7%81%E5%BA%95%E7%9A%84%E7%88%B1",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[Bm7]  [Dsus4]  [Em]  [D]  [D/F#]  [G/B]  [G/D]  [G]  [Am7]  [C]  [Cmaj7]  [D/C]  [Am]  [C/D] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-78bc90cd3f24",
+    "title": "认识你是多么的幸运",
+    "artist": "兴起发光音乐 · 冯碧云",
+    "category": "感恩",
+    "categoryReason": "感谢认识主、蒙爱与蒙恩的人生。",
+    "originalKey": "C",
+    "archivedSheetCount": 1,
+    "sheets": [],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E8%AE%A4%E8%AF%86%E4%BD%A0%E6%98%AF%E5%A4%9A%E4%B9%88%E7%9A%84%E5%B9%B8%E8%BF%90",
+    "searchUrl": "https://yopu.co/explore#q=%E8%AE%A4%E8%AF%86%E4%BD%A0%E6%98%AF%E5%A4%9A%E4%B9%88%E7%9A%84%E5%B9%B8%E8%BF%90",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[G/B]  [F]  [C2]  [Em/G]  [F#dim]  [Am]  [Fm6]  [C]  [C/E]  [F/G]  [Dm7]  [Em]  [G]  [Em7] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-3b36fdc528ee",
+    "title": "主，我渴慕你",
+    "artist": "小羊诗歌",
+    "category": "爱慕",
+    "categoryReason": "呼求与主更深亲密、渴望认识祂。",
+    "originalKey": "F",
+    "timeSignature": "4/4",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-3b36fdc528ee-pdf-0",
+        "label": "小羊诗歌 · 旋律和弦谱",
+        "instrument": "unknown",
+        "kind": "pdf",
+        "url": "https://w247.net/files/songs/%E6%88%91%E6%B8%B4%E6%85%95%E7%A5%A2%E5%96%AE%E9%A0%81%E8%AD%9C.pdf",
+        "sourceName": "小羊诗歌官网"
+      },
+      {
+        "id": "light-3b36fdc528ee-external-0",
+        "url": "https://chord4.com/tabs/24432",
+        "label": "Chord4 · 吉他和弦谱",
+        "sourceName": "Chord4 公开和弦谱",
+        "kind": "page",
+        "instrument": "guitar"
+      }
+    ],
+    "listeningUrl": "https://w247.net/songs/wo-ke-mu-ni/",
+    "searchUrl": "https://yopu.co/explore#q=%E4%B8%BB%EF%BC%8C%E6%88%91%E6%B8%B4%E6%85%95%E4%BD%A0",
+    "audio": {
+      "url": "https://w247.net/files/songs/%E6%88%91%E6%B8%B4%E6%85%95%E7%A5%A2.mp3",
+      "sourceUrl": "https://w247.net/songs/wo-ke-mu-ni/",
+      "label": "官方原唱 · 小羊诗歌",
+      "verifiedAt": "2026-11-16",
+      "verification": "source-page"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[F]  [C/E]  [Bb]  [Dm]  [Am7]  [Gm7]  [C7]  [A]  [C] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-1a9df28a2ee2",
+    "title": "超越万物的爱",
+    "artist": "Light 团契收藏",
+    "category": "纪念",
+    "categoryReason": "默想十架牺牲与超越万物的救赎之爱。",
+    "originalKey": "G",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-1a9df28a2ee2-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/rpQ4zJnP",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E8%B6%85%E8%B6%8A%E4%B8%87%E7%89%A9%E7%9A%84%E7%88%B1",
+    "searchUrl": "https://yopu.co/explore#q=%E8%B6%85%E8%B6%8A%E4%B8%87%E7%89%A9%E7%9A%84%E7%88%B1",
+    "audio": {
+      "url": "https://hland.toutiaoweb.com/prod/20230925-064250.9256.mp3",
+      "sourceUrl": "https://www.shitou.club/p/2087077.html",
+      "label": "公开音源 · 超越万物的爱 / 赞美诗歌",
+      "verifiedAt": "2026-11-16",
+      "verification": "range"
+    },
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[D/F#]  [Em]  [G]  [D]  [C]  [Am] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-92f041f2d74b",
+    "title": "我们的神",
+    "artist": "赞美之泉",
+    "category": "颂赞",
+    "categoryReason": "颂赞创造、掌权并配得万口称颂的神。",
+    "originalKey": "F",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-92f041f2d74b-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/rpQ4DyLP",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%88%91%E4%BB%AC%E7%9A%84%E7%A5%9E",
+    "searchUrl": "https://yopu.co/explore#q=%E6%88%91%E4%BB%AC%E7%9A%84%E7%A5%9E",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[C/E]  [C]  [Dm]  [Bb]  [F]  [C/G]  [D/F#]  [G/D]  [G/B]  [G]  [Em]  [F/C]  [F/A]  [Am]  [D]  [Gm]  [Csus4] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-87471e8e2f52",
+    "title": "大山为我挪开",
+    "artist": "Light 团契收藏",
+    "category": "激励",
+    "categoryReason": "在艰难中宣告神同在、凭信心前进。",
+    "originalKey": "D",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-87471e8e2f52-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/RPOrmNX7",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%A4%A7%E5%B1%B1%E4%B8%BA%E6%88%91%E6%8C%AA%E5%BC%80",
+    "searchUrl": "https://yopu.co/explore#q=%E5%A4%A7%E5%B1%B1%E4%B8%BA%E6%88%91%E6%8C%AA%E5%BC%80",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[A/D]  [D]  [G]  [Em]  [Bm] "
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "light-7e198af3dcfe",
+    "title": "这是我们的敬拜",
+    "artist": "赞美之泉",
+    "category": "颂赞",
+    "categoryReason": "同心高举神，顺逆境中持续敬拜。",
+    "originalKey": "C",
+    "archivedSheetCount": 1,
+    "sheets": [
+      {
+        "id": "light-7e198af3dcfe-yopu",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/a17Jlelp",
+        "label": "有谱么 · 吉他和弦谱",
+        "sourceName": "有谱么（登录后查看完整功能）"
+      }
+    ],
+    "listeningUrl": "https://www.zanmei.ai/search/song/%E8%BF%99%E6%98%AF%E6%88%91%E4%BB%AC%E7%9A%84%E6%95%AC%E6%8B%9C",
+    "searchUrl": "https://yopu.co/explore#q=%E8%BF%99%E6%98%AF%E6%88%91%E4%BB%AC%E7%9A%84%E6%95%AC%E6%8B%9C",
+    "chart": {
+      "kind": "chords",
+      "credit": "和弦取自已存谱本，仅作指法、键位与转调参考。完整旋律和节奏请查看来源曲谱。",
+      "sections": [
+        {
+          "label": "本曲和弦参考 · 非完整旋律谱",
+          "lines": [
+            "[G]  [C/E]  [Am]  [Em]  [F/G]  [C]  [F]  [Dm]  [A]  [D]  [Bm]  [F#m]  [D/F#] "
+          ]
+        }
+      ]
+    }
+  }
+]

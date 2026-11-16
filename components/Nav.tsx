@@ -34,6 +34,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/posts", label: "文章" },
   { href: "/novels", label: "小说" },
   { href: "/videos", label: "视频" },
+  { href: "/music", label: "音乐" },
   { href: "/resources", label: "资源" },
   { href: "/copyright", label: "版权" },
   { href: "/admin", label: "⚙ 管理" }
@@ -82,7 +83,7 @@ export function Nav({ siteName, defaultTheme }: NavProps) {
 
         {/* 桌面导航 (md+) */}
         <ul className="hidden items-center gap-5 text-sm md:flex lg:gap-6">
-          {NAV_ITEMS.slice(0, 6).map((item) => (
+          {NAV_ITEMS.filter(item => item.href !== "/copyright" && item.href !== "/admin").map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}
@@ -161,7 +162,7 @@ export function Nav({ siteName, defaultTheme }: NavProps) {
               animate={{ y: 0 }}
               exit={{ y: "-100%" }}
               transition={{ type: "spring", stiffness: 320, damping: 32 }}
-              className="fixed inset-x-0 top-0 z-50 border-b border-border bg-bg shadow-2xl md:hidden"
+              className="fixed inset-x-0 top-0 z-50 max-h-[100dvh] overflow-y-auto overscroll-contain border-b border-border bg-bg pb-[env(safe-area-inset-bottom)] shadow-2xl md:hidden"
             >
               <div className="flex items-center justify-between px-6 py-4">
                 <Link

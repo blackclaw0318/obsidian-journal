@@ -1,0 +1,40 @@
+{
+  "light-200171dd4e0b": {
+    "key": "C",
+    "reviewed": true,
+    "measures": 24
+  },
+  "light-04403982ac17": {
+    "key": "C",
+    "reviewed": true,
+    "measures": 18
+  },
+  "light-b7b858066c93": {
+    "key": "G",
+    "reviewed": true,
+    "measures": 17
+  },
+  "light-29bab52d2f8f": {
+    "key": "G",
+    "reviewed": true,
+    "measures": 17
+  },
+  "light-df3ab946c704": {
+    "key": "G",
+    "timeSignature": "4/4",
+    "reviewed": true,
+    "measures": 25
+  },
+  "light-bad900e65d53": {
+    "key": "F",
+    "timeSignature": "4/4",
+    "reviewed": true,
+    "measures": 21
+  },
+  "light-8a1ffa7203e2": {
+    "key": "D",
+    "timeSignature": "2/4",
+    "reviewed": true,
+    "measures": 34
+  }
+}

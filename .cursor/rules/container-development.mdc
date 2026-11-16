@@ -1,0 +1,18 @@
+---
+description: All homepage runtime, builds and tests use isolated Docker development containers
+alwaysApply: true
+---
+
+# 容器开发约定
+
+用户于 2026-11-11 要求：后续开发、运行、构建和测试全部使用本项目独立的 Docker 环境。
+
+- 本机 Git 工作区保留源码与未提交修改；将本次改动同步到服务器 `/opt/project-development/homepage/source` 后，在对应开发容器内验证。远端编辑的改动也须回存本机 Git 工作区，避免源码分叉。
+- 服务器：`root@111.228.46.221`；使用用户已有的 `~/.ssh/gensticker_server_ed25519`。不复制 SSH 私钥。
+- Compose 工作目录：`/opt/project-deployment/deploy`；开发配置：`homepage.dev.yaml`。
+- 用 `docker compose -f homepage.dev.yaml up -d` 启动开发环境，用 `exec` 或 `run --rm` 执行 Python/npm/构建/测试命令；不要在 Mac 或宿主机直接运行应用依赖。
+- 开发卷、端口和网络与生产独立。不要把生产数据库、附件、真实 `.env`、密钥或会话复制到开发环境。
+- 同步源码时排除 `node_modules`、`.next`、虚拟环境、数据库、上传目录和真实 `.env`。依赖变更后重建开发镜像并更新对应开发依赖卷。
+- 开发和验收后用 `docker compose -f homepage.dev.yaml stop` 释放资源。
+- 生产使用 `/opt/project-deployment/deploy/homepage.compose.yaml`。发布通过版本镜像及固定引用更新，保留当前数据卷；不要修改运行中的生产容器来发布源码。
+- 旧宿主机服务已停用。不要直接重新启动它们或把旧快照覆盖到当前生产数据；需要回退时先核对当前数据及迁移文档。
