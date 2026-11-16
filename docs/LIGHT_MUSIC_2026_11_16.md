@@ -81,3 +81,5 @@ docker compose -f homepage.dev.yaml run --rm --no-deps -v /app/.next -e NODE_ENV
 - [离线识谱工具 Dolce](https://github.com/lodebar2026/dolce)：使用官方 v0.8.8 macOS 包，只在本机离线读取原图，校验发布资产 SHA256；工具与模型未打入网站镜像。
 - [abcjs 官方文档](https://docs.abcjs.net/)：站内排版、转调与吉他六线谱。固定依赖 6.7.2。
 
+
+正式发布已完成，详见 [Docker 发布记录](DEPLOYMENT_2026_11_16_LIGHT.md)。当前生产镜像对应代码 `f5cc0be`；64 首音源链接、7 首完整转调谱及逐首待补 CSV 已上线。
