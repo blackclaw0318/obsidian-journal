@@ -59,11 +59,29 @@ export function CompleteNotation({
           paddingtop: 20,
           paddingbottom: 25,
           scale: 1,
-          wrap: { minSpacing: 1.8, maxSpacing: 2.8, preferredMeasuresPerLine: 4 },
+          // abcjs 6.7.2 drops tablature plugins when it reparses wrapped systems.
+          wrap:
+            instrument === "piano"
+              ? { minSpacing: 1.8, maxSpacing: 2.8, preferredMeasuresPerLine: 4 }
+              : undefined,
           tablature:
-            instrument === "guitar" ? [{ instrument: "guitar", label: "吉他六线谱 · %T", capo }] : undefined
+            instrument === "guitar"
+              ? [
+                  {
+                    instrument: "guitar",
+                    label: "吉他六线谱",
+                    tuning: ["E,,", "A,,", "D,", "G,", "B,", "E"],
+                    capo
+                  }
+                ]
+              : undefined
         });
         if (!rendered.length) throw new Error("谱面音符无法排版");
+        if (
+          instrument === "guitar" &&
+          !(rendered[0] as unknown as { tablatures?: unknown[] }).tablatures?.length
+        )
+          throw new Error("吉他六线谱未能载入，请重试");
         setLoading(false);
       })
       .catch((e) => {
