@@ -32,10 +32,11 @@ describe("Light 曲谱交互", () => {
   });
   it("切换到钢琴时按演唱调显示和弦，吉他变调夹不污染钢琴音高", () => {
     const { container } = render(<LightScore song={song} />);
+    fireEvent.click(screen.getByRole("button", { name: "吉他和弦" }));
     fireEvent.change(screen.getByLabelText("演唱调"), { target: { value: "9" } });
     fireEvent.change(screen.getByLabelText("变调夹"), { target: { value: "2" } });
     expect(container.querySelector(".light-chart strong")?.textContent).toBe("G");
-    fireEvent.click(screen.getByRole("button", { name: "钢琴伴奏" }));
+    fireEvent.click(screen.getByRole("button", { name: "钢琴和弦参考" }));
     expect([...container.querySelectorAll(".light-chart strong")].map((e) => e.textContent)).toEqual([
       "A",
       "E/G#",
@@ -45,6 +46,28 @@ describe("Light 曲谱交互", () => {
     expect(screen.getByRole("link", { name: "打开 PDF" }).getAttribute("href")).toBe("about:blank");
     expect(screen.getByTitle("谱例 · 原谱").getAttribute("src")).toBe("about:blank");
     expect(screen.queryByLabelText("演唱调")).toBeNull();
+  });
+  it("优先展示有谱么来源谱", () => {
+    render(
+      <LightScore
+        song={{
+          ...song,
+          sheets: [
+            {
+              id: "yopu",
+              instrument: "guitar",
+              label: "有谱么",
+              url: "https://yopu.co/view/9PxLmqvP",
+              kind: "page",
+              format: "和弦谱"
+            }
+          ]
+        }}
+      />
+    );
+    expect(screen.getByRole("link", { name: /在有谱么打开原谱/ }).getAttribute("href")).toBe(
+      "https://yopu.co/view/9PxLmqvP"
+    );
   });
   it("分类和标题搜索共同过滤，清空后恢复列表", () => {
     render(<LightLibrary songs={[song, { ...song, id: "qb", title: "祷告谱例", category: "祷告祈求" }]} />);

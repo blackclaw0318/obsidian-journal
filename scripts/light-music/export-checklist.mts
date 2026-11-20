@@ -8,6 +8,7 @@ const rows = [
     "MP3状态",
     "MP3地址",
     "音源来源",
+    "外部收听地址",
     "吉他站内完整转调谱",
     "钢琴站内双手转调谱",
     "已有曲谱来源",
@@ -20,13 +21,16 @@ for (const song of songs) {
   rows.push([
     song.title,
     song.category,
-    audio?.verification === "range"
-      ? "已验证文件头与完整文件长度"
+    audio?.preview
+      ? "官方试听片段，完整音源待补"
       : audio
-        ? "官网公开地址，待逐首试听"
+        ? audio.verification === "range"
+          ? "已验证文件头与完整文件长度"
+          : "官网公开地址，待逐首试听"
         : "未找到可用MP3",
     audio?.url ?? "",
     audio?.sourceUrl ?? song.listeningUrl ?? "",
+    song.listeningUrl ?? "",
     full ? "已完成" : "待补齐",
     full ? "已完成" : "待补齐",
     song.sheets.map((s: { url: string }) => s.url).join(" | "),
@@ -44,7 +48,8 @@ await fs.writeFile("public/music/light-resource-checklist.csv", csv);
 console.log(
   JSON.stringify({
     songs: songs.length,
-    audio: songs.filter((s: { audio?: unknown }) => s.audio).length,
+    audio: songs.filter((s: { audio?: { preview?: boolean } }) => s.audio && !s.audio.preview).length,
+    previews: songs.filter((s: { audio?: { preview?: boolean } }) => s.audio?.preview).length,
     completeScores: Object.values(notation).length
   })
 );

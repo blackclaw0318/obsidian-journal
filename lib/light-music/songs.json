@@ -9,12 +9,14 @@
     "archivedSheetCount": 1,
     "sheets": [
       {
-        "id": "light-32034042b1bc-yopu",
+        "id": "light-32034042b1bc-yopu-gXg03BP3",
+        "label": "有谱么 · 和弦谱 · G 调",
         "instrument": "guitar",
         "kind": "page",
         "url": "https://yopu.co/view/gXg03BP3",
-        "label": "有谱么 · 吉他和弦谱",
-        "sourceName": "有谱么（登录后查看完整功能）"
+        "sourceName": "有谱么",
+        "format": "和弦谱",
+        "scoreKey": "G"
       },
       {
         "id": "light-32034042b1bc-pdf-0",
@@ -65,12 +67,14 @@
     "archivedSheetCount": 1,
     "sheets": [
       {
-        "id": "light-5a020700d2d0-yopu",
+        "id": "light-5a020700d2d0-yopu-a17Jg8wp",
+        "label": "有谱么 · 和弦谱 · G 调",
         "instrument": "guitar",
         "kind": "page",
         "url": "https://yopu.co/view/a17Jg8wp",
-        "label": "有谱么 · 吉他和弦谱",
-        "sourceName": "有谱么（登录后查看完整功能）"
+        "sourceName": "有谱么",
+        "format": "和弦谱",
+        "scoreKey": "G"
       }
     ],
     "listeningUrl": "https://www.zanmei.ai/search/song/%E5%B8%B8%E5%B8%B8%E5%96%9C%E4%B9%90",
@@ -105,12 +109,14 @@
     "archivedSheetCount": 5,
     "sheets": [
       {
-        "id": "light-bc5a128190bf-yopu",
+        "id": "light-bc5a128190bf-yopu-aXYJLkPZ",
+        "label": "有谱么 · 和弦谱 · D 调",
         "instrument": "guitar",
         "kind": "page",
         "url": "https://yopu.co/view/aXYJLkPZ",
-        "label": "有谱么 · 吉他和弦谱",
-        "sourceName": "有谱么（登录后查看完整功能）"
+        "sourceName": "有谱么",
+        "format": "和弦谱",
+        "scoreKey": "D"
       }
     ],
     "listeningUrl": "https://www.zanmei.ai/search/song/%E6%B0%B8%E6%B4%BB%E7%9B%BC%E6%9C%9B",
@@ -249,6 +255,13 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://rp-ccc.org/Main/Worship%20Songs%20Chinese/MP3/04-16.mp3",
+      "sourceUrl": "https://rp-ccc.org/Main/Worship%20Songs%20Chinese/Worship_Songs.htm",
+      "label": "Rohnert Park 华人基督教会 · 公开试听",
+      "verifiedAt": "2026-11-20",
+      "verification": "range"
     }
   },
   {
@@ -300,6 +313,16 @@
     "originalKey": "G",
     "archivedSheetCount": 3,
     "sheets": [
+      {
+        "id": "light-7ca71b72d778-yopu-g10VJd5P",
+        "label": "有谱么 · 和弦谱 · G 调",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/g10VJd5P",
+        "sourceName": "有谱么",
+        "format": "和弦谱",
+        "scoreKey": "G"
+      },
       {
         "id": "light-7ca71b72d778-pdf-0",
         "label": "小羊诗歌 · 旋律和弦谱",
@@ -470,6 +493,16 @@
     "archivedSheetCount": 1,
     "sheets": [
       {
+        "id": "light-9760b844a7b8-yopu-rp8Ol8kP",
+        "label": "有谱么 · 和弦谱 · C 调",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/rp8Ol8kP",
+        "sourceName": "有谱么",
+        "format": "和弦谱",
+        "scoreKey": "C"
+      },
+      {
         "id": "light-9760b844a7b8-pdf-0",
         "label": "小羊诗歌 · 旋律和弦谱",
         "instrument": "unknown",
@@ -539,6 +572,13 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://rp-ccc.org/Main/Worship%20Songs%20Chinese/MP3/04-49.mp3",
+      "sourceUrl": "https://rp-ccc.org/Main/Worship%20Songs%20Chinese/Worship_Songs.htm",
+      "label": "Rohnert Park 华人基督教会 · 公开试听",
+      "verifiedAt": "2026-11-20",
+      "verification": "range"
     }
   },
   {
@@ -643,6 +683,17 @@
     "originalKey": "G",
     "archivedSheetCount": 2,
     "sheets": [
+      {
+        "id": "light-b7b858066c93-yopu-9PxLN4nP",
+        "label": "有谱么 · 和弦谱 · G 调 · 奕安（台灣4C教會）",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/9PxLN4nP",
+        "sourceName": "有谱么",
+        "format": "和弦谱",
+        "scoreKey": "G",
+        "arranger": "奕安（台灣4C教會）"
+      },
       {
         "id": "light-b7b858066c93-external-0",
         "url": "https://www.cccc.org.uk/resources/scores/scores/hesanna.jpg",
@@ -1059,8 +1110,15 @@
         "sourceName": "有谱么（登录后查看完整功能）"
       }
     ],
-    "listeningUrl": "https://www.zanmei.ai/search/song/%E8%83%BD%E4%B8%8D%E8%83%BD",
-    "searchUrl": "https://yopu.co/explore#q=%E8%83%BD%E4%B8%8D%E8%83%BD"
+    "listeningUrl": "https://sop.org/music/pw20/",
+    "searchUrl": "https://yopu.co/explore#q=%E8%83%BD%E4%B8%8D%E8%83%BD",
+    "audio": {
+      "url": "https://play.izanm.org/song/p/42629.mp3",
+      "sourceUrl": "https://www.cbann.com/?p=38159",
+      "label": "Dongye · 钢琴纯音乐版",
+      "verifiedAt": "2026-11-20",
+      "verification": "range"
+    }
   },
   {
     "id": "light-cdf50bdd7897",
@@ -1093,6 +1151,13 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://rp-ccc.org/Main/Worship%20Songs%20Chinese/MP3/04-02.mp3",
+      "sourceUrl": "https://rp-ccc.org/Main/Worship%20Songs%20Chinese/Worship_Songs.htm",
+      "label": "Rohnert Park 华人基督教会 · 公开试听",
+      "verifiedAt": "2026-11-20",
+      "verification": "range"
     }
   },
   {
@@ -1145,6 +1210,16 @@
     "originalKey": "C",
     "archivedSheetCount": 1,
     "sheets": [
+      {
+        "id": "light-7cf72af25a58-yopu-9Pxbal15",
+        "label": "有谱么 · 和弦谱 · C 调",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/9Pxbal15",
+        "sourceName": "有谱么",
+        "format": "和弦谱",
+        "scoreKey": "C"
+      },
       {
         "id": "light-7cf72af25a58-external-0",
         "url": "https://www.cccc.org.uk/resources/scores/scores/wodeshenwodefuwodepanshi.png",
@@ -1293,7 +1368,18 @@
     "originalKey": "D",
     "timeSignature": "4/4",
     "archivedSheetCount": 1,
-    "sheets": [],
+    "sheets": [
+      {
+        "kind": "page",
+        "id": "zanmei-joshua-scores",
+        "url": "https://www.zanmei.ai/artist/joshua-band/tab/4_0_13.html",
+        "sourceName": "爱赞美",
+        "label": "爱赞美 · 歌谱列表 · 《为着你的荣耀》版",
+        "instrument": "unknown",
+        "format": "和弦简谱",
+        "scoreKey": "D"
+      }
+    ],
     "listeningUrl": "https://www.zanmei.ai/search/song/%E8%B6%85%E4%B9%8E%E4%B8%87%E5%90%8D%E4%B9%8B%E5%90%8D",
     "searchUrl": "https://yopu.co/explore#q=%E8%B6%85%E4%B9%8E%E4%B8%87%E5%90%8D%E4%B9%8B%E5%90%8D",
     "audio": {
@@ -1319,7 +1405,7 @@
   {
     "id": "light-7746efee6627",
     "title": "住在你里面",
-    "artist": "Light 团契收藏",
+    "artist": "赞美之泉",
     "category": "爱慕",
     "categoryReason": "渴望住在主里面，与主亲密同行。",
     "originalKey": "D",
@@ -1334,7 +1420,7 @@
         "sourceName": "有谱么（登录后查看完整功能）"
       }
     ],
-    "listeningUrl": "https://www.zanmei.ai/search/song/%E4%BD%8F%E5%9C%A8%E4%BD%A0%E9%87%8C%E9%9D%A2",
+    "listeningUrl": "https://sop.org/music/",
     "searchUrl": "https://yopu.co/explore#q=%E4%BD%8F%E5%9C%A8%E4%BD%A0%E9%87%8C%E9%9D%A2",
     "chart": {
       "kind": "chords",
@@ -1347,6 +1433,14 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://sop.org/sopmedia/Demo/PW16/03_Abiding_in_You_Demo_PW16.mp3",
+      "sourceUrl": "https://sop.org/music/",
+      "label": "赞美之泉官网 · 试听片段",
+      "verifiedAt": "2026-11-20",
+      "verification": "source-page",
+      "preview": true
     }
   },
   {
@@ -1501,6 +1595,13 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://play.izanm.org/song/p/51778.mp3",
+      "sourceUrl": "https://www.cbann.com/?p=46919",
+      "label": "佐佑赞美 · 钢琴纯音乐版",
+      "verifiedAt": "2026-11-20",
+      "verification": "range"
     }
   },
   {
@@ -1766,7 +1867,7 @@
         "sourceName": "有谱么（登录后查看完整功能）"
       }
     ],
-    "listeningUrl": "https://www.zanmei.ai/search/song/%E4%BB%8E%E8%BF%99%E4%BB%A3%E5%88%B0%E9%82%A3%E4%BB%A3",
+    "listeningUrl": "https://sop.org/music/pw19/",
     "searchUrl": "https://yopu.co/explore#q=%E4%BB%8E%E8%BF%99%E4%BB%A3%E5%88%B0%E9%82%A3%E4%BB%A3",
     "chart": {
       "kind": "chords",
@@ -1779,6 +1880,14 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://sop.org/sopmedia/Demo/PW19/05_FromNowtillEvermore_Demo_PW19.mp3",
+      "sourceUrl": "https://sop.org/music/pw19/",
+      "label": "赞美之泉官网 · 试听片段",
+      "verifiedAt": "2026-11-20",
+      "verification": "source-page",
+      "preview": true
     }
   },
   {
@@ -1879,7 +1988,7 @@
         "sourceName": "有谱么（登录后查看完整功能）"
       }
     ],
-    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%98%AF%E4%B8%BA%E4%BA%86%E7%88%B1",
+    "listeningUrl": "https://open.spotify.com/track/5ByIysx4Waz1wkKOGceTOv",
     "searchUrl": "https://yopu.co/explore#q=%E6%98%AF%E4%B8%BA%E4%BA%86%E7%88%B1",
     "chart": {
       "kind": "chords",
@@ -1992,7 +2101,7 @@
         "sourceName": "有谱么（登录后查看完整功能）"
       }
     ],
-    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%88%91%E4%BB%AC%E6%AC%A2%E8%BF%8E%E5%90%9B%E7%8E%8B%E9%99%8D%E4%B8%B4",
+    "listeningUrl": "https://sop.org/music/pw19/",
     "searchUrl": "https://yopu.co/explore#q=%E6%88%91%E4%BB%AC%E6%AC%A2%E8%BF%8E%E5%90%9B%E7%8E%8B%E9%99%8D%E4%B8%B4",
     "chart": {
       "kind": "chords",
@@ -2005,6 +2114,14 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://sop.org/sopmedia/Demo/PW19/04_WeLongToMeet_Demo_PW19.mp3",
+      "sourceUrl": "https://sop.org/music/pw19/",
+      "label": "赞美之泉官网 · 试听片段",
+      "verifiedAt": "2026-11-20",
+      "verification": "source-page",
+      "preview": true
     }
   },
   {
@@ -2063,7 +2180,18 @@
     "categoryReason": "呼求圣灵复兴、点燃生命。",
     "originalKey": "Bb",
     "archivedSheetCount": 1,
-    "sheets": [],
+    "sheets": [
+      {
+        "id": "light-84e4607147da-izanmei",
+        "label": "爱赞美 · 和弦简谱列表",
+        "instrument": "unknown",
+        "kind": "page",
+        "url": "https://www.zanmei.ai/song/254/tab/5_0_1.html",
+        "sourceName": "爱赞美",
+        "format": "和弦简谱",
+        "scoreKey": "A"
+      }
+    ],
     "listeningUrl": "https://www.zanmei.ai/search/song/%E6%B8%B4%E6%9C%9B%E5%A4%8D%E5%85%B4%E7%9A%84%E7%81%AB",
     "searchUrl": "https://yopu.co/explore#q=%E6%B8%B4%E6%9C%9B%E5%A4%8D%E5%85%B4%E7%9A%84%E7%81%AB",
     "audio": {
@@ -2265,7 +2393,7 @@
         "sourceName": "有谱么（登录后查看完整功能）"
       }
     ],
-    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%A5%94%E8%B7%91%E4%B8%8D%E6%94%BE%E5%BC%83",
+    "listeningUrl": "https://sop.org/music/pw20/",
     "searchUrl": "https://yopu.co/explore#q=%E5%A5%94%E8%B7%91%E4%B8%8D%E6%94%BE%E5%BC%83",
     "chart": {
       "kind": "chords",
@@ -2278,6 +2406,14 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://sop.org/sopmedia/Demo/PW20A/08_Won'tGiveUp_Demo_PW20A.mp3",
+      "sourceUrl": "https://sop.org/music/pw20/",
+      "label": "赞美之泉官网 · 试听片段",
+      "verifiedAt": "2026-11-20",
+      "verification": "source-page",
+      "preview": true
     }
   },
   {
@@ -2296,9 +2432,19 @@
         "url": "https://yopu.co/view/b1va8bkp",
         "label": "有谱么 · 吉他和弦谱",
         "sourceName": "有谱么（登录后查看完整功能）"
+      },
+      {
+        "id": "light-dcbc4cb2ee77-jesuscan-piano",
+        "instrument": "piano",
+        "kind": "pdf",
+        "url": "https://www.jesuscan.org/wp-content/uploads/2020/01/GiveUsVision_A_PianoFullScore.pdf",
+        "label": "钢琴双手谱 · A 调",
+        "sourceName": "Jesus Can · Give Us Vision",
+        "format": "五线谱",
+        "scoreKey": "A"
       }
     ],
-    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%96%B0%E7%9A%84%E5%BC%82%E8%B1%A1%EF%BC%8C%E6%96%B0%E7%9A%84%E6%96%B9%E5%90%91",
+    "listeningUrl": "https://sop.org/music/pw20/",
     "searchUrl": "https://yopu.co/explore#q=%E6%96%B0%E7%9A%84%E5%BC%82%E8%B1%A1%EF%BC%8C%E6%96%B0%E7%9A%84%E6%96%B9%E5%90%91",
     "chart": {
       "kind": "chords",
@@ -2311,6 +2457,14 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://sop.org/sopmedia/Demo/PW20A/03_GiveUsVision_Demo_PW20A.mp3",
+      "sourceUrl": "https://sop.org/music/pw20/",
+      "label": "赞美之泉官网 · 试听片段",
+      "verifiedAt": "2026-11-20",
+      "verification": "source-page",
+      "preview": true
     }
   },
   {
@@ -2412,7 +2566,7 @@
   {
     "id": "light-d91a231188d2",
     "title": "从心合一",
-    "artist": "Light 团契收藏",
+    "artist": "赞美之泉",
     "category": "祷告祈求",
     "categoryReason": "求在主里同心、彼此相爱并合一敬拜。",
     "originalKey": "F",
@@ -2427,7 +2581,7 @@
         "sourceName": "有谱么（登录后查看完整功能）"
       }
     ],
-    "listeningUrl": "https://www.zanmei.ai/search/song/%E4%BB%8E%E5%BF%83%E5%90%88%E4%B8%80",
+    "listeningUrl": "https://open.spotify.com/track/0iAqrTFUiWGZuZp5itD4CJ",
     "searchUrl": "https://yopu.co/explore#q=%E4%BB%8E%E5%BF%83%E5%90%88%E4%B8%80",
     "chart": {
       "kind": "chords",
@@ -2440,6 +2594,14 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://sop.org/sopmedia/Demo/PW18/14_Unity_Demo_PW18.mp3",
+      "sourceUrl": "https://sop.org/music/pw18/",
+      "label": "赞美之泉官网 · 试听片段",
+      "verifiedAt": "2026-11-20",
+      "verification": "source-page",
+      "preview": true
     }
   },
   {
@@ -2452,6 +2614,26 @@
     "archivedSheetCount": 1,
     "sheets": [
       {
+        "id": "light-dd7e0c8c5aed-yopu-NXoLZyPb",
+        "label": "有谱么 · 和弦谱 · A 调",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/NXoLZyPb",
+        "sourceName": "有谱么",
+        "format": "和弦谱",
+        "scoreKey": "A"
+      },
+      {
+        "id": "light-dd7e0c8c5aed-yopu-AXqBlQ8P",
+        "label": "有谱么 · 和弦谱 · A 调",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/AXqBlQ8P",
+        "sourceName": "有谱么",
+        "format": "和弦谱",
+        "scoreKey": "A"
+      },
+      {
         "id": "light-dd7e0c8c5aed-external-0",
         "url": "https://chord4.com/tabs/36796",
         "label": "Chord4 · 吉他和弦谱",
@@ -2460,7 +2642,7 @@
         "instrument": "guitar"
       }
     ],
-    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%85%85%E6%BB%A1%E5%9C%A8%E8%BF%99%E9%87%8C",
+    "listeningUrl": "https://sop.org/music/",
     "searchUrl": "https://yopu.co/explore#q=%E5%85%85%E6%BB%A1%E5%9C%A8%E8%BF%99%E9%87%8C",
     "chart": {
       "kind": "chords",
@@ -2473,6 +2655,14 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://sop.org/sopmedia/Demo/PW24/06_FillThisPlace_Demo_PW24.mp3",
+      "sourceUrl": "https://sop.org/music/",
+      "label": "赞美之泉官网 · 试听片段",
+      "verifiedAt": "2026-11-20",
+      "verification": "source-page",
+      "preview": true
     }
   },
   {
@@ -2494,7 +2684,7 @@
         "sourceName": "有谱么（登录后查看完整功能）"
       }
     ],
-    "listeningUrl": "https://www.zanmei.ai/search/song/%E8%BF%9B%E5%85%A5%E4%BD%A0%E7%9A%84%E5%90%8C%E5%9C%A8",
+    "listeningUrl": "https://sop.org/music/pw05/",
     "searchUrl": "https://yopu.co/explore#q=%E8%BF%9B%E5%85%A5%E4%BD%A0%E7%9A%84%E5%90%8C%E5%9C%A8",
     "chart": {
       "kind": "lead",
@@ -2537,6 +2727,14 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://sop.org/sopmedia/Demo/PW05/09_IntoYourPresence_Demo_PW05.mp3",
+      "sourceUrl": "https://sop.org/music/pw05/",
+      "label": "赞美之泉官网 · 试听片段",
+      "verifiedAt": "2026-11-20",
+      "verification": "source-page",
+      "preview": true
     }
   },
   {
@@ -2549,6 +2747,17 @@
     "archivedSheetCount": 1,
     "sheets": [
       {
+        "kind": "page",
+        "id": "yopu-9PxLmqvP",
+        "url": "https://yopu.co/view/9PxLmqvP",
+        "sourceName": "有谱么",
+        "label": "有谱么 · 赞美之泉版",
+        "instrument": "guitar",
+        "format": "和弦谱",
+        "scoreKey": "G",
+        "arranger": "琪.."
+      },
+      {
         "id": "light-c0d36d49e6bc-external-0",
         "url": "https://chord4.com/tabs/38570",
         "label": "Chord4 · 吉他和弦谱",
@@ -2557,7 +2766,7 @@
         "instrument": "guitar"
       }
     ],
-    "listeningUrl": "https://www.zanmei.ai/search/song/%E8%BF%99%E4%B8%96%E4%BB%A3",
+    "listeningUrl": "https://sop.org/music/",
     "searchUrl": "https://yopu.co/explore#q=%E8%BF%99%E4%B8%96%E4%BB%A3",
     "chart": {
       "kind": "chords",
@@ -2570,6 +2779,14 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://sop.org/sopmedia/Demo/PW11A/09_This_Generation_Demo_PW11A.mp3",
+      "sourceUrl": "https://sop.org/music/",
+      "label": "赞美之泉官网 · 试听片段",
+      "verifiedAt": "2026-11-20",
+      "verification": "source-page",
+      "preview": true
     }
   },
   {
@@ -2580,7 +2797,18 @@
     "categoryReason": "勉励会众靠主常常喜乐。",
     "originalKey": "G",
     "archivedSheetCount": 1,
-    "sheets": [],
+    "sheets": [
+      {
+        "kind": "page",
+        "id": "zanmei-tianyun-615",
+        "url": "https://www.zanmei.ai/tab/1103.html?index=615&songbook=1",
+        "sourceName": "爱赞美",
+        "label": "爱赞美 · 《天韵之声》615 首",
+        "instrument": "unknown",
+        "format": "和弦简谱",
+        "scoreKey": "A♭"
+      }
+    ],
     "listeningUrl": "https://www.zanmei.ai/search/song/%E9%9D%A0%E4%B8%BB%E5%B8%B8%E5%96%9C%E4%B9%90",
     "searchUrl": "https://yopu.co/explore#q=%E9%9D%A0%E4%B8%BB%E5%B8%B8%E5%96%9C%E4%B9%90",
     "audio": {
@@ -2614,12 +2842,26 @@
     "archivedSheetCount": 2,
     "sheets": [
       {
-        "id": "light-04403982ac17-yopu",
+        "id": "light-04403982ac17-yopu-6PMzlGwp",
+        "label": "有谱么 · 弹唱谱 · C 调 · 两万五",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/6PMzlGwp",
+        "sourceName": "有谱么",
+        "format": "弹唱谱",
+        "scoreKey": "C",
+        "arranger": "两万五"
+      },
+      {
+        "id": "light-04403982ac17-yopu-rpQzOQ1G",
+        "label": "有谱么 · 和弦谱 · C 调 · Ian",
         "instrument": "guitar",
         "kind": "page",
         "url": "https://yopu.co/view/rpQzOQ1G",
-        "label": "有谱么 · 吉他和弦谱",
-        "sourceName": "有谱么（登录后查看完整功能）"
+        "sourceName": "有谱么",
+        "format": "和弦谱",
+        "scoreKey": "C",
+        "arranger": "Ian"
       }
     ],
     "listeningUrl": "https://www.zanmei.ai/search/song/%E5%AE%89%E9%9D%99",
@@ -2665,6 +2907,26 @@
     "archivedSheetCount": 1,
     "sheets": [
       {
+        "id": "light-c8e001753bcd-yopu-rXLyVBPW",
+        "label": "有谱么 · 和弦谱 · C 调",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/rXLyVBPW",
+        "sourceName": "有谱么",
+        "format": "和弦谱",
+        "scoreKey": "C"
+      },
+      {
+        "id": "light-c8e001753bcd-yopu-aXY5R8XZ",
+        "label": "有谱么 · 和弦谱 · G 调",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/aXY5R8XZ",
+        "sourceName": "有谱么",
+        "format": "和弦谱",
+        "scoreKey": "G"
+      },
+      {
         "id": "light-c8e001753bcd-external-0",
         "url": "https://www.izanmei.com/tab/35697.html",
         "label": "爱赞美 · 旋律谱",
@@ -2692,6 +2954,16 @@
     "originalKey": "F",
     "archivedSheetCount": 1,
     "sheets": [
+      {
+        "id": "light-9ac5bb4c6b9c-yopu-RPOE8N17",
+        "label": "有谱么 · 和弦谱 · E 调",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/RPOE8N17",
+        "sourceName": "有谱么",
+        "format": "和弦谱",
+        "scoreKey": "E"
+      },
       {
         "id": "light-9ac5bb4c6b9c-external-0",
         "url": "https://chord4.com/tabs/25393",
@@ -2733,6 +3005,26 @@
     "archivedSheetCount": 1,
     "sheets": [
       {
+        "id": "light-a13866247d13-yopu-kP2K9dWp",
+        "label": "有谱么 · 和弦谱 · D 调",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/kP2K9dWp",
+        "sourceName": "有谱么",
+        "format": "和弦谱",
+        "scoreKey": "D"
+      },
+      {
+        "id": "light-a13866247d13-yopu-7Xr5AyR1",
+        "label": "有谱么 · 和弦谱 · E 调",
+        "instrument": "guitar",
+        "kind": "page",
+        "url": "https://yopu.co/view/7Xr5AyR1",
+        "sourceName": "有谱么",
+        "format": "和弦谱",
+        "scoreKey": "E"
+      },
+      {
         "id": "light-a13866247d13-external-0",
         "url": "https://cm.clachinese.org/files/pdf/P26.pdf",
         "label": "CLA 教会 · 和弦伴奏谱",
@@ -2741,7 +3033,7 @@
         "instrument": "guitar"
       }
     ],
-    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%BE%97%E8%83%9C%E7%9A%84%E5%AE%A3%E5%91%8A",
+    "listeningUrl": "https://sop.org/music/pw25/",
     "searchUrl": "https://yopu.co/explore#q=%E5%BE%97%E8%83%9C%E7%9A%84%E5%AE%A3%E5%91%8A",
     "chart": {
       "kind": "chords",
@@ -2754,6 +3046,14 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://sop.org/sopmedia/Demo/PW25/05_YouAreMyVictory_Demo_PW25.mp3",
+      "sourceUrl": "https://sop.org/music/pw25/",
+      "label": "赞美之泉官网 · 试听片段",
+      "verifiedAt": "2026-11-20",
+      "verification": "source-page",
+      "preview": true
     }
   },
   {
@@ -2802,7 +3102,7 @@
         "sourceName": "有谱么（登录后查看完整功能）"
       }
     ],
-    "listeningUrl": "https://www.zanmei.ai/search/song/%E8%B0%A2%E8%B0%A2%E4%BD%A0%E6%8B%A3%E9%80%89",
+    "listeningUrl": "https://sop.org/music/cpw08/",
     "searchUrl": "https://yopu.co/explore#q=%E8%B0%A2%E8%B0%A2%E4%BD%A0%E6%8B%A3%E9%80%89",
     "chart": {
       "kind": "chords",
@@ -2815,6 +3115,14 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://sop.org/sopmedia/Demo/CPW08/10_ThankYouForChoosingMe_CPW08.mp3",
+      "sourceUrl": "https://sop.org/music/cpw08/",
+      "label": "赞美之泉官网 · 试听片段",
+      "verifiedAt": "2026-11-20",
+      "verification": "source-page",
+      "preview": true
     }
   },
   {
@@ -2835,7 +3143,7 @@
         "sourceName": "有谱么（登录后查看完整功能）"
       }
     ],
-    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%88%91%E4%BB%AC%E7%88%B1%E8%AE%A9%E4%B8%96%E7%95%8C%E4%B8%8D%E4%B8%80%E6%A0%B7",
+    "listeningUrl": "https://sop.org/music/",
     "searchUrl": "https://yopu.co/explore#q=%E6%88%91%E4%BB%AC%E7%88%B1%E8%AE%A9%E4%B8%96%E7%95%8C%E4%B8%8D%E4%B8%80%E6%A0%B7",
     "chart": {
       "kind": "chords",
@@ -2848,6 +3156,14 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://sop.org/sopmedia/Demo/PW13/03_We_will_Love_Demo_PW13.mp3",
+      "sourceUrl": "https://sop.org/music/",
+      "label": "赞美之泉官网 · 试听片段",
+      "verifiedAt": "2026-11-20",
+      "verification": "source-page",
+      "preview": true
     }
   },
   {
@@ -2945,7 +3261,7 @@
         "sourceName": "有谱么（登录后查看完整功能）"
       }
     ],
-    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%A5%BD%E5%96%9C%E6%AC%A2%E4%B8%8E%E4%BD%A0%E5%9C%A8%E4%B8%80%E8%B5%B7",
+    "listeningUrl": "https://sop.org/music/pw29/",
     "searchUrl": "https://yopu.co/explore#q=%E5%A5%BD%E5%96%9C%E6%AC%A2%E4%B8%8E%E4%BD%A0%E5%9C%A8%E4%B8%80%E8%B5%B7",
     "chart": {
       "kind": "chords",
@@ -2958,6 +3274,14 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://sop.org/sopmedia/Demo/PW29/PW29_02_IReallyLoveToBeWithYou_DEMO.mp3",
+      "sourceUrl": "https://sop.org/music/pw29/",
+      "label": "赞美之泉官网 · 试听片段",
+      "verifiedAt": "2026-11-20",
+      "verification": "source-page",
+      "preview": true
     }
   },
   {
@@ -3003,7 +3327,7 @@
   {
     "id": "light-734262532dc9",
     "title": "深触我心",
-    "artist": "Light 团契收藏",
+    "artist": "赞美之泉",
     "category": "纪念",
     "categoryReason": "默想耶稣的受苦、十架与舍身大爱。",
     "originalKey": "G",
@@ -3032,6 +3356,13 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://rp-ccc.org/Main/Worship%20Songs%20Chinese/MP3/04-64.mp3",
+      "sourceUrl": "https://rp-ccc.org/Main/Worship%20Songs%20Chinese/Worship_Songs.htm",
+      "label": "Rohnert Park 华人基督教会 · 公开试听",
+      "verifiedAt": "2026-11-20",
+      "verification": "range"
     }
   },
   {
@@ -3172,7 +3503,7 @@
         "sourceName": "有谱么（登录后查看完整功能）"
       }
     ],
-    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%B7%B1%E4%B8%8D%E8%A7%81%E5%BA%95%E7%9A%84%E7%88%B1",
+    "listeningUrl": "https://sop.org/music/pw26/",
     "searchUrl": "https://yopu.co/explore#q=%E6%B7%B1%E4%B8%8D%E8%A7%81%E5%BA%95%E7%9A%84%E7%88%B1",
     "chart": {
       "kind": "chords",
@@ -3185,6 +3516,14 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://sop.org/sopmedia/Demo/PW26/10_EndlessLove_DEMO_PW26.mp3",
+      "sourceUrl": "https://sop.org/music/pw26/",
+      "label": "赞美之泉官网 · 试听片段",
+      "verifiedAt": "2026-11-20",
+      "verification": "source-page",
+      "preview": true
     }
   },
   {
@@ -3196,7 +3535,7 @@
     "originalKey": "C",
     "archivedSheetCount": 1,
     "sheets": [],
-    "listeningUrl": "https://www.zanmei.ai/search/song/%E8%AE%A4%E8%AF%86%E4%BD%A0%E6%98%AF%E5%A4%9A%E4%B9%88%E7%9A%84%E5%B9%B8%E8%BF%90",
+    "listeningUrl": "https://streetvoice.com/asm/songs/565309/",
     "searchUrl": "https://yopu.co/explore#q=%E8%AE%A4%E8%AF%86%E4%BD%A0%E6%98%AF%E5%A4%9A%E4%B9%88%E7%9A%84%E5%B9%B8%E8%BF%90",
     "chart": {
       "kind": "chords",
@@ -3318,7 +3657,7 @@
         "sourceName": "有谱么（登录后查看完整功能）"
       }
     ],
-    "listeningUrl": "https://www.zanmei.ai/search/song/%E6%88%91%E4%BB%AC%E7%9A%84%E7%A5%9E",
+    "listeningUrl": "https://sop.org/music/cpw12/",
     "searchUrl": "https://yopu.co/explore#q=%E6%88%91%E4%BB%AC%E7%9A%84%E7%A5%9E",
     "chart": {
       "kind": "chords",
@@ -3331,12 +3670,20 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://sop.org/sopmedia/Demo/CPW12/09_YouAreOurGod_CPW12_DEMO.mp3",
+      "sourceUrl": "https://sop.org/music/cpw12/",
+      "label": "赞美之泉官网 · 试听片段",
+      "verifiedAt": "2026-11-20",
+      "verification": "source-page",
+      "preview": true
     }
   },
   {
     "id": "light-87471e8e2f52",
     "title": "大山为我挪开",
-    "artist": "Light 团契收藏",
+    "artist": "赞美之泉",
     "category": "激励",
     "categoryReason": "在艰难中宣告神同在、凭信心前进。",
     "originalKey": "D",
@@ -3351,7 +3698,7 @@
         "sourceName": "有谱么（登录后查看完整功能）"
       }
     ],
-    "listeningUrl": "https://www.zanmei.ai/search/song/%E5%A4%A7%E5%B1%B1%E4%B8%BA%E6%88%91%E6%8C%AA%E5%BC%80",
+    "listeningUrl": "https://open.spotify.com/track/1Arv0P6oeLEun5U9t6GWQI",
     "searchUrl": "https://yopu.co/explore#q=%E5%A4%A7%E5%B1%B1%E4%B8%BA%E6%88%91%E6%8C%AA%E5%BC%80",
     "chart": {
       "kind": "chords",
@@ -3364,6 +3711,14 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://sop.org/sopmedia/Demo/PW24/03_MountainsMoveforMe_Demo_PW24.mp3",
+      "sourceUrl": "https://sop.org/music/",
+      "label": "赞美之泉官网 · 试听片段",
+      "verifiedAt": "2026-11-20",
+      "verification": "source-page",
+      "preview": true
     }
   },
   {
@@ -3384,7 +3739,7 @@
         "sourceName": "有谱么（登录后查看完整功能）"
       }
     ],
-    "listeningUrl": "https://www.zanmei.ai/search/song/%E8%BF%99%E6%98%AF%E6%88%91%E4%BB%AC%E7%9A%84%E6%95%AC%E6%8B%9C",
+    "listeningUrl": "https://open.spotify.com/track/0suba0gRuP3y8jmhSFd2BV",
     "searchUrl": "https://yopu.co/explore#q=%E8%BF%99%E6%98%AF%E6%88%91%E4%BB%AC%E7%9A%84%E6%95%AC%E6%8B%9C",
     "chart": {
       "kind": "chords",
@@ -3397,6 +3752,14 @@
           ]
         }
       ]
+    },
+    "audio": {
+      "url": "https://sop.org/sopmedia/Demo/PW31/04_ThisIsOurWorship_PW31_DEMO.mp3",
+      "sourceUrl": "https://sop.org/music/pw31/",
+      "label": "赞美之泉官网 · 试听片段",
+      "verifiedAt": "2026-11-20",
+      "verification": "source-page",
+      "preview": true
     }
   }
 ]

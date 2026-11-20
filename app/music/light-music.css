@@ -348,6 +348,11 @@
   text-decoration: underline;
   text-underline-offset: 4px;
 }
+.light-audio-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
 .light-audio p {
   font-size: 12px;
   color: var(--sticker-muted);
@@ -533,21 +538,6 @@
   line-height: 1.9;
   color: var(--sticker-muted);
   margin-top: 20px;
-}
-.light-score-pending {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  gap: 14px;
-  padding: 45px 10px;
-  color: var(--sticker-muted);
-  font-size: 13px;
-  text-align: center;
-}
-.light-score-pending button {
-  font-size: 12px;
-  text-decoration: underline;
-  text-underline-offset: 5px;
 }
 .light-original-toolbar {
   display: flex;

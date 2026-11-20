@@ -25,6 +25,7 @@ export function LightLibrary({ songs }: { songs: LightSong[] }) {
     )?.id
   );
   const selected = songs.find((song) => song.id === selectedId);
+  const missingAudio = songs.filter((song) => !song.audio || song.audio.preview);
   const filtered = useMemo(
     () =>
       songs.filter(
@@ -131,30 +132,25 @@ export function LightLibrary({ songs }: { songs: LightSong[] }) {
         </nav>
         <details className="light-resource-log">
           <summary>
-            待补清单 · {songs.filter((song) => !song.audio).length} 首音源 /{" "}
+            待补清单 · {missingAudio.length} 首完整音源 /{" "}
             {songs.filter((song) => !song.notation?.reviewed).length} 首完整转调谱
           </summary>
-          <p>
-            下面这些歌曲尚缺可用
-            MP3。其余未标“完整转调谱”的歌曲，目前提供来源谱本或和弦参考；吉他完整谱与钢琴双手编配仍待补齐。
-          </p>
+          <p>下方列出缺少站内完整录音或只有试听片段的歌曲。CSV 可查每首歌的音源和完整转调谱状态。</p>
           <div className="light-missing-songs">
-            {songs
-              .filter((song) => !song.audio)
-              .map((song) => (
-                <button
-                  key={song.id}
-                  type="button"
-                  onClick={() => {
-                    setSelectedId(song.id);
-                    document
-                      .getElementById("light-selected-score")
-                      ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                  }}
-                >
-                  {song.title}
-                </button>
-              ))}
+            {missingAudio.map((song) => (
+              <button
+                key={song.id}
+                type="button"
+                onClick={() => {
+                  setSelectedId(song.id);
+                  document
+                    .getElementById("light-selected-score")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+              >
+                {song.title}
+              </button>
+            ))}
           </div>
           <a href="/music/light-resource-checklist.csv" download>
             下载完整待补清单 CSV <ArrowUpRight size={13} />
@@ -198,11 +194,7 @@ export function LightLibrary({ songs }: { songs: LightSong[] }) {
                               {song.notation?.key || song.originalKey || "—"}
                             </span>
                             <span className="light-song-status">
-                              {song.audio?.verification === "range"
-                                ? "可播放"
-                                : song.audio
-                                  ? "官方音源"
-                                  : "音源待补"}
+                              {song.audio?.preview ? "官方试听" : song.audio ? "可播放" : "音源待补"}
                             </span>
                             <ArrowUpRight size={17} />
                           </button>

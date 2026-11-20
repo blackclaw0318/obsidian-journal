@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { ArrowUpRight, FileImage, Guitar, Minus, Music2, Plus, RotateCcw } from "lucide-react";
-import { type LightSong } from "@/lib/light-music/catalog";
+import { isYopuSheet, type LightSong } from "@/lib/light-music/catalog";
 import {
   KEYS,
   mod12,
@@ -18,7 +18,7 @@ import { CompleteNotation } from "./CompleteNotation";
 
 export function LightScore({ song, demo = false }: { song: LightSong; demo?: boolean }) {
   const [view, setView] = useState<"guitar" | "piano" | "original">(
-    song.notation || song.chart ? "guitar" : "original"
+    song.notation || (song.chart && !song.sheets.length) ? "guitar" : "original"
   );
   const [offset, setOffset] = useState(0);
   const [capo, setCapo] = useState(0);
@@ -45,6 +45,7 @@ export function LightScore({ song, demo = false }: { song: LightSong; demo?: boo
     )
   ];
   const sheet = song.sheets.find((item) => item.id === sheetId) ?? song.sheets[0];
+  const yopu = sheet && isYopuSheet(sheet);
 
   return (
     <section className="light-score" aria-label={`${song.title} 曲谱`}>
@@ -71,18 +72,26 @@ export function LightScore({ song, demo = false }: { song: LightSong; demo?: boo
               aria-label={`播放 ${song.title}`}
               onError={() => setAudioError(true)}
             />
-            <a href={song.audio.sourceUrl} target="_blank" rel="noopener noreferrer">
-              {song.audio.label}
-              <ArrowUpRight size={13} />
-            </a>
+            <div className="light-audio-links">
+              <a href={song.audio.sourceUrl} target="_blank" rel="noopener noreferrer">
+                {song.audio.label}
+                <ArrowUpRight size={13} />
+              </a>
+              {song.audio.preview && song.listeningUrl?.startsWith("https://open.spotify.com/track/") && (
+                <a href={song.listeningUrl} target="_blank" rel="noopener noreferrer">
+                  在 Spotify 收听
+                  <ArrowUpRight size={13} />
+                </a>
+              )}
+            </div>
             {audioError && <p role="status">音频暂时无法加载，可打开来源页面收听。</p>}
           </>
         ) : (
           <p>
-            {demo ? "" : "本站音源待补充。"}
+            {demo ? "" : "站内音源待补充。"}
             {song.listeningUrl && (
               <a href={song.listeningUrl} target="_blank" rel="noopener noreferrer">
-                前往来源页面收听
+                {song.listeningUrl.includes("/search/") ? "搜索音源" : "前往来源页面收听"}
                 <ArrowUpRight size={13} />
               </a>
             )}
@@ -90,14 +99,18 @@ export function LightScore({ song, demo = false }: { song: LightSong; demo?: boo
         )}
       </div>
       <nav className="light-score-tabs" aria-label="曲谱视图">
-        <button type="button" aria-pressed={view === "guitar"} onClick={() => setView("guitar")}>
-          <Guitar size={16} />
-          {song.notation ? "吉他完整谱" : "吉他和弦"}
-        </button>
-        <button type="button" aria-pressed={view === "piano"} onClick={() => setView("piano")}>
-          <Music2 size={16} />
-          {song.notation ? "钢琴双手谱" : "钢琴伴奏"}
-        </button>
+        {(song.notation || song.chart) && (
+          <>
+            <button type="button" aria-pressed={view === "guitar"} onClick={() => setView("guitar")}>
+              <Guitar size={16} />
+              {song.notation ? "吉他完整谱" : "吉他和弦"}
+            </button>
+            <button type="button" aria-pressed={view === "piano"} onClick={() => setView("piano")}>
+              <Music2 size={16} />
+              {song.notation ? "钢琴双手谱" : "钢琴和弦参考"}
+            </button>
+          </>
+        )}
         {song.sheets.length > 0 && (
           <button type="button" aria-pressed={view === "original"} onClick={() => setView("original")}>
             <FileImage size={16} />
@@ -244,17 +257,6 @@ export function LightScore({ song, demo = false }: { song: LightSong; demo?: boo
           )}
         </>
       )}
-      {view !== "original" && !song.chart && !song.notation && (
-        <div className="light-score-pending">
-          <Music2 size={25} strokeWidth={1.4} />
-          <p>{view === "guitar" ? "吉他和弦谱" : "钢琴伴奏谱"}正在整理。</p>
-          {song.sheets.length > 0 && (
-            <button type="button" onClick={() => setView("original")}>
-              先查看原始曲谱 →
-            </button>
-          )}
-        </div>
-      )}
       {view === "original" && (
         <div className="light-original">
           {sheet ? (
@@ -275,15 +277,20 @@ export function LightScore({ song, demo = false }: { song: LightSong; demo?: boo
                     ))}
                   </select>
                 </label>
-                <a href={sheet.url} target="_blank" rel="noopener noreferrer">
-                  {sheet.kind === "page" ? "来源页面" : sheet.kind === "pdf" ? "打开 PDF" : "打开大图"}
-                  <ArrowUpRight size={14} />
-                </a>
+                {sheet.kind !== "page" && (
+                  <a href={sheet.url} target="_blank" rel="noopener noreferrer">
+                    {sheet.kind === "pdf" ? "打开 PDF" : "打开大图"}
+                    <ArrowUpRight size={14} />
+                  </a>
+                )}
               </div>
               <p className="light-score-credit">
-                {sheet.kind === "page" ? "曲谱来源" : "原始谱本"} ·{" "}
-                {sheet.instrument === "guitar" ? "吉他" : sheet.instrument === "piano" ? "钢琴" : "通用谱"}
-                {sheet.incomplete ? " · 此谱不完整" : ""} · 保留原调
+                {sheet.sourceName ?? (sheet.kind === "page" ? "曲谱来源" : "原始谱本")}
+                {sheet.format ? ` · ${sheet.format}` : ""}
+                {sheet.instrument === "guitar" ? " · 吉他" : sheet.instrument === "piano" ? " · 钢琴" : ""}
+                {sheet.incomplete ? " · 此谱不完整" : ""}
+                {sheet.scoreKey ? ` · ${sheet.scoreKey} 调` : ""}
+                {sheet.arranger ? ` · ${sheet.arranger} 编配` : ""}
               </p>
               {sheet.kind === "pdf" ? (
                 <iframe
@@ -294,10 +301,9 @@ export function LightScore({ song, demo = false }: { song: LightSong; demo?: boo
                 />
               ) : sheet.kind === "page" ? (
                 <a className="light-sheet-source" href={sheet.url} target="_blank" rel="noopener noreferrer">
-                  查看{sheet.instrument === "piano" ? "钢琴" : sheet.instrument === "guitar" ? "吉他" : ""}
-                  完整曲谱
+                  {yopu ? "在有谱么打开原谱" : "打开来源曲谱"}
                   <ArrowUpRight size={16} />
-                  {sheet.sourceName && <span>{sheet.sourceName}</span>}
+                  {yopu && <span>转调与谱面选项在有谱么使用</span>}
                 </a>
               ) : failedImages.includes(sheet.url) ? (
                 <p role="status">曲谱图片暂时无法加载，请稍后重试。</p>

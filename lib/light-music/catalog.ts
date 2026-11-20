@@ -20,6 +20,13 @@ export interface LightSheet {
   kind?: "image" | "page" | "pdf";
   incomplete?: boolean;
   sourceName?: string;
+  format?: "弹唱谱" | "和弦谱" | "指弹谱" | "五线谱" | "和弦简谱";
+  scoreKey?: string;
+  arranger?: string;
+}
+
+export function isYopuSheet(sheet: LightSheet) {
+  return sheet.kind === "page" && /^https:\/\/yopu\.co\/view\/[A-Za-z0-9]+$/.test(sheet.url);
 }
 export interface LightSong {
   id: string;
@@ -37,6 +44,7 @@ export interface LightSong {
     label: string;
     verifiedAt: string;
     verification?: "range" | "source-page";
+    preview?: boolean;
   };
   listeningUrl?: string;
   searchUrl?: string;
@@ -70,6 +78,7 @@ export function mergeSongEntries(entries: LightSong[]): LightSong[] {
     }
     const preferred = current.incomplete && !entry.incomplete ? entry : current;
     const incomplete = Boolean(current.incomplete && entry.incomplete);
+    const audio = [preferred.audio, current.audio, entry.audio];
     grouped.set(name, {
       ...preferred,
       id: current.id,
@@ -77,7 +86,7 @@ export function mergeSongEntries(entries: LightSong[]): LightSong[] {
       category: incomplete ? "其他" : preferred.category,
       aliases: [...new Set([...(current.aliases ?? []), ...(entry.aliases ?? [])])],
       sheets: [...new Map([...current.sheets, ...entry.sheets].map((sheet) => [sheet.url, sheet])).values()],
-      audio: preferred.audio ?? current.audio ?? entry.audio,
+      audio: audio.find((source) => source && !source.preview) ?? audio.find(Boolean),
       chart: preferred.chart ?? current.chart ?? entry.chart
     });
   }
