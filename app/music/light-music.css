@@ -566,30 +566,6 @@
   height: auto;
   margin-top: 20px;
 }
-.light-sheet-source {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 25px 20px;
-  margin-top: 20px;
-  border: 1px solid var(--sticker-rule);
-  font-size: 14px;
-}
-.light-sheet-source > span {
-  margin-left: auto;
-  font-size: 10px;
-  color: var(--sticker-muted);
-}
-.light-search-source {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 22px;
-  padding-bottom: 5px;
-  border-bottom: 1px solid var(--sticker-rule);
-  font-size: 11px;
-  color: var(--sticker-muted);
-}
 .light-workspace {
   display: grid;
   grid-template-columns: minmax(240px, 0.7fr) minmax(0, 1.3fr);

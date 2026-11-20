@@ -36,5 +36,77 @@
     "timeSignature": "2/4",
     "reviewed": true,
     "measures": 34
+  },
+  "light-5ba8f1bd8eb2": {
+    "key": "A",
+    "timeSignature": "4/4",
+    "reviewed": true,
+    "measures": 16
+  },
+  "light-84e4607147da": {
+    "key": "Bb",
+    "timeSignature": "4/4",
+    "reviewed": true,
+    "measures": 17
+  },
+  "light-16d8f50748ba": {
+    "key": "D",
+    "timeSignature": "4/4",
+    "reviewed": true,
+    "measures": 19
+  },
+  "light-3493593ee711": {
+    "key": "C",
+    "timeSignature": "4/4",
+    "reviewed": true,
+    "measures": 17
+  },
+  "light-cfd8c0420a3c": {
+    "key": "D",
+    "timeSignature": "4/4",
+    "reviewed": true,
+    "measures": 24
+  },
+  "light-f01d65da6243": {
+    "key": "D",
+    "timeSignature": "4/4",
+    "reviewed": true,
+    "measures": 38
+  },
+  "light-f7deb60002f4": {
+    "key": "G",
+    "timeSignature": "4/4",
+    "reviewed": true,
+    "measures": 30
+  },
+  "light-78bc90cd3f24": {
+    "key": "C",
+    "timeSignature": "4/4",
+    "reviewed": true,
+    "measures": 33
+  },
+  "light-deb3cd2ec0a0": {
+    "key": "G",
+    "timeSignature": "4/4",
+    "reviewed": true,
+    "measures": 16
+  },
+  "light-2fa862bdc2eb": {
+    "key": "C",
+    "timeSignature": "4/4",
+    "reviewed": true,
+    "measures": 18
+  },
+  "light-273bf08eb7d6": {
+    "key": "D",
+    "timeSignature": "4/4",
+    "reviewed": true,
+    "measures": 17
+  },
+  "light-d86c15255d28": {
+    "key": "A",
+    "timeSignature": "4/4",
+    "reviewed": true,
+    "measures": 28
   }
 }

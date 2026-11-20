@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { ArrowUpRight, FileImage, Guitar, Minus, Music2, Plus, RotateCcw } from "lucide-react";
-import { isYopuSheet, type LightSong } from "@/lib/light-music/catalog";
+import type { LightSong } from "@/lib/light-music/catalog";
 import {
   KEYS,
   mod12,
@@ -17,13 +17,14 @@ import { ChordDiagram } from "./ChordDiagram";
 import { CompleteNotation } from "./CompleteNotation";
 
 export function LightScore({ song, demo = false }: { song: LightSong; demo?: boolean }) {
+  const sheets = song.sheets.filter((sheet) => sheet.kind !== "page");
   const [view, setView] = useState<"guitar" | "piano" | "original">(
-    song.notation || (song.chart && !song.sheets.length) ? "guitar" : "original"
+    song.notation || (song.chart && !sheets.length) ? "guitar" : "original"
   );
   const [offset, setOffset] = useState(0);
   const [capo, setCapo] = useState(0);
   const [fontSize, setFontSize] = useState(18);
-  const [sheetId, setSheetId] = useState(song.sheets[0]?.id);
+  const [sheetId, setSheetId] = useState(sheets[0]?.id);
   const [failedImages, setFailedImages] = useState<string[]>([]);
   const [audioError, setAudioError] = useState(false);
   const sourceKey = song.notation?.key ?? song.originalKey;
@@ -44,8 +45,7 @@ export function LightScore({ song, demo = false }: { song: LightSong; demo?: boo
       ) ?? []
     )
   ];
-  const sheet = song.sheets.find((item) => item.id === sheetId) ?? song.sheets[0];
-  const yopu = sheet && isYopuSheet(sheet);
+  const sheet = sheets.find((item) => item.id === sheetId) ?? sheets[0];
 
   return (
     <section className="light-score" aria-label={`${song.title} 曲谱`}>
@@ -111,10 +111,10 @@ export function LightScore({ song, demo = false }: { song: LightSong; demo?: boo
             </button>
           </>
         )}
-        {song.sheets.length > 0 && (
+        {sheets.length > 0 && (
           <button type="button" aria-pressed={view === "original"} onClick={() => setView("original")}>
             <FileImage size={16} />
-            来源曲谱 <span>{song.sheets.length}</span>
+            来源曲谱 <span>{sheets.length}</span>
           </button>
         )}
       </nav>
@@ -269,7 +269,7 @@ export function LightScore({ song, demo = false }: { song: LightSong; demo?: boo
                     value={sheet.id}
                     onChange={(event) => setSheetId(event.target.value)}
                   >
-                    {song.sheets.map((item) => (
+                    {sheets.map((item) => (
                       <option key={item.id} value={item.id}>
                         {item.label}
                         {item.incomplete ? "（残缺）" : ""}
@@ -277,15 +277,13 @@ export function LightScore({ song, demo = false }: { song: LightSong; demo?: boo
                     ))}
                   </select>
                 </label>
-                {sheet.kind !== "page" && (
-                  <a href={sheet.url} target="_blank" rel="noopener noreferrer">
-                    {sheet.kind === "pdf" ? "打开 PDF" : "打开大图"}
-                    <ArrowUpRight size={14} />
-                  </a>
-                )}
+                <a href={sheet.url} target="_blank" rel="noopener noreferrer">
+                  {sheet.kind === "pdf" ? "打开 PDF" : "打开大图"}
+                  <ArrowUpRight size={14} />
+                </a>
               </div>
               <p className="light-score-credit">
-                {sheet.sourceName ?? (sheet.kind === "page" ? "曲谱来源" : "原始谱本")}
+                {sheet.sourceName ?? "原始谱本"}
                 {sheet.format ? ` · ${sheet.format}` : ""}
                 {sheet.instrument === "guitar" ? " · 吉他" : sheet.instrument === "piano" ? " · 钢琴" : ""}
                 {sheet.incomplete ? " · 此谱不完整" : ""}
@@ -299,12 +297,6 @@ export function LightScore({ song, demo = false }: { song: LightSong; demo?: boo
                   title={`${song.title} · ${sheet.label}`}
                   loading="lazy"
                 />
-              ) : sheet.kind === "page" ? (
-                <a className="light-sheet-source" href={sheet.url} target="_blank" rel="noopener noreferrer">
-                  {yopu ? "在有谱么打开原谱" : "打开来源曲谱"}
-                  <ArrowUpRight size={16} />
-                  {yopu && <span>转调与谱面选项在有谱么使用</span>}
-                </a>
               ) : failedImages.includes(sheet.url) ? (
                 <p role="status">曲谱图片暂时无法加载，请稍后重试。</p>
               ) : (
@@ -318,15 +310,9 @@ export function LightScore({ song, demo = false }: { song: LightSong; demo?: boo
               )}
             </>
           ) : (
-            <p>原始曲谱待补充。</p>
+            <p>站内曲谱待整理。</p>
           )}
         </div>
-      )}
-      {song.searchUrl && (
-        <a className="light-search-source" href={song.searchUrl} target="_blank" rel="noopener noreferrer">
-          在有谱么查找更多谱本
-          <ArrowUpRight size={13} />
-        </a>
       )}
     </section>
   );

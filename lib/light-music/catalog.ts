@@ -25,9 +25,6 @@ export interface LightSheet {
   arranger?: string;
 }
 
-export function isYopuSheet(sheet: LightSheet) {
-  return sheet.kind === "page" && /^https:\/\/yopu\.co\/view\/[A-Za-z0-9]+$/.test(sheet.url);
-}
 export interface LightSong {
   id: string;
   title: string;

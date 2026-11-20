@@ -185,8 +185,14 @@ export function LightLibrary({ songs }: { songs: LightSong[] }) {
                             <span className="light-song-title">
                               <strong>{song.title}</strong>
                               <span>
-                                {song.artist || "Light 团契"} · {song.sheets.length} 个谱源
-                                {song.notation?.reviewed ? " · 完整转调谱" : ""}
+                                {song.artist || "Light 团契"} ·{" "}
+                                {song.notation?.reviewed
+                                  ? "站内转调谱"
+                                  : song.sheets.some((sheet) => sheet.kind !== "page")
+                                    ? "站内阅谱"
+                                    : song.chart
+                                      ? "和弦参考"
+                                      : "曲谱待补"}
                                 {song.incomplete ? " · 残缺谱" : ""}
                               </span>
                             </span>

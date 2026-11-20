@@ -47,11 +47,12 @@ describe("Light 曲谱交互", () => {
     expect(screen.getByTitle("谱例 · 原谱").getAttribute("src")).toBe("about:blank");
     expect(screen.queryByLabelText("演唱调")).toBeNull();
   });
-  it("优先展示有谱么来源谱", () => {
+  it("仅有站外谱源时直接显示站内和弦参考", () => {
     render(
       <LightScore
         song={{
           ...song,
+          searchUrl: "https://yopu.co/explore",
           sheets: [
             {
               id: "yopu",
@@ -65,9 +66,9 @@ describe("Light 曲谱交互", () => {
         }}
       />
     );
-    expect(screen.getByRole("link", { name: /在有谱么打开原谱/ }).getAttribute("href")).toBe(
-      "https://yopu.co/view/9PxLmqvP"
-    );
+    expect(screen.getByRole("button", { name: "吉他和弦" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByText("甲")).toBeTruthy();
+    expect(screen.queryByRole("link", { name: /有谱么/ })).toBeNull();
   });
   it("分类和标题搜索共同过滤，清空后恢复列表", () => {
     render(<LightLibrary songs={[song, { ...song, id: "qb", title: "祷告谱例", category: "祷告祈求" }]} />);

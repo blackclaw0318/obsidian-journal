@@ -11,7 +11,7 @@ const rows = [
     "外部收听地址",
     "吉他站内完整转调谱",
     "钢琴站内双手转调谱",
-    "已有曲谱来源",
+    "可站内查看的 PDF 或图片来源",
     "待补链接（可填写）"
   ]
 ];
@@ -33,7 +33,10 @@ for (const song of songs) {
     song.listeningUrl ?? "",
     full ? "已完成" : "待补齐",
     full ? "已完成" : "待补齐",
-    song.sheets.map((s: { url: string }) => s.url).join(" | "),
+    song.sheets
+      .filter((s: { kind?: string }) => s.kind !== "page")
+      .map((s: { url: string }) => s.url)
+      .join(" | "),
     ""
   ]);
 }
