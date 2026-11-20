@@ -41,8 +41,8 @@
       "url": "https://w247.net/files/songs/%E7%A5%A2%E6%AF%94%E9%80%99%E4%B8%80%E5%88%87%E6%9B%B4%E7%BE%8E%E9%BA%97.mp3",
       "sourceUrl": "https://w247.net/songs/ni-bi-zhe-yi-qie-geng-mei-li/",
       "label": "官方原唱 · 小羊诗歌",
-      "verifiedAt": "2026-11-16",
-      "verification": "source-page"
+      "verifiedAt": "2026-11-20",
+      "verification": "range"
     },
     "chart": {
       "kind": "chords",
@@ -346,8 +346,8 @@
       "url": "https://w247.net/files/songs/%E5%A6%82%E6%9E%9C.mp3",
       "sourceUrl": "https://w247.net/songs/ru-guo/",
       "label": "官方原唱 · 小羊诗歌",
-      "verifiedAt": "2026-11-16",
-      "verification": "source-page"
+      "verifiedAt": "2026-11-20",
+      "verification": "range"
     },
     "chart": {
       "kind": "chords",
@@ -525,8 +525,8 @@
       "url": "https://w247.net/files/songs/%E8%80%B6%E7%A9%8C%21%E8%80%B6%E7%A9%8C%21.mp3",
       "sourceUrl": "https://w247.net/songs/ye-su-ye-su/",
       "label": "官方原唱 · 小羊诗歌",
-      "verifiedAt": "2026-11-16",
-      "verification": "source-page"
+      "verifiedAt": "2026-11-20",
+      "verification": "range"
     },
     "chart": {
       "kind": "chords",
@@ -658,8 +658,8 @@
       "url": "https://w247.net/files/songs/%E5%AF%B6%E5%BA%A7.mp3",
       "sourceUrl": "https://w247.net/songs/bao-zuo/",
       "label": "官方原唱 · 小羊诗歌",
-      "verifiedAt": "2026-11-16",
-      "verification": "source-page"
+      "verifiedAt": "2026-11-20",
+      "verification": "range"
     },
     "chart": {
       "kind": "chords",
@@ -1644,8 +1644,8 @@
       "url": "https://w247.net/files/songs/%E5%86%8D%E6%AC%A1%E5%B0%87%E6%88%91%E6%9B%B4%E6%96%B0.mp3",
       "sourceUrl": "https://w247.net/songs/zai-ci-jiang-wo-geng-xin/",
       "label": "官方原唱 · 小羊诗歌",
-      "verifiedAt": "2026-11-16",
-      "verification": "source-page"
+      "verifiedAt": "2026-11-20",
+      "verification": "range"
     },
     "chart": {
       "kind": "chords",
@@ -2156,8 +2156,8 @@
       "url": "https://w247.net/files/songs/%E8%81%B2%E5%90%88%E7%82%BA%E4%B8%80.mp3",
       "sourceUrl": "https://w247.net/songs/sheng-he-wei-yi/",
       "label": "官方原唱 · 小羊诗歌",
-      "verifiedAt": "2026-11-16",
-      "verification": "source-page"
+      "verifiedAt": "2026-11-20",
+      "verification": "range"
     },
     "chart": {
       "kind": "chords",
@@ -2408,12 +2408,11 @@
       ]
     },
     "audio": {
-      "url": "https://sop.org/sopmedia/Demo/PW20A/08_Won'tGiveUp_Demo_PW20A.mp3",
-      "sourceUrl": "https://sop.org/music/pw20/",
-      "label": "赞美之泉官网 · 试听片段",
+      "url": "https://www.lifechurchmissions.com/downloads/Hymns/Presentation/2015/Audio/20151122%20%E5%A5%94%E8%B7%91%E4%B8%8D%E6%94%BE%E5%BC%83.mp3",
+      "sourceUrl": "https://suyun2710.wordpress.com/2017/05/12/wedding-hymn-presentation%E3%80%90%E5%A5%94%E8%B7%91%E4%B8%8D%E6%94%BE%E5%BC%83%E3%80%91/",
+      "label": "公开音源 · 婚礼现场演唱版",
       "verifiedAt": "2026-11-20",
-      "verification": "source-page",
-      "preview": true
+      "verification": "range"
     }
   },
   {
@@ -2507,8 +2506,8 @@
       "url": "https://w247.net/files/songs/%E8%81%96%E5%93%89%E5%85%A8%E8%83%BD%E4%B8%BB.mp3",
       "sourceUrl": "https://w247.net/songs/sheng-zai-quan-neng-zhu/",
       "label": "官方原唱 · 小羊诗歌",
-      "verifiedAt": "2026-11-16",
-      "verification": "source-page"
+      "verifiedAt": "2026-11-20",
+      "verification": "range"
     },
     "chart": {
       "kind": "chords",
@@ -2729,12 +2728,11 @@
       ]
     },
     "audio": {
-      "url": "https://sop.org/sopmedia/Demo/PW05/09_IntoYourPresence_Demo_PW05.mp3",
-      "sourceUrl": "https://sop.org/music/pw05/",
-      "label": "赞美之泉官网 · 试听片段",
+      "url": "https://play.izanm.org/song/p/42491.mp3",
+      "sourceUrl": "https://www.cbann.com/?p=38021",
+      "label": "公开音源 · 王璜青钢琴版",
       "verifiedAt": "2026-11-20",
-      "verification": "source-page",
-      "preview": true
+      "verification": "range"
     }
   },
   {
@@ -3080,8 +3078,8 @@
       "url": "https://w247.net/files/songs/%E6%88%91%E7%9A%84%E7%A5%9E%E7%9C%9F%E7%BE%8E.mp3",
       "sourceUrl": "https://w247.net/songs/wo-de-shen-zhen-mei/",
       "label": "官方原唱 · 小羊诗歌",
-      "verifiedAt": "2026-11-16",
-      "verification": "source-page"
+      "verifiedAt": "2026-11-20",
+      "verification": "range"
     }
   },
   {
@@ -3227,8 +3225,8 @@
       "url": "https://w247.net/files/songs/%E9%99%AA%E6%88%91%E8%B5%B0%E9%81%8E%E6%98%A5%E5%A4%8F%E7%A7%8B%E5%86%AC.mp3",
       "sourceUrl": "https://w247.net/songs/pei-wo-zou-guo-chun-xia-qiu-dong/",
       "label": "官方原唱 · 小羊诗歌",
-      "verifiedAt": "2026-11-16",
-      "verification": "source-page"
+      "verifiedAt": "2026-11-20",
+      "verification": "range"
     },
     "chart": {
       "kind": "chords",
@@ -3429,8 +3427,8 @@
       "url": "https://w247.net/files/songs/%E7%82%BA%E6%88%91%E7%95%99%E4%B8%80%E5%80%8B%E4%BD%8D%E5%AD%90.mp3",
       "sourceUrl": "https://w247.net/songs/wei-wo-liu-yi-ge-wei-zi/",
       "label": "官方原唱 · 小羊诗歌",
-      "verifiedAt": "2026-11-16",
-      "verification": "source-page"
+      "verifiedAt": "2026-11-20",
+      "verification": "range"
     },
     "chart": {
       "kind": "chords",
@@ -3583,8 +3581,8 @@
       "url": "https://w247.net/files/songs/%E6%88%91%E6%B8%B4%E6%85%95%E7%A5%A2.mp3",
       "sourceUrl": "https://w247.net/songs/wo-ke-mu-ni/",
       "label": "官方原唱 · 小羊诗歌",
-      "verifiedAt": "2026-11-16",
-      "verification": "source-page"
+      "verifiedAt": "2026-11-20",
+      "verification": "range"
     },
     "chart": {
       "kind": "chords",

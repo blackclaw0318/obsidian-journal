@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { guitarCapoChords, pianoArrangement, type CompleteScore } from "@/lib/light-music/notation";
+import { guitarArrangement, pianoArrangement, type CompleteScore } from "@/lib/light-music/notation";
 
 export function CompleteNotation({
   id,
@@ -50,7 +50,7 @@ export function CompleteNotation({
         const abc =
           instrument === "piano"
             ? pianoArrangement(score.abc, score.key, abcjs.parseOnly)
-            : guitarCapoChords(score.abc, capo);
+            : guitarArrangement(score.abc, score.key, abcjs.parseOnly, transpose, capo);
         const rendered = abcjs.renderAbc(paper.current, abc, {
           responsive: "resize",
           staffwidth: 760,
@@ -71,6 +71,7 @@ export function CompleteNotation({
                     instrument: "guitar",
                     label: "吉他六线谱",
                     tuning: ["E,,", "A,,", "D,", "G,", "B,", "E"],
+                    highestNote: "b",
                     capo
                   }
                 ]
@@ -79,7 +80,7 @@ export function CompleteNotation({
         if (!rendered.length) throw new Error("谱面音符无法排版");
         if (
           instrument === "guitar" &&
-          !(rendered[0] as unknown as { tablatures?: unknown[] }).tablatures?.length
+          !(rendered[0] as unknown as { tablatures?: unknown[] }).tablatures?.some(Boolean)
         )
           throw new Error("吉他六线谱未能载入，请重试");
         setLoading(false);
@@ -112,7 +113,7 @@ export function CompleteNotation({
           {score.credit}
           {instrument === "piano"
             ? " 左手为 Light 分解和弦伴奏编配，右手保留原曲旋律。"
-            : " 五线谱与六线谱同步转调，变调夹按实际品位换算。"}
+            : " 人声旋律与吉他分解伴奏同步转调，六线谱按变调夹换算品位。"}
         </p>
       )}
     </div>

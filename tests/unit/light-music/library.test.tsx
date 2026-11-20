@@ -1,6 +1,7 @@
 import React from "react";
-import { afterEach, describe, expect, it } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { CompleteNotation } from "../../../components/light-music/CompleteNotation";
 import { LightScore } from "../../../components/light-music/LightScore";
 import { LightLibrary } from "../../../components/light-music/LightLibrary";
 import { normalizeSongTitle, type LightSong } from "../../../lib/light-music/catalog";
@@ -46,6 +47,39 @@ describe("Light 曲谱交互", () => {
     expect(screen.getByRole("link", { name: "打开 PDF" }).getAttribute("href")).toBe("about:blank");
     expect(screen.getByTitle("谱例 · 原谱").getAttribute("src")).toBe("about:blank");
     expect(screen.queryByLabelText("演唱调")).toBeNull();
+  });
+  it("完整吉他伴奏能渲染六线谱，并在改变调性时重新排版", async () => {
+    const score = {
+      title: "谱例",
+      key: "G",
+      abc: 'X:1\nT:谱例\nM:4/4\nL:1/8\nK:G\n"G"B8 | "D"A8 | "Em"G8 | "G"G8 |]',
+      credit: "测试",
+      reviewed: true
+    };
+    const bbox = Object.getOwnPropertyDescriptor(SVGElement.prototype, "getBBox");
+    Object.defineProperty(SVGElement.prototype, "getBBox", {
+      configurable: true,
+      value: () => ({ x: 0, y: 0, width: 20, height: 12 })
+    });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify(score))));
+    try {
+      const { container, rerender } = render(
+        <CompleteNotation id="qa" instrument="guitar" transpose={0} capo={0} fontSize={18} />
+      );
+      await waitFor(() => expect(container.querySelector("svg")?.textContent).toContain("吉他六线谱"));
+      const original = container.querySelector("svg");
+      rerender(<CompleteNotation id="qa" instrument="guitar" transpose={-2} capo={3} fontSize={18} />);
+      await waitFor(() => {
+        const transposed = container.querySelector("svg");
+        expect(transposed).not.toBe(original);
+        expect(transposed?.textContent).toContain("吉他六线谱");
+      });
+      expect(screen.queryByRole("alert")).toBeNull();
+    } finally {
+      vi.unstubAllGlobals();
+      if (bbox) Object.defineProperty(SVGElement.prototype, "getBBox", bbox);
+      else Reflect.deleteProperty(SVGElement.prototype, "getBBox");
+    }
   });
   it("仅有站外谱源时直接显示站内和弦参考", () => {
     render(
